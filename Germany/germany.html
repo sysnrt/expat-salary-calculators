@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" id="metaDesc" content="Brutto-Netto Gehaltsrechner Deutschland 2026 — Berechne dein Nettogehalt mit allen Abzügen, Sozialversicherung und Familienleistungen.">
+<title>Gehaltsrechner Deutschland 2026 | German Salary Calculator</title>
+<link rel="stylesheet" href="../shared.css">
+<style>
+  :root {
+    --primary: #1a1a2e;
+    --primary-light: #e94560;
+    --accent: #e94560;
+    --accent-green: #0f3460;
+    --bg: #f5f5f7;
+    --card: #ffffff;
+    --text: #1a1a2e;
+    --text-light: #6b7280;
+    --border: #e5e7eb;
+    --shadow: 0 4px 24px rgba(0,0,0,0.07);
+    --radius: 16px;
+    --gold: #d4a843;
+    --red: #e94560;
+    --blue: #0f3460;
+    --teal: #16a085;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+    color: white; padding: 48px 24px 36px; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -60%; left: -30%; width: 160%; height: 220%;
+    background: radial-gradient(ellipse, rgba(233,69,96,0.08) 0%, transparent 60%);
+    animation: pulse 10s ease-in-out infinite;
+  }
+
+  .badge { display:inline-block; background:rgba(233,69,96,0.25); padding:4px 16px; border-radius:20px; font-size:0.85rem; margin-top:12px; position:relative; backdrop-filter:blur(4px); border:1px solid rgba(233,69,96,0.3); }
+
+  .salary-display { font-size:2.4rem; font-weight:800; color:var(--blue); margin:4px 0 12px; letter-spacing:-1px; }
+
+  input[type="range"] { -webkit-appearance:none; width:100%; height:8px; border-radius:4px; background:linear-gradient(90deg,#0f3460,#e94560); outline:none; margin:8px 0; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:24px; height:24px; border-radius:50%; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.2); cursor:pointer; border:3px solid var(--red); }
+  input[type="range"]::-moz-range-thumb { width:24px; height:24px; border-radius:50%; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.2); cursor:pointer; border:3px solid var(--red); }
+
+  .number-input:focus { outline:none; border-color:var(--red); }
+
+  .toggle input:checked + .slider { background:var(--red); }
+
+  .custom-select:focus { outline:none; border-color:var(--red); }
+
+  .result-hero {
+    background: linear-gradient(135deg, #1a1a2e, #0f3460);
+    color:white; border-radius:var(--radius); padding:32px; text-align:center; margin-bottom:24px; box-shadow:var(--shadow);
+  }
+
+  footer a { color:var(--red); text-decoration:none; }
+</style>
+</head>
+<body data-page="germany">
+
+
+
+<div class="hero">
+  <div class="lang-selector">
+    <button class="lang-btn" data-lang="hu" title="Magyar">🇭🇺</button>
+    <button class="lang-btn active" data-lang="de" title="Deutsch">🇩🇪</button>
+    <button class="lang-btn" data-lang="nl" title="Nederlands">🇳🇱</button>
+    <button class="lang-btn" data-lang="en" title="English">🇬🇧</button>
+  </div>
+  <h1 id="heroTitle">Gehaltsrechner 2026</h1>
+  <p id="heroSub" data-de="Brutto-Netto Rechner mit allen Abzügen und Familienleistungen" data-en="Gross-to-net calculator with all deductions and family benefits" data-hu="Részletes bruttó-nettó bér-kalkulátor minden levonással" data-nl="Bruto-netto calculator met alle inhoudingen en gezinsvoordelen">Brutto-Netto Rechner mit allen Abzügen und Familienleistungen</p>
+  <div class="badge" data-de="Gültig ab 1. Januar 2026" data-en="Valid from January 1, 2026" data-hu="2026. január 1-től érvényes" data-nl="Geldig vanaf 1 januari 2026">Gültig ab 1. Januar 2026</div>
+  <div class="flag-strip">
+    <div style="background:#000"></div><div style="background:#dd0000"></div><div style="background:#ffcc00"></div>
+  </div>
+</div>
+
+<div class="container">
+<div class="grid">
+
+  <!-- LEFT: Inputs -->
+  <div>
+    <!-- Gross Salary -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-blue">💰</span> <span data-de="Bruttolohn" data-en="Gross Salary" data-hu="Bruttó bér" data-nl="Brutoloon">Bruttolohn</span></h2>
+      <div class="salary-input-group">
+        <label data-de="Monatliches Bruttogehalt (€)" data-en="Monthly gross salary (€)" data-hu="Havi bruttó bér (€)" data-nl="Maandelijks brutoloon (€)">Monatliches Bruttogehalt (€)</label>
+        <div class="salary-display" id="salaryDisplay">4 000 <span>€/Monat</span></div>
+        <input type="range" id="salarySlider" min="500" max="15000" step="50" value="4000" aria-label="Monthly gross salary slider">
+        <div class="range-labels">
+          <span>500 €</span><span>15 000 €</span>
+        </div>
+
+    <div class="whatif-bar" id="whatifBar">
+      <button class="whatif-btn" data-whatif="raise10"><span class="emoji">📈</span>+10% Raise</button>
+      <button class="whatif-btn" data-whatif="raise20"><span class="emoji">🚀</span>+20% Raise</button>
+      <button class="whatif-btn" data-whatif="bonus1k"><span class="emoji">💎</span>+1K Bonus</button>
+      <button class="whatif-btn" data-whatif="bonus2k"><span class="emoji">🎯</span>+2K Bonus</button>
+      <button class="whatif-btn" data-whatif="min"><span class="emoji">📉</span>Min Wage</button>
+    </div>
+
+        <div style="margin-top:12px">
+          <input type="text" class="number-input" id="salaryInput" value="4 000" aria-label="Monthly gross salary input" data-de-placeholder="Betrag eingeben..." data-en-placeholder="Enter amount..." data-hu-placeholder="Összeg megadása..." data-nl-placeholder="Bedrag invoeren..." placeholder="Betrag eingeben...">
+        </div>
+      </div>
+      <div class="tab-bar">
+        <button class="tab-btn active" data-mode="gross" data-de="Vom Brutto" data-en="From Gross" data-hu="Bruttóból" data-nl="Van bruto">Vom Brutto</button>
+        <button class="tab-btn" data-mode="total" data-de="Von Arbeitgeberkosten" data-en="From Employer Cost" data-hu="Munkáltatói költségből" data-nl="Van werkgeverskosten">Von Arbeitgeberkosten</button>
+      </div>
+    </div>
+
+    <!-- Tax Class & Status -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-purple">📋</span> <span data-de="Steuerklasse & Status" data-en="Tax Class & Status" data-hu="Adóosztály & státusz" data-nl="Belastingklasse & status">Steuerklasse & Status</span></h2>
+      <div class="select-row">
+        <label data-de="Steuerklasse" data-en="Tax Class" data-hu="Adóosztály" data-nl="Belastingklasse">Steuerklasse</label>
+        <select class="custom-select" id="taxClass" aria-label="Tax class" style="max-width:220px">
+          <option value="1">Klasse I – Ledig</option>
+          <option value="2">Klasse II – Alleinerziehend</option>
+          <option value="3">Klasse III – Verheiratet (höheres Einkommen)</option>
+          <option value="4" selected>Klasse IV – Verheiratet (gleiches Einkommen)</option>
+          <option value="5">Klasse V – Verheiratet (niedrigeres Einkommen)</option>
+          <option value="joint">Zusammenveranlagung (Jahresausgleich)</option>
+        </select>
+      </div>
+      <!-- Joint Assessment: Full per-partner inputs -->
+      <div id="jointSalarySection" style="display:none;margin:16px 0">
+        <div style="font-size:0.85rem;color:var(--text-light);margin-bottom:14px;padding:0 4px" data-de="Geben Sie die Daten beider Partner ein. Die Berechnung zeigt das kombinierte Haushaltsnetto nach Jahresausgleich (Ehegattensplitting)." data-en="Enter details for both partners. The calculation shows the combined household net after annual tax settlement (income splitting)." data-hu="Adja meg mindkét partner adatait. A számítás a kombinált háztartási nettót mutatja az éves adóelszámolás után (Ehegattensplitting)." data-nl="Voer de gegevens van beide partners in. De berekening toont het gecombineerde huishoudnetto na jaarafrekening (Ehegattensplitting).">Geben Sie die Daten beider Partner ein. Die Berechnung zeigt das kombinierte Haushaltsnetto nach Jahresausgleich (Ehegattensplitting).</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <!-- Partner A -->
+          <div style="flex:1;min-width:220px;background:#f0f4f8;border-radius:12px;padding:16px">
+            <div style="font-weight:700;font-size:0.95rem;margin-bottom:12px;color:var(--blue)" data-de="Partner A" data-en="Partner A" data-hu="Partner A (A fél)" data-nl="Partner A">Partner A</div>
+            <div style="margin-bottom:10px">
+              <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:4px" data-de="Bruttolohn (€/Monat)" data-en="Gross salary (€/month)" data-hu="Bruttó bér (€/hó)" data-nl="Brutoloon (€/maand)">Bruttolohn (€/Monat)</label>
+              <input type="text" class="number-input" id="partnerAInput" value="4 000" aria-label="Partner A monthly gross salary" placeholder="z.B. 4 000" style="width:100%;text-align:center">
+            </div>
+            <div style="margin-bottom:10px">
+              <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:4px" data-de="Krankenversicherung" data-en="Health insurance" data-hu="Egészségbiztosítás" data-nl="Zorgverzekering">Krankenversicherung</label>
+              <select class="custom-select" id="healthTypeA" aria-label="Partner A health insurance type" style="width:100%">
+                <option value="statutory" selected>Gesetzlich (GKV)</option>
+                <option value="private">Privat (PKV)</option>
+              </select>
+            </div>
+            <div id="gkvRowA" style="margin-bottom:10px">
+              <label style="font-size:0.82rem;display:block;margin-bottom:4px" data-de="Zusatzbeitrag (%)" data-en="Additional contribution (%)" data-hu="Kiegészítő járulék (%)" data-nl="Aanvullende bijdrage (%)">Zusatzbeitrag (%)</label>
+              <input type="number" class="number-input" id="additionalHealthA" value="2.9" step="0.1" min="0" max="5" aria-label="Partner A additional health contribution" style="width:100%;text-align:center">
+            </div>
+            <div id="pkvRowA" style="display:none;margin-bottom:10px">
+              <label style="font-size:0.82rem;display:block;margin-bottom:4px" data-de="PKV Monatsbeitrag (€)" data-en="PKV monthly premium (€)" data-hu="PKV havi díj (€)" data-nl="PKV maandpremie (€)">PKV Monatsbeitrag (€)</label>
+              <input type="number" class="number-input" id="pkvPremiumA" value="400" step="10" min="0" aria-label="Partner A PKV premium" style="width:100%;text-align:center">
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="font-size:0.85rem;font-weight:600" data-de="Kirchensteuer" data-en="Church tax" data-hu="Egyházi adó" data-nl="Kerkbelasting">Kirchensteuer</span>
+              <label class="toggle"><input type="checkbox" id="churchTaxA" aria-label="Partner A church tax"><span class="slider"></span></label>
+            </div>
+          </div>
+          <!-- Partner B -->
+          <div style="flex:1;min-width:220px;background:#f0f4f8;border-radius:12px;padding:16px">
+            <div style="font-weight:700;font-size:0.95rem;margin-bottom:12px;color:var(--red)" data-de="Partner B" data-en="Partner B" data-hu="Partner B (B fél)" data-nl="Partner B">Partner B</div>
+            <div style="margin-bottom:10px">
+              <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:4px" data-de="Bruttolohn (€/Monat)" data-en="Gross salary (€/month)" data-hu="Bruttó bér (€/hó)" data-nl="Brutoloon (€/maand)">Bruttolohn (€/Monat)</label>
+              <input type="text" class="number-input" id="partnerBInput" value="3 000" aria-label="Partner B monthly gross salary" placeholder="z.B. 3 000" style="width:100%;text-align:center">
+            </div>
+            <div style="margin-bottom:10px">
+              <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:4px" data-de="Krankenversicherung" data-en="Health insurance" data-hu="Egészségbiztosítás" data-nl="Zorgverzekering">Krankenversicherung</label>
+              <select class="custom-select" id="healthTypeB" aria-label="Partner B health insurance type" style="width:100%">
+                <option value="statutory" selected>Gesetzlich (GKV)</option>
+                <option value="private">Privat (PKV)</option>
+              </select>
+            </div>
+            <div id="gkvRowB" style="margin-bottom:10px">
+              <label style="font-size:0.82rem;display:block;margin-bottom:4px" data-de="Zusatzbeitrag (%)" data-en="Additional contribution (%)" data-hu="Kiegészítő járulék (%)" data-nl="Aanvullende bijdrage (%)">Zusatzbeitrag (%)</label>
+              <input type="number" class="number-input" id="additionalHealthB" value="2.9" step="0.1" min="0" max="5" aria-label="Partner B additional health contribution" style="width:100%;text-align:center">
+            </div>
+            <div id="pkvRowB" style="display:none;margin-bottom:10px">
+              <label style="font-size:0.82rem;display:block;margin-bottom:4px" data-de="PKV Monatsbeitrag (€)" data-en="PKV monthly premium (€)" data-hu="PKV havi díj (€)" data-nl="PKV maandpremie (€)">PKV Monatsbeitrag (€)</label>
+              <input type="number" class="number-input" id="pkvPremiumB" value="400" step="10" min="0" aria-label="Partner B PKV premium" style="width:100%;text-align:center">
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="font-size:0.85rem;font-weight:600" data-de="Kirchensteuer" data-en="Church tax" data-hu="Egyházi adó" data-nl="Kerkbelasting">Kirchensteuer</span>
+              <label class="toggle"><input type="checkbox" id="churchTaxB" aria-label="Partner B church tax"><span class="slider"></span></label>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:10px;font-size:0.82rem;color:var(--text-light);text-align:center" id="jointCombinedHint">Kombiniertes Brutto: 7 000 €/Monat</div>
+      </div>
+
+      <div class="select-row">
+        <label data-de="Bundesland" data-en="Federal State" data-hu="Szövetségi állam" data-nl="Deelstaat">Bundesland</label>
+        <select class="custom-select" id="bundesland" aria-label="Federal state" style="max-width:220px">
+          <option value="BW">Baden-Württemberg</option>
+          <option value="BY">Bayern</option>
+          <option value="BE">Berlin</option>
+          <option value="BB">Brandenburg</option>
+          <option value="HB">Bremen</option>
+          <option value="HH">Hamburg</option>
+          <option value="HE">Hessen</option>
+          <option value="MV">Mecklenburg-Vorpommern</option>
+          <option value="NI">Niedersachsen</option>
+          <option value="NW" selected>Nordrhein-Westfalen</option>
+          <option value="RP">Rheinland-Pfalz</option>
+          <option value="SL">Saarland</option>
+          <option value="SN">Sachsen</option>
+          <option value="ST">Sachsen-Anhalt</option>
+          <option value="SH">Schleswig-Holstein</option>
+          <option value="TH">Thüringen</option>
+        </select>
+      </div>
+      <div class="option-row">
+        <div>
+          <div class="option-label" data-de="Kirchensteuer" data-en="Church Tax" data-hu="Egyházi adó" data-nl="Kerkbelasting">Kirchensteuer</div>
+          <div class="option-sublabel" id="churchSubLabel" data-de="Automatisch nach Bundesland (8% BY/BW, 9% andere)" data-en="Auto-set by state (8% BY/BW, 9% other)" data-hu="Automatikus szövetségi állam szerint (8% BY/BW, 9% egyéb)" data-nl="Automatisch per deelstaat (8% BY/BW, 9% overige)">Automatisch nach Bundesland (8% BY/BW, 9% andere)</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="churchTax" aria-label="Church tax toggle"><span class="slider"></span></label>
+      </div>
+    </div>
+
+    <!-- Family -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-green">👨‍👩‍👧‍👦</span> <span data-de="Kinder & Familie" data-en="Children & Family" data-hu="Gyermekek & Család" data-nl="Kinderen & Familie">Kinder & Familie</span></h2>
+      <div style="margin-bottom:16px">
+        <label style="font-weight:600;font-size:0.92rem;display:block;margin-bottom:10px" data-de="Anzahl der Kinder" data-en="Number of children" data-hu="Gyermekek száma" data-nl="Aantal kinderen">Anzahl der Kinder</label>
+        <div class="children-counter">
+          <button class="counter-btn" data-action="children" data-delta="-1" aria-label="Decrease children">−</button>
+          <span class="counter-value" id="childrenCount">0</span>
+          <button class="counter-btn" data-action="children" data-delta="1" aria-label="Increase children">+</button>
+        </div>
+      </div>
+      <div class="option-row" id="childAgeRow" style="display:none">
+        <div>
+          <div class="option-label" data-de="Kinder unter 25 Jahren" data-en="Children under 25" data-hu="25 év alatti gyermekek" data-nl="Kinderen onder 25 jaar">Kinder unter 25 Jahren</div>
+          <div class="option-sublabel" data-de="Relevant für Pflegeversicherung" data-en="Relevant for nursing care insurance" data-hu="Releváns az ápolásbiztosítás szempontjából" data-nl="Relevant voor de zorgverzekering">Relevant für Pflegeversicherung</div>
+        </div>
+        <div class="children-counter" style="margin-left:12px">
+          <button class="counter-btn" data-action="childrenU25" data-delta="-1" aria-label="Decrease children under 25">−</button>
+          <span class="counter-value" id="childrenU25Count">0</span>
+          <button class="counter-btn" data-action="childrenU25" data-delta="1" aria-label="Increase children under 25">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Income -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-teal">🎁</span> <span data-de="Zusätzliches Einkommen" data-en="Additional Income" data-hu="Kiegészítő jövedelem" data-nl="Aanvullend inkomen">Zusätzliches Einkommen</span></h2>
+      <div class="option-row">
+        <div>
+          <div class="option-label" data-de="Sonderzahlungen berücksichtigen" data-en="Include bonus payments" data-hu="Bónuszok figyelembevétele" data-nl="Bonusbetalingen meenemen">Sonderzahlungen berücksichtigen</div>
+          <div class="option-sublabel" data-de="13. Gehalt, Urlaubsgeld, Bonus, etc." data-en="13th month, holiday pay, bonus, etc." data-hu="13. havi bér, szabadságpénz, bónusz stb." data-nl="13e maand, vakantiegeld, bonus, etc.">13. Gehalt, Urlaubsgeld, Bonus, etc.</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="bonusToggle" aria-label="Bonus payments toggle"><span class="slider"></span></label>
+      </div>
+      <div id="bonusSection" style="display:none;margin-top:16px">
+        <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+          <button class="tab-btn" style="flex:none;padding:6px 12px;font-size:0.8rem;background:#f0f4f8;border-radius:8px" data-bonus-preset="13th" data-de="13. Gehalt" data-en="13th Month" data-hu="13. havi bér" data-nl="13e maand">13. Gehalt</button>
+          <button class="tab-btn" style="flex:none;padding:6px 12px;font-size:0.8rem;background:#f0f4f8;border-radius:8px" data-bonus-preset="14th" data-de="13.+14. Gehalt" data-en="13th+14th Month" data-hu="13.+14. havi bér" data-nl="13e+14e maand">13.+14. Gehalt</button>
+          <button class="tab-btn" style="flex:none;padding:6px 12px;font-size:0.8rem;background:#f0f4f8;border-radius:8px" data-bonus-preset="holiday" data-de="Urlaubsgeld (50%)" data-en="Holiday Pay (50%)" data-hu="Szabadságpénz (50%)" data-nl="Vakantiegeld (50%)">Urlaubsgeld (50%)</button>
+          <button class="tab-btn" style="flex:none;padding:6px 12px;font-size:0.8rem;background:#f0f4f8;border-radius:8px" data-bonus-preset="custom" data-de="Eigener Betrag" data-en="Custom Amount" data-hu="Egyéni összeg" data-nl="Eigen bedrag">Eigener Betrag</button>
+        </div>
+        <div class="select-row" style="border-bottom:none">
+          <label data-de="Jährlicher Zusatzbetrag brutto (€)" data-en="Annual additional gross (€)" data-hu="Éves kiegészítő bruttó összeg (€)" data-nl="Jaarlijks aanvullend brutobedrag (€)">Jährlicher Zusatzbetrag brutto (€)</label>
+          <input type="text" class="number-input" id="bonusInput" value="0" aria-label="Annual bonus amount" data-de-placeholder="z.B. 4 000" data-en-placeholder="e.g. 4 000" data-hu-placeholder="pl. 4 000" data-nl-placeholder="bijv. 4 000" placeholder="z.B. 4 000" style="max-width:140px;text-align:center">
+        </div>
+        <div style="font-size:0.8rem;color:var(--text-light);margin-top:4px" id="bonusHint"></div>
+      </div>
+    </div>
+
+    <!-- Health Insurance -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-red">🏥</span> <span data-de="Krankenversicherung" data-en="Health Insurance" data-hu="Egészségbiztosítás" data-nl="Zorgverzekering">Krankenversicherung</span></h2>
+      <div class="select-row">
+        <label data-de="Versicherungsart" data-en="Insurance Type" data-hu="Biztosítás típusa" data-nl="Verzekeringsvorm">Versicherungsart</label>
+        <select class="custom-select" id="healthType" aria-label="Health insurance type" style="max-width:220px">
+          <option value="statutory" selected>Gesetzlich (GKV)</option>
+          <option value="private">Privat (PKV)</option>
+        </select>
+      </div>
+      <div id="gkvRow" class="select-row">
+        <label data-de="Zusatzbeitrag (%)" data-en="Additional Contribution (%)" data-hu="Kiegészítő járulék (%)" data-nl="Aanvullende bijdrage (%)">Zusatzbeitrag (%)</label>
+        <input type="number" class="number-input" id="additionalHealth" value="2.9" step="0.1" min="0" max="5" aria-label="Additional health contribution percentage" style="max-width:120px;text-align:center">
+      </div>
+      <div id="pkvRow" class="select-row" style="display:none">
+        <label data-de="PKV Monatsbeitrag (€)" data-en="PKV Monthly Premium (€)" data-hu="PKV havi díj (€)" data-nl="PKV maandpremie (€)">PKV Monatsbeitrag (€)</label>
+        <input type="number" class="number-input" id="pkvPremium" value="400" step="10" min="0" aria-label="Private health insurance monthly premium" style="max-width:140px;text-align:center">
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Results -->
+  <div>
+    <div class="result-hero">
+      <div class="net-label" data-de="Monatliches Nettogehalt" data-en="Monthly Net Salary" data-hu="Havi nettó bér" data-nl="Maandelijks nettoloon">Monatliches Nettogehalt</div>
+      <div class="net-amount" id="netAmount">0 €</div>
+      <div class="net-sub" id="netSub">-</div>
+    </div>
+
+    <div class="summary-grid" style="margin-bottom:24px">
+      <div class="summary-box green">
+        <div class="label" data-de="Nettolohn" data-en="Net Salary" data-hu="Nettó bér" data-nl="Nettoloon">Nettolohn</div>
+        <div class="value" id="sumNet">0</div>
+      </div>
+      <div class="summary-box red">
+        <div class="label" data-de="Abzüge gesamt" data-en="Total Deductions" data-hu="Összes levonás" data-nl="Totale inhoudingen">Abzüge gesamt</div>
+        <div class="value" id="sumDeductions">0</div>
+      </div>
+      <div class="summary-box blue">
+        <div class="label" data-de="Arbeitgeberkosten" data-en="Employer Cost" data-hu="Munkáltatói költség" data-nl="Werkgeverskosten">Arbeitgeberkosten</div>
+        <div class="value" id="sumEmployer">0</div>
+      </div>
+      <div class="summary-box purple">
+        <div class="label" data-de="Kindergeld" data-en="Child Benefit" data-hu="Gyermekgondozási támogatás" data-nl="Kinderbijslag">Kindergeld</div>
+        <div class="value" id="sumKindergeld">0</div>
+      </div>
+    </div>
+
+    <!-- Donut -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-teal">📊</span> <span data-de="Gehaltszusammensetzung" data-en="Salary Composition" data-hu="Béred összetétele" data-nl="Salarissamenstelling">Gehaltszusammensetzung</span></h2>
+      <div class="chart-container">
+        <svg class="donut-chart" id="donutChart" viewBox="0 0 200 200" width="220" height="220"></svg>
+      </div>
+      <div class="chart-legend" id="chartLegend"></div>
+    </div>
+
+    <!-- Breakdown -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-red">📋</span> <span data-de="Detaillierte Aufstellung" data-en="Detailed Breakdown" data-hu="Részletes bontás" data-nl="Gedetailleerde berekening">Detaillierte Aufstellung</span></h2>
+      <table class="breakdown-table" id="breakdownTable"></table>
+    </div>
+
+    <!-- Employer Bars -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-orange">🏢</span> <span data-de="Arbeitgeberanteile" data-en="Employer Contributions" data-hu="Munkáltatói terhek" data-nl="Werkgeversbijdragen">Arbeitgeberanteile</span></h2>
+      <div id="employerBars"></div>
+      <div style="margin-top:16px;padding-top:16px;border-top:2px solid var(--border);display:flex;justify-content:space-between;font-weight:700">
+        <span data-de="Gesamte Arbeitgeberkosten" data-en="Total Employer Cost" data-hu="Teljes munkáltatói költség" data-nl="Totale werkgeverskosten">Gesamte Arbeitgeberkosten</span>
+        <span id="totalEmployerCost">0 €</span>
+      </div>
+    </div>
+
+    <!-- Kindergeld -->
+    <div class="card" id="kindergeldCard" style="margin-bottom:24px;display:none">
+      <h2><span class="icon icon-gold">👶</span> <span data-de="Kindergeld (staatlich)" data-en="Child Benefit (State)" data-hu="Gyermekgondozási támogatás (állami)" data-nl="Kinderbijslag (overheid)">Kindergeld (staatlich)</span></h2>
+      <div class="allowance-card">
+        <h3 data-de="Monatliches Kindergeld" data-en="Monthly Child Benefit" data-hu="Havi gyermektámogatás" data-nl="Maandelijkse kinderbijslag">Monatliches Kindergeld</h3>
+        <div class="allowance-amount" id="kindergeldAmount">0 <span>€/Monat</span></div>
+      </div>
+      <div style="margin-top:12px;font-size:0.85rem;color:var(--text-light)" id="kindergeldDetail"></div>
+    </div>
+  </div>
+
+  <!-- Net vs Gross Chart -->
+  <div class="card full-width" style="margin-bottom:0">
+    <h2><span class="icon icon-green">📈</span> <span data-de="Nettoeinkommen vs. Bruttogehalt" data-en="Net Take-Home vs. Gross Salary" data-hu="Nettó bevétel a bruttó függvényében" data-nl="Nettosalaris vs. Brutosalaris">Nettoeinkommen vs. Bruttogehalt</span></h2>
+    <div class="chart-subtitle" data-de="Monatliche Beträge in Euro · 2026" data-en="Monthly amounts in EUR · 2026" data-hu="Havi összegek euróban · 2026" data-nl="Maandbedragen in euro · 2026" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-light);margin:-12px 0 12px">Monatliche Beträge in Euro · 2026</div>
+    <div id="netVsGrossLegend" style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;font-size:0.82rem"></div>
+    <div style="position:relative;width:100%;overflow:hidden;border-radius:12px;background:#0f1729">
+      <canvas id="netVsGrossChart" style="width:100%;height:340px;display:block"></canvas>
+    </div>
+  </div>
+
+  <!-- Effective Tax Rate Chart -->
+  <div class="card full-width" style="margin-bottom:0">
+    <h2><span class="icon icon-red">📉</span> <span data-de="Effektive Abgabenquote" data-en="Effective Tax Rate" data-hu="Effektív adókulcs" data-nl="Effectieve belastingdruk">Effektive Abgabenquote</span></h2>
+    <div class="chart-subtitle" data-de="Gesamtabzüge in % des Bruttolohns" data-en="Total deductions as % of gross salary" data-hu="Összes levonás a bruttó %-ában" data-nl="Totale afdracht als % van brutosalaris" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-light);margin:-12px 0 12px">Gesamtabzüge in % des Bruttolohns</div>
+    <div id="taxRateLegend" style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;font-size:0.82rem"></div>
+    <div style="position:relative;width:100%;overflow:hidden;border-radius:12px;background:#0f1729">
+      <canvas id="taxRateChart" style="width:100%;height:300px;display:block"></canvas>
+    </div>
+  </div>
+
+  <!-- Annual Overview -->
+  <div class="card full-width">
+    <h2><span class="icon icon-blue">📅</span> <span data-de="Jahresübersicht" data-en="Annual Overview" data-hu="Éves áttekintés" data-nl="Jaaroverzicht">Jahresübersicht</span></h2>
+    <div class="summary-grid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="summary-box green"><div class="label" data-de="Jahres-Netto" data-en="Annual Net" data-hu="Éves nettó" data-nl="Jaarnetto">Jahres-Netto</div><div class="value" id="annualNet">0</div></div>
+      <div class="summary-box red"><div class="label" data-de="Jahres-Steuern" data-en="Annual Taxes" data-hu="Éves adók" data-nl="Jaarlijkse belastingen">Jahres-Steuern</div><div class="value" id="annualTax">0</div></div>
+      <div class="summary-box blue"><div class="label" data-de="Jahres-SV" data-en="Annual SS" data-hu="Éves TB" data-nl="Jaarlijkse SV">Jahres-SV</div><div class="value" id="annualSS">0</div></div>
+      <div class="summary-box purple"><div class="label" data-de="Jahres-AG-Kosten" data-en="Annual Employer Cost" data-hu="Éves munkáltatói ktg." data-nl="Jaarlijkse werkgeverskosten">Jahres-AG-Kosten</div><div class="value" id="annualEmployer">0</div></div>
+    </div>
+    <div style="margin-top:16px">
+      <svg id="annualBarChart" viewBox="0 0 800 60" width="100%" height="60"></svg>
+      <div id="annualBarLegend" style="display:flex;gap:20px;justify-content:center;margin-top:8px;flex-wrap:wrap"></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+
+
+  <!-- ══════ SAVE & HISTORY ══════ -->
+  <div class="history-card full-width" id="historyCard">
+    <h2><span class="icon icon-green" style="background:#d1fae5;color:#059669">💾</span> Recent Calculations</h2>
+    <button class="save-btn" id="saveCalcBtn" onclick="saveCalculation()">
+      <span>💾</span> Save Calculation
+    </button>
+    <div class="history-search-wrap">
+      <input type="text" class="history-search" id="historySearch" placeholder="Search saved calculations..." oninput="renderHistory()">
+    </div>
+    <div class="history-list" id="historyList">
+      <div class="history-empty">No saved calculations yet. Use the button above to save one.</div>
+    </div>
+  </div>
+
+<footer>
+  <p data-de="Gehaltsrechner Deutschland 2026 — Nur zur Information, keine Steuerberatung." data-en="German Salary Calculator 2026 — For informational purposes only, not tax advice." data-hu="Német bérkalkulátor 2026 — Csak tájékoztató jellegű, nem minősül adótanácsadásnak." data-nl="Duitse salariscalculator 2026 — Alleen ter informatie, geen belastingadvies.">Gehaltsrechner Deutschland 2026 — Nur zur Information, keine Steuerberatung.</p>
+  <p style="margin-top:4px" data-de="Mindestlohn 2026: 13,90 €/Stunde" data-en="Minimum wage 2026: €13.90/hour" data-hu="Minimálbér 2026: 13,90 €/óra" data-nl="Minimumloon 2026: €13,90/uur">Mindestlohn 2026: 13,90 €/Stunde</p>
+</footer>
+
+<script>
+// ====== CONSTANTS 2026 ======
+// Income tax §32a EStG 2026
+const GRUNDFREIBETRAG = 12348;
+const ZONE2_UPPER = 17799;
+const ZONE3_UPPER = 69878;
+const ZONE4_UPPER = 277825;
+
+// Social security rates (total = employee + employer)
+const PENSION_RATE = 0.186;       // 9.3% each
+const HEALTH_RATE = 0.146;        // 7.3% each
+const UNEMPLOYMENT_RATE = 0.026;  // 1.3% each
+const NURSING_BASE_RATE = 0.036;  // split depends on state
+
+// Contribution ceilings (monthly)
+const PENSION_CEIL = 8450;        // also for unemployment and insolvency levy
+const HEALTH_CEIL = 5812.50;      // also for nursing care
+
+// Insolvency levy (Insolvenzgeldumlage U3) — employer only
+// Source: lohn-info.de/insolvenzgeldumlage.html — basis: pensionable income up to PENSION_CEIL
+const INSOLVENCY_RATE = 0.0015;   // 0.15% for 2026
+
+// Kindergeld
+const KINDERGELD_PER_CHILD = 259;
+
+// Kinderfreibetrag (annual, per child, for joint assessment)
+const KINDERFREIBETRAG = 9756;
+
+// Soli threshold (annual tax)
+const SOLI_THRESHOLD_SINGLE = 19950;
+const SOLI_THRESHOLD_JOINT = 39900;
+const SOLI_RATE = 0.055;
+
+let lang = 'de';
+let calcMode = 'gross';
+let numChildren = 0;
+let numChildrenU25 = 0;
+
+// ====== FORMAT ======
+function fmt(n) { return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+function fmtShort(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1).replace('.0','') + 'M';
+  if (n >= 1000) return Math.round(n/1000) + 'K';
+  return n.toString();
+}
+
+// ====== TRANSLATION HELPER ======
+function t(de, en, hu, nl) {
+  if (lang === 'de') return de;
+  if (lang === 'hu') return hu || en;
+  if (lang === 'nl') return nl || en;
+  return en;
+}
+
+// ====== LANG ======
+const TITLE_MAP = {
+  de: 'Gehaltsrechner Deutschland 2026 | German Salary Calculator',
+  en: 'German Salary Calculator 2026 | Gehaltsrechner Deutschland',
+  hu: 'Német bérkalkulátor 2026 | Gehaltsrechner Deutschland',
+  nl: 'Duitse salariscalculator 2026 | Gehaltsrechner Deutschland'
+};
+const META_DESC_MAP = {
+  de: 'Brutto-Netto Gehaltsrechner Deutschland 2026 — Berechne dein Nettogehalt mit allen Abzügen, Sozialversicherung und Familienleistungen.',
+  en: 'German Salary Calculator 2026 — Calculate your net salary with all deductions, social security and family benefits.',
+  hu: 'Német bérkalkulátor 2026 — Számold ki a nettó béred az összes levonással, társadalombiztosítással és családi juttatásokkal.',
+  nl: 'Duitse salariscalculator 2026 — Bereken je nettosalaris met alle inhoudingen, sociale zekerheid en gezinsvoordelen.'
+};
+
+function setLang(newLang, btnEl) {
+  if (lang === newLang) return;
+  lang = newLang;
+  document.documentElement.lang = lang;
+  document.title = TITLE_MAP[lang] || TITLE_MAP.en;
+  document.getElementById('metaDesc').setAttribute('content', META_DESC_MAP[lang] || META_DESC_MAP.en);
+
+  // Update button active states
+  document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+
+  document.querySelectorAll('[data-de]').forEach(el => {
+    const t = el.getAttribute('data-' + lang) || el.getAttribute('data-en');
+    if (t) el.textContent = t;
+  });
+  document.querySelectorAll('[data-de-placeholder]').forEach(el => {
+    const t = el.getAttribute('data-' + lang + '-placeholder') || el.getAttribute('data-en-placeholder');
+    if (t) el.placeholder = t;
+  });
+  // Update tax class dropdown
+  const tc = document.getElementById('taxClass');
+  const deLabels = ['Klasse I – Ledig','Klasse II – Alleinerziehend','Klasse III – Verheiratet (höheres Einkommen)','Klasse IV – Verheiratet (gleiches Einkommen)','Klasse V – Verheiratet (niedrigeres Einkommen)','Zusammenveranlagung (Jahresausgleich)'];
+  const huLabels = ['I. osztály – Egyedülálló','II. osztály – Egyedülálló szülő','III. osztály – Házas (magasabb kereset)','IV. osztály – Házas (egyenlő kereset)','V. osztály – Házas (alacsonyabb kereset)','Együttes adózás (éves elszámolás)'];
+  const nlLabels = ['Klasse I – Ongehuwd','Klasse II – Alleenstaande ouder','Klasse III – Gehuwd (hogere inkomsten)','Klasse IV – Gehuwd (gelijke inkomsten)','Klasse V – Gehuwd (lagere inkomsten)','Gezamenlijke aanslag (jaarafrekening)'];
+  const enLabels = ['Class I – Single','Class II – Single Parent','Class III – Married (higher earner)','Class IV – Married (equal income)','Class V – Married (lower earner)','Joint Assessment (Annual Settlement)'];
+  const labels = lang === 'de' ? deLabels : lang === 'hu' ? huLabels : lang === 'nl' ? nlLabels : enLabels;
+  for (let i = 0; i < tc.options.length; i++) tc.options[i].textContent = labels[i];
+  // Health
+  const ht = document.getElementById('healthType');
+  const healthLabels = {
+    de: ['Gesetzlich (GKV)', 'Privat (PKV)'],
+    hu: ['Törvényes (GKV)', 'Magán (PKV)'],
+    nl: ['Wettelijk (GKV)', 'Privé (PKV)'],
+    en: ['Statutory (GKV)', 'Private (PKV)']
+  };
+  ht.options[0].textContent = (healthLabels[lang] || healthLabels.en)[0];
+  ht.options[1].textContent = (healthLabels[lang] || healthLabels.en)[1];
+  // Per-partner health insurance dropdowns
+  const htA = document.getElementById('healthTypeA');
+  const htB = document.getElementById('healthTypeB');
+  htA.options[0].textContent = (healthLabels[lang] || healthLabels.en)[0];
+  htA.options[1].textContent = (healthLabels[lang] || healthLabels.en)[1];
+  htB.options[0].textContent = (healthLabels[lang] || healthLabels.en)[0];
+  htB.options[1].textContent = (healthLabels[lang] || healthLabels.en)[1];
+  calculate();
+}
+
+// ====== INPUT ======
+function updateSalaryDisplay(v) {
+  const suffix = t('€/Monat', '€/month', '€/hó', '€/maand');
+  document.getElementById('salaryDisplay').innerHTML = fmt(v) + ' <span>' + suffix + '</span>';
+}
+function updateFromSlider() {
+  const v = parseInt(document.getElementById('salarySlider').value);
+  document.getElementById('salaryInput').value = fmt(v);
+  updateSalaryDisplay(v);
+  calculate();
+}
+function updateFromInput() {
+  const raw = document.getElementById('salaryInput').value.replace(/\s/g,'');
+  const v = parseInt(raw) || 0;
+  document.getElementById('salarySlider').value = Math.min(Math.max(v,500),15000);
+  updateSalaryDisplay(v);
+  calculate();
+}
+function setCalcMode(mode, btn) {
+  calcMode = mode;
+  document.querySelectorAll('.tab-bar .tab-btn[data-mode]').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  calculate();
+}
+
+// ====== CHILDREN ======
+function changeChildren(d) {
+  numChildren = Math.max(0, Math.min(10, numChildren + d));
+  document.getElementById('childrenCount').textContent = numChildren;
+  if (d > 0) { numChildrenU25 = numChildren; document.getElementById('childrenU25Count').textContent = numChildrenU25; }
+  else { numChildrenU25 = Math.min(numChildrenU25, numChildren); document.getElementById('childrenU25Count').textContent = numChildrenU25; }
+  document.getElementById('childAgeRow').style.display = numChildren > 0 ? 'flex' : 'none';
+  calculate();
+}
+function changeChildrenU25(d) {
+  numChildrenU25 = Math.max(0, Math.min(numChildren, numChildrenU25 + d));
+  document.getElementById('childrenU25Count').textContent = numChildrenU25;
+  calculate();
+}
+
+// ====== BONUS / ADDITIONAL INCOME ======
+function toggleBonusSection() {
+  const on = document.getElementById('bonusToggle').checked;
+  document.getElementById('bonusSection').style.display = on ? 'block' : 'none';
+  if (!on) { document.getElementById('bonusInput').value = '0'; }
+  calculate();
+}
+function setBonusPreset(type) {
+  const rawVal = document.getElementById('salaryInput').value.replace(/\s/g,'');
+  const monthly = parseInt(rawVal) || 0;
+  let bonus = 0;
+  if (type === '13th') bonus = monthly;
+  else if (type === '14th') bonus = monthly * 2;
+  else if (type === 'holiday') bonus = Math.round(monthly * 0.5);
+  else { document.getElementById('bonusInput').value = ''; document.getElementById('bonusInput').focus(); return; }
+  document.getElementById('bonusInput').value = fmt(bonus);
+  calculate();
+}
+function onBonusInput() {
+  calculate();
+}
+function getAnnualBonus() {
+  if (!document.getElementById('bonusToggle').checked) return 0;
+  const raw = document.getElementById('bonusInput').value.replace(/\s/g,'');
+  return parseInt(raw) || 0;
+}
+
+// (Event listeners are wired at the bottom of the script)
+
+// ====== GERMAN INCOME TAX FORMULA §32a EStG 2026 ======
+// Coefficients per Steuerfortentwicklungsgesetz / §32a EStG effective 2026-01-01
+// Source: gesetze-im-internet.de/estg/__32a.html, finanz-tools.de/einkommensteuer/berechnung-formeln/2026
+function computeAnnualIncomeTax(zvE) {
+  zvE = Math.floor(zvE);
+  if (zvE <= GRUNDFREIBETRAG) return 0;
+  if (zvE <= ZONE2_UPPER) {
+    const y = (zvE - GRUNDFREIBETRAG) / 10000;
+    return Math.floor((914.51 * y + 1400) * y);              // Zone 2: §32a Abs.1 Nr.2
+  }
+  if (zvE <= ZONE3_UPPER) {
+    const z = (zvE - ZONE2_UPPER) / 10000;
+    return Math.floor((173.10 * z + 2397) * z + 1034.87);    // Zone 3: §32a Abs.1 Nr.3
+  }
+  if (zvE <= ZONE4_UPPER) {
+    return Math.floor(0.42 * zvE - 11135.63);                // Zone 4: §32a Abs.1 Nr.4
+  }
+  return Math.floor(0.45 * zvE - 19470.38);                  // Zone 5: §32a Abs.1 Nr.5
+}
+
+// ====== SOLI ======
+function computeSoli(annualTax, isJoint) {
+  const threshold = isJoint ? SOLI_THRESHOLD_JOINT : SOLI_THRESHOLD_SINGLE;
+  if (annualTax <= threshold) return 0;
+  const fullSoli = annualTax * SOLI_RATE;
+  // Phase-in zone: max 11.9% of amount exceeding threshold
+  const phaseIn = (annualTax - threshold) * 0.119;
+  return Math.min(fullSoli, phaseIn);
+}
+
+// ====== JOINT ASSESSMENT HELPERS ======
+function isJointMode() {
+  return document.getElementById('taxClass').value === 'joint';
+}
+
+function getPartnerGross(id) {
+  const raw = document.getElementById(id).value.replace(/\s/g,'');
+  return parseInt(raw) || 0;
+}
+
+function updateJointHint() {
+  const a = getPartnerGross('partnerAInput');
+  const b = getPartnerGross('partnerBInput');
+  const combined = a + b;
+  const hint = document.getElementById('jointCombinedHint');
+  const label = t('Kombiniertes Brutto', 'Combined gross', 'Kombinált bruttó', 'Gecombineerd bruto');
+  const suffix = t('€/Monat', '€/month', '€/hó', '€/maand');
+  hint.textContent = `${label}: ${fmt(combined)} ${suffix}`;
+}
+
+function toggleJointSection() {
+  const isJoint = isJointMode();
+  document.getElementById('jointSalarySection').style.display = isJoint ? 'block' : 'none';
+  // Hide main salary input section when joint mode is active
+  document.getElementById('salarySlider').closest('.card').style.display = isJoint ? 'none' : 'block';
+  // Hide the standalone health insurance card (per-partner fields are inside joint section)
+  document.getElementById('healthType').closest('.card').style.display = isJoint ? 'none' : 'block';
+  // Hide the standalone church tax row (per-partner toggles are inside joint section)
+  document.getElementById('churchTax').closest('.option-row').style.display = isJoint ? 'none' : 'flex';
+  // Hide additional income / bonus section in joint mode
+  document.getElementById('bonusToggle').closest('.card').style.display = isJoint ? 'none' : 'block';
+  if (isJoint) updateJointHint();
+  calculate();
+}
+
+function computeJointBreakdown(grossA, grossB, annualBonus) {
+  annualBonus = annualBonus || 0;
+  const churchRateVal = getChurchRate();
+  const saxony = isSaxony();
+
+  // Per-partner settings
+  const isChurchA = document.getElementById('churchTaxA').checked;
+  const isChurchB = document.getElementById('churchTaxB').checked;
+  const healthTypeA = document.getElementById('healthTypeA').value;
+  const healthTypeB = document.getElementById('healthTypeB').value;
+  const additionalHealthRateA = parseFloat(document.getElementById('additionalHealthA').value) / 100 || 0;
+  const additionalHealthRateB = parseFloat(document.getElementById('additionalHealthB').value) / 100 || 0;
+  const pkvPremiumA = parseFloat(document.getElementById('pkvPremiumA').value) || 0;
+  const pkvPremiumB = parseFloat(document.getElementById('pkvPremiumB').value) || 0;
+
+  // Helper: compute individual social security for one partner
+  function computeIndividualSS(monthlyGross, hType, addHealthRate, pkvPrem) {
+    const pensionBase = Math.min(monthlyGross, PENSION_CEIL);
+    const healthBase = Math.min(monthlyGross, HEALTH_CEIL);
+    const empPension = pensionBase * PENSION_RATE / 2;
+    const empUnemployment = pensionBase * UNEMPLOYMENT_RATE / 2;
+    let empHealth;
+    if (hType === 'statutory') {
+      empHealth = healthBase * (HEALTH_RATE / 2 + addHealthRate / 2);
+    } else {
+      empHealth = pkvPrem;
+    }
+    let empNursingRate = saxony ? 0.023 : NURSING_BASE_RATE / 2;
+    if (numChildren === 0) empNursingRate += 0.006;
+    if (numChildrenU25 >= 2) {
+      const discount = Math.min(numChildrenU25 - 1, 4) * 0.0025;
+      empNursingRate = Math.max(0, empNursingRate - discount);
+    }
+    const empNursing = healthBase * empNursingRate;
+    const totalEmpSS = empPension + empHealth + empUnemployment + empNursing;
+
+    // Employer side
+    const erPension = pensionBase * PENSION_RATE / 2;
+    const erUnemployment = pensionBase * UNEMPLOYMENT_RATE / 2;
+    // PKV: employer subsidy = min(half of PKV premium, GKV-equivalent max) per §257 SGB V
+    const gkvEquiv = healthBase * (HEALTH_RATE / 2 + addHealthRate / 2);
+    const erHealth = (hType === 'statutory') ? gkvEquiv : Math.min(pkvPrem / 2, gkvEquiv);
+    const erNursingRate = saxony ? 0.013 : NURSING_BASE_RATE / 2;
+    const erNursing = healthBase * erNursingRate;
+    const erInsolvency = pensionBase * INSOLVENCY_RATE; // U3: assessed on pensionable income
+    const totalErSS = erPension + erHealth + erUnemployment + erNursing + erInsolvency;
+
+    return {
+      empPension, empHealth, empUnemployment, empNursing, totalEmpSS,
+      erPension, erHealth, erUnemployment, erNursing, erInsolvency, totalErSS,
+      pensionBase, healthBase, empNursingRate, hType, addHealthRate, pkvPrem
+    };
+  }
+
+  const ssA = computeIndividualSS(grossA, healthTypeA, additionalHealthRateA, pkvPremiumA);
+  const ssB = computeIndividualSS(grossB, healthTypeB, additionalHealthRateB, pkvPremiumB);
+
+  // Combined values
+  const combinedGross = grossA + grossB;
+  const combinedEmpSS = ssA.totalEmpSS + ssB.totalEmpSS;
+  const combinedErSS = ssA.totalErSS + ssB.totalErSS;
+
+  // Annual combined gross
+  const annualGrossA = grossA * 12;
+  const annualGrossB = grossB * 12;
+  const totalAnnualGross = annualGrossA + annualGrossB + annualBonus;
+
+  // Combined annual SS for Vorsorgepauschale
+  const annualPension = (ssA.empPension + ssB.empPension) * 12;
+  const annualHealthA = ssA.empHealth * 12;
+  const annualHealthB = ssB.empHealth * 12;
+  const annualNursing = (ssA.empNursing + ssB.empNursing) * 12;
+  const annualUnemployment = (ssA.empUnemployment + ssB.empUnemployment) * 12;
+
+  // Vorsorgepauschale (joint: cap is 3000 for married)
+  // 2026 reform: Mindestvorsorgepauschale (12% rule) abolished; TB4 (unemployment) added
+  const werbungskosten = 1230 * 2; // both partners get Werbungskostenpauschale
+  const sonderausgaben = 36 * 2;
+  const vsp1Cap = 3000; // married joint
+
+  // Health deduction: per partner based on their insurance type
+  const healthBaseA = Math.min(grossA, HEALTH_CEIL);
+  const healthBaseB = Math.min(grossB, HEALTH_CEIL);
+  const healthDedA = (healthTypeA === 'statutory')
+    ? annualHealthA * 0.96
+    : Math.min(pkvPremiumA * 12, healthBaseA * (HEALTH_RATE / 2 + additionalHealthRateA / 2) * 12) * 0.96;
+  const healthDedB = (healthTypeB === 'statutory')
+    ? annualHealthB * 0.96
+    : Math.min(pkvPremiumB * 12, healthBaseB * (HEALTH_RATE / 2 + additionalHealthRateB / 2) * 12) * 0.96;
+  const healthDed = healthDedA + healthDedB;
+
+  const tb2_tb3 = healthDed + annualNursing;
+  const remainingCap = Math.max(0, vsp1Cap - tb2_tb3);
+  const tb4 = Math.min(annualUnemployment, remainingCap);  // TB4: capped so TB2+TB3+TB4 ≤ 3000
+  const vsp = annualPension + tb2_tb3 + tb4;
+
+  // zvE (combined)
+  const zvE = Math.max(0, totalAnnualGross - werbungskosten - sonderausgaben - vsp);
+
+  // Ehegattensplitting: divide by 2, compute tax, multiply by 2
+  const annualTax = 2 * computeAnnualIncomeTax(zvE / 2);
+
+  // Kinderfreibetrag for Soli
+  let zvEForSoli = (numChildren > 0) ? Math.max(0, zvE - numChildren * KINDERFREIBETRAG) : zvE;
+  const annualTaxForSoli = 2 * computeAnnualIncomeTax(zvEForSoli / 2);
+
+  // Soli (joint thresholds)
+  const annualSoli = computeSoli(annualTaxForSoli, true);
+
+  // Church tax — each partner independently
+  let annualChurch = 0;
+  if (isChurchA && isChurchB) {
+    annualChurch = annualTaxForSoli * churchRateVal; // both pay on full tax
+  } else if (isChurchA || isChurchB) {
+    annualChurch = annualTaxForSoli * churchRateVal / 2; // only one partner pays (on half of split tax)
+  }
+
+  const totalAnnualTaxAll = annualTax + annualSoli + annualChurch;
+  const monthlyTax = annualTax / 12;
+  const monthlySoli = annualSoli / 12;
+  const monthlyChurch = annualChurch / 12;
+  const totalMonthlyTax = totalAnnualTaxAll / 12;
+
+  // Combined net
+  const totalDeductions = totalMonthlyTax + combinedEmpSS;
+  const netSalary = combinedGross - totalDeductions;
+
+  // Employer cost
+  const totalEmployerCost = combinedGross + combinedErSS;
+
+  // Kindergeld
+  const kindergeld = numChildren * KINDERGELD_PER_CHILD;
+
+  // Effective monthly
+  const effMonthlyGross = totalAnnualGross / 12;
+  const effMonthlyNet = netSalary;
+  const effMonthlyDeductions = totalDeductions;
+  const effEmployerCost = totalEmployerCost;
+
+  return {
+    gross: combinedGross,
+    grossA: grossA,
+    grossB: grossB,
+    monthlyTax, monthlySoli, monthlyChurch, totalMonthlyTax,
+    empPension: ssA.empPension + ssB.empPension,
+    empHealth: ssA.empHealth + ssB.empHealth,
+    empUnemployment: ssA.empUnemployment + ssB.empUnemployment,
+    empNursing: ssA.empNursing + ssB.empNursing,
+    totalEmpSS: combinedEmpSS,
+    erPension: ssA.erPension + ssB.erPension,
+    erHealth: ssA.erHealth + ssB.erHealth,
+    erUnemployment: ssA.erUnemployment + ssB.erUnemployment,
+    erNursing: ssA.erNursing + ssB.erNursing,
+    erInsolvency: ssA.erInsolvency + ssB.erInsolvency,
+    totalErSS: combinedErSS,
+    totalDeductions, netSalary, totalEmployerCost, kindergeld,
+    annualTax, annualSoli, vorsorgepauschale: vsp,
+    // Bonus fields (zeroed for joint mode)
+    annualBonus: 0,
+    bonusTax: 0, bonusSoli: 0, bonusChurch: 0, totalBonusTax: 0,
+    bonusPension: 0, bonusHealth: 0, bonusUnemploy: 0, bonusNursing: 0, bonusSS: 0,
+    bonusNet: 0, bonusDeductions: 0,
+    erBonusSS: 0,
+    effMonthlyGross, effMonthlyNet, effMonthlyDeductions, effEmployerCost
+  };
+}
+
+// ====== CORE CALCULATION ======
+function calculate() {
+  const taxClassVal = document.getElementById('taxClass').value;
+
+  if (taxClassVal === 'joint') {
+    const grossA = getPartnerGross('partnerAInput');
+    const grossB = getPartnerGross('partnerBInput');
+    updateJointHint();
+    const result = computeJointBreakdown(grossA, grossB);
+    renderResults(result, result.gross);
+    return;
+  }
+
+  const rawVal = document.getElementById('salaryInput').value.replace(/\s/g,'');
+  let inputAmount = parseInt(rawVal) || 0;
+  let monthlyGross;
+
+  if (calcMode === 'gross') {
+    monthlyGross = inputAmount;
+  } else {
+    // Reverse from total employer cost using binary search (bisection method)
+    let lo = 0, hi = inputAmount;
+    for (let i = 0; i < 60; i++) {
+      const mid = (lo + hi) / 2;
+      const r = computeBreakdown(mid);
+      if (r.totalEmployerCost < inputAmount) lo = mid;
+      else hi = mid;
+    }
+    monthlyGross = Math.round((lo + hi) / 2);
+  }
+
+  const bonus = getAnnualBonus();
+  const result = computeBreakdown(monthlyGross, bonus);
+  renderResults(result, monthlyGross);
+}
+
+// Bundesland helpers
+const SAXONY_STATES = ['SN'];
+const CHURCH_8_STATES = ['BY', 'BW'];
+
+function getChurchRate() {
+  const bl = document.getElementById('bundesland').value;
+  return CHURCH_8_STATES.includes(bl) ? 0.08 : 0.09;
+}
+function isSaxony() {
+  return SAXONY_STATES.includes(document.getElementById('bundesland').value);
+}
+function onBundeslandChange() {
+  calculate();
+}
+
+function computeBreakdown(monthlyGross, annualBonus) {
+  annualBonus = annualBonus || 0;
+  const taxClassVal = document.getElementById('taxClass').value;
+  const isChurch = document.getElementById('churchTax').checked;
+  const churchRateVal = getChurchRate();
+  const healthType = document.getElementById('healthType').value;
+  const additionalHealthRate = parseFloat(document.getElementById('additionalHealth').value) / 100 || 0;
+  const pkvPremium = parseFloat(document.getElementById('pkvPremium').value) || 0;
+  const saxony = isSaxony();
+
+  const annualGross = monthlyGross * 12;
+  const totalAnnualGross = annualGross + annualBonus;
+  const isJoint = taxClassVal === '3' || taxClassVal === '4' || taxClassVal === 'joint';
+  const isSplitting = taxClassVal === '3'; // Only Class III uses splitting for monthly payroll
+  const isClass5 = taxClassVal === '5'; // Class V: no Grundfreibetrag (transferred to Class III spouse)
+
+  // ====== SOCIAL SECURITY (Employee) — regular monthly ======
+  const pensionBase = Math.min(monthlyGross, PENSION_CEIL);
+  const healthBase = Math.min(monthlyGross, HEALTH_CEIL);
+
+  const empPension = pensionBase * PENSION_RATE / 2;
+  const empUnemployment = pensionBase * UNEMPLOYMENT_RATE / 2;
+
+  let empHealth;
+  if (healthType === 'statutory') {
+    empHealth = healthBase * (HEALTH_RATE / 2 + additionalHealthRate / 2);
+  } else {
+    empHealth = pkvPremium;
+  }
+
+  // Nursing care (employee)
+  let empNursingRate;
+  if (saxony) {
+    empNursingRate = 0.023; // Saxony: employee pays 2.3%
+  } else {
+    empNursingRate = NURSING_BASE_RATE / 2; // 1.8%
+  }
+  if (numChildren === 0) {
+    empNursingRate += 0.006; // +0.6% childless surcharge
+  }
+  if (numChildrenU25 >= 2) {
+    const discount = Math.min(numChildrenU25 - 1, 4) * 0.0025;
+    empNursingRate = Math.max(0, empNursingRate - discount);
+  }
+  const empNursing = healthBase * empNursingRate;
+  const totalEmpSS = empPension + empHealth + empUnemployment + empNursing;
+
+  // ====== BONUS SOCIAL SECURITY ======
+  // Bonus is subject to SS up to annual ceiling minus already-paid regular contributions
+  let bonusSS = 0;
+  let bonusPension = 0, bonusHealth = 0, bonusUnemploy = 0, bonusNursing = 0;
+  if (annualBonus > 0) {
+    const annualPensionCeil = PENSION_CEIL * 12;
+    const annualHealthCeil = HEALTH_CEIL * 12;
+    const usedPension = pensionBase * 12;
+    const usedHealth = healthBase * 12;
+    const remainPension = Math.max(0, annualPensionCeil - usedPension);
+    const remainHealth = Math.max(0, annualHealthCeil - usedHealth);
+    const bonusPensionBase = Math.min(annualBonus, remainPension);
+    const bonusHealthBase = Math.min(annualBonus, remainHealth);
+    bonusPension = bonusPensionBase * PENSION_RATE / 2;
+    bonusUnemploy = bonusPensionBase * UNEMPLOYMENT_RATE / 2;
+    if (healthType === 'statutory') {
+      bonusHealth = bonusHealthBase * (HEALTH_RATE / 2 + additionalHealthRate / 2);
+    }
+    bonusNursing = bonusHealthBase * empNursingRate;
+    bonusSS = bonusPension + bonusHealth + bonusUnemploy + bonusNursing;
+  }
+
+  // ====== HELPER: compute Vorsorgepauschale for a given annual gross & SS amounts ======
+  const werbungskosten = 1230;
+  const sonderausgaben = 36;
+  const vsp1Cap = taxClassVal === '3' ? 3000 : 1900;
+  const alleinerziehendEntlastung = (taxClassVal === '2') ? (4260 + Math.max(0, numChildren - 1) * 240) : 0;
+
+  // 2026 reform: Mindestvorsorgepauschale (12% rule) abolished.
+  // New TB4 (unemployment) added, capped so TB2+TB3+TB4 ≤ 1900/3000.
+  // Source: lohn-info.de/vorsorgepauschale.html, §39b EStG 2026
+  function computeVSP(annGross, annPension, annHealth, annNursing, annUnemployment) {
+    const healthDed = (healthType === 'statutory')
+      ? annHealth * 0.96
+      : Math.min(pkvPremium * 12, healthBase * (HEALTH_RATE / 2 + additionalHealthRate / 2) * 12) * 0.96;
+    const tb2_tb3 = healthDed + annNursing;                         // TB2 + TB3: uncapped
+    const remainingCap = Math.max(0, vsp1Cap - tb2_tb3);           // room left under 1900/3000
+    const tb4 = Math.min(annUnemployment || 0, remainingCap);      // TB4: unemployment, capped
+    return annPension + tb2_tb3 + tb4;
+  }
+
+  function computeZvE(annGross, vsp) {
+    return Math.max(0, annGross - werbungskosten - sonderausgaben - vsp - alleinerziehendEntlastung);
+  }
+
+  function computeTaxForZvE(zvE) {
+    if (isSplitting) return 2 * computeAnnualIncomeTax(zvE / 2); // Class III: Ehegattensplitting
+    // Class V approximation: adds Grundfreibetrag back to zvE to simulate transfer to Class III spouse.
+    // Note: official BMF Programmablaufplan uses a distinct procedure; this is a close approximation
+    // that may diverge by a small amount (typically < €10/month) from the official withholding tables.
+    if (isClass5) return computeAnnualIncomeTax(zvE + GRUNDFREIBETRAG);
+    return computeAnnualIncomeTax(zvE); // Classes I, II, IV: standard formula
+  }
+
+  // ====== TOTAL (with bonus) ======
+  const vspTotal = computeVSP(totalAnnualGross, empPension * 12 + bonusPension, empHealth * 12 + bonusHealth, empNursing * 12 + bonusNursing, empUnemployment * 12 + bonusUnemploy);
+  const zvE = computeZvE(totalAnnualGross, vspTotal);
+  // Kinderfreibetrag for Soli: Class V gets none (transferred to Class III spouse)
+  let zvEForSoli = (numChildren > 0 && !isClass5) ? Math.max(0, zvE - numChildren * KINDERFREIBETRAG) : zvE;
+  const totalAnnualTax = computeTaxForZvE(zvE);
+
+  // ====== BASE (without bonus) — Jahrestabelle method for bonus taxation ======
+  const vspBase = computeVSP(annualGross, empPension * 12, empHealth * 12, empNursing * 12, empUnemployment * 12);
+  const zvEBase = computeZvE(annualGross, vspBase);
+  const zvEBaseSoli = (numChildren > 0 && !isClass5) ? Math.max(0, zvEBase - numChildren * KINDERFREIBETRAG) : zvEBase;
+  const annualTaxBase = computeTaxForZvE(zvEBase);
+
+  // Monthly tax = base annual tax / 12; Bonus tax = total - base (Jahrestabelle §39b Abs.3)
+  const monthlyTax = annualTaxBase / 12;
+  const bonusTax = totalAnnualTax - annualTaxBase;
+
+  // Soli
+  const annualTaxForSoli = computeTaxForZvE(zvEForSoli);
+  const annualTaxForSoliBase = computeTaxForZvE(zvEBaseSoli);
+  const totalAnnualSoli = computeSoli(annualTaxForSoli, isJoint);
+  const annualSoliBase = computeSoli(annualTaxForSoliBase, isJoint);
+  const monthlySoli = annualSoliBase / 12;
+  const bonusSoli = totalAnnualSoli - annualSoliBase;
+
+  // Church tax
+  let monthlyChurch = 0;
+  let bonusChurch = 0;
+  if (isChurch) {
+    monthlyChurch = annualTaxForSoliBase / 12 * churchRateVal;
+    bonusChurch = (annualTaxForSoli - annualTaxForSoliBase) * churchRateVal;
+  }
+
+  const totalMonthlyTax = monthlyTax + monthlySoli + monthlyChurch;
+  const totalBonusTax = bonusTax + bonusSoli + bonusChurch;
+
+  // ====== NET ======
+  const totalDeductions = totalMonthlyTax + totalEmpSS;
+  const netSalary = monthlyGross - totalDeductions;
+
+  // Bonus net
+  const bonusDeductions = totalBonusTax + bonusSS;
+  const bonusNet = annualBonus - bonusDeductions;
+
+  // ====== EMPLOYER SIDE (regular monthly) ======
+  const erPension = pensionBase * PENSION_RATE / 2;
+  const erUnemployment = pensionBase * UNEMPLOYMENT_RATE / 2;
+  // PKV: employer subsidy = min(half of PKV premium, GKV-equivalent max) per §257 SGB V
+  const gkvEquivMax = healthBase * (HEALTH_RATE / 2 + additionalHealthRate / 2);
+  const erHealth = (healthType === 'statutory') ? gkvEquivMax : Math.min(pkvPremium / 2, gkvEquivMax);
+  const erNursingRate = saxony ? 0.013 : NURSING_BASE_RATE / 2;
+  const erNursing = healthBase * erNursingRate;
+  const erInsolvency = pensionBase * INSOLVENCY_RATE; // U3: assessed on pensionable income
+
+  const totalErSS = erPension + erHealth + erUnemployment + erNursing + erInsolvency;
+  const totalEmployerCost = monthlyGross + totalErSS;
+
+  // Employer SS on bonus
+  let erBonusSS = 0;
+  if (annualBonus > 0) {
+    const remainPension = Math.max(0, PENSION_CEIL * 12 - pensionBase * 12);
+    const remainHealth = Math.max(0, HEALTH_CEIL * 12 - healthBase * 12);
+    const bPBase = Math.min(annualBonus, remainPension);
+    const bHBase = Math.min(annualBonus, remainHealth);
+    erBonusSS = bPBase * PENSION_RATE / 2
+              + bPBase * UNEMPLOYMENT_RATE / 2
+              + bHBase * (HEALTH_RATE / 2 + (healthType === 'statutory' ? additionalHealthRate / 2 : 0))
+              + bHBase * erNursingRate
+              + bPBase * INSOLVENCY_RATE;  // U3: pension-ceiling basis
+  }
+
+  // ====== KINDERGELD ======
+  const kindergeld = numChildren * KINDERGELD_PER_CHILD;
+
+  return {
+    gross: monthlyGross,
+    monthlyTax, monthlySoli, monthlyChurch, totalMonthlyTax,
+    empPension, empHealth, empUnemployment, empNursing, totalEmpSS,
+    erPension, erHealth, erUnemployment, erNursing, erInsolvency, totalErSS,
+    totalDeductions, netSalary, totalEmployerCost, kindergeld,
+    annualTax: totalAnnualTax, annualSoli: totalAnnualSoli, vorsorgepauschale: vspTotal,
+    // Bonus fields
+    annualBonus,
+    bonusTax, bonusSoli, bonusChurch, totalBonusTax,
+    bonusPension, bonusHealth, bonusUnemploy, bonusNursing, bonusSS,
+    bonusNet, bonusDeductions,
+    erBonusSS,
+    // Effective monthly averages (including bonus spread over 12 months)
+    effMonthlyGross: (totalAnnualGross) / 12,
+    effMonthlyNet: (netSalary * 12 + bonusNet) / 12,
+    effMonthlyDeductions: (totalDeductions * 12 + bonusDeductions) / 12,
+    effEmployerCost: (totalEmployerCost * 12 + annualBonus + erBonusSS) / 12
+  };
+}
+
+// ====== RENDER ======
+function renderResults(r, gross) {
+
+  const hasBonus = r.annualBonus > 0;
+  const bTag = (val) => hasBonus ? `<span class="bonus-tag">Ø +${fmt(Math.round(val / 12))}</span>` : '';
+  updateSalaryDisplay(parseInt(document.getElementById('salaryInput').value.replace(/\s/g,'')) || 0);
+
+  // Net amount hero
+  const jointMode = isJointMode();
+  // Update hero label for joint mode
+  const netLabel = document.querySelector('.net-label');
+  if (jointMode) {
+    netLabel.textContent = t('Monatliches Haushaltsnetto', 'Monthly Household Net', 'Havi háztartási nettó', 'Maandelijks huishoudnetto');
+  } else {
+    netLabel.textContent = t('Monatliches Nettogehalt', 'Monthly Net Salary', 'Havi nettó bér', 'Maandelijks nettoloon');
+  }
+  animateOdometer(document.getElementById('netAmount'), Math.round(r.netSalary), '', ' €');
+  const pct = gross > 0 ? Math.round(r.netSalary / gross * 100) : 0;
+  let subText;
+  if (jointMode) {
+    subText = `${pct}% ${t('vom Haushaltseinkommen','of household income','a háztartási jövedelemből','van huishoudinkomen')} | ${t('Brutto gesamt','Total gross','Összes bruttó','Totaal bruto')}: ${fmt(gross)} € (${fmt(r.grossA)} + ${fmt(r.grossB)})`;
+  } else {
+    subText = `${pct}% ${t('vom Bruttolohn','of gross salary','a bruttó bérből','van brutoloon')} | ${t('Brutto','Gross','Bruttó','Bruto')}: ${fmt(gross)} €`;
+  }
+  if (hasBonus) {
+    const effPct = r.effMonthlyGross > 0 ? Math.round(r.effMonthlyNet / r.effMonthlyGross * 100) : 0;
+    subText += ` · ${t('Ø','Avg.','Átl.','Gem.')} ${fmt(Math.round(r.effMonthlyNet))} ${t('€/Mo.','€/mo.','€/hó','€/mnd')} (${effPct}%)`;
+  }
+  document.getElementById('netSub').innerHTML = subText;
+
+  // Summary boxes
+  document.getElementById('sumNet').innerHTML = fmt(Math.round(r.netSalary)) + (hasBonus ? `<br><span class="eff-label">Ø ${fmt(Math.round(r.effMonthlyNet))}</span>` : '');
+  document.getElementById('sumDeductions').innerHTML = fmt(Math.round(r.totalDeductions)) + (hasBonus ? `<br><span class="eff-label">Ø ${fmt(Math.round(r.effMonthlyDeductions))}</span>` : '');
+  document.getElementById('sumEmployer').innerHTML = fmt(Math.round(r.totalEmployerCost)) + (hasBonus ? `<br><span class="eff-label">Ø ${fmt(Math.round(r.effEmployerCost))}</span>` : '');
+  document.getElementById('sumKindergeld').textContent = fmt(r.kindergeld);
+  document.getElementById('totalEmployerCost').innerHTML = fmt(Math.round(r.totalEmployerCost)) + ' €' + (hasBonus ? `<span class="bonus-tag">Ø ${fmt(Math.round(r.effEmployerCost))}</span>` : '');
+
+  // Annual overview (includes bonus)
+  document.getElementById('annualNet').textContent = fmt(Math.round(r.netSalary * 12 + (hasBonus ? r.bonusNet : 0)));
+  document.getElementById('annualTax').textContent = fmt(Math.round(r.totalMonthlyTax * 12 + (hasBonus ? r.totalBonusTax : 0)));
+  document.getElementById('annualSS').textContent = fmt(Math.round(r.totalEmpSS * 12 + (hasBonus ? r.bonusSS : 0)));
+  document.getElementById('annualEmployer').textContent = fmt(Math.round(r.totalEmployerCost * 12 + (hasBonus ? r.annualBonus + r.erBonusSS : 0)));
+
+  renderBreakdown(r, gross);
+  renderDonut(r, gross);
+  renderEmployerBars(r, gross);
+  renderAnnualBar(r);
+  renderCurveCharts(gross);
+
+  // Bonus hint
+  if (hasBonus) {
+    const bonusPct = gross > 0 ? Math.round(r.bonusNet / r.annualBonus * 100) : 0;
+    document.getElementById('bonusHint').innerHTML = `${t('Bonus netto','Bonus net','Bónusz nettó','Bonus netto')}: ${fmt(Math.round(r.bonusNet))} € (${bonusPct}%) · ${t('Abzüge','Deductions','Levonások','Inhoudingen')}: ${fmt(Math.round(r.bonusDeductions))} € · ${t('Ø pro Monat','Avg. per month','Átl. havonta','Gem. per maand')}: +${fmt(Math.round(r.bonusNet / 12))} €`;
+  } else {
+    document.getElementById('bonusHint').innerHTML = '';
+  }
+
+  // Kindergeld card
+  const kCard = document.getElementById('kindergeldCard');
+  if (numChildren > 0) {
+    kCard.style.display = 'block';
+    const suffix = t('€/Monat', '€/month', '€/hó', '€/maand');
+    document.getElementById('kindergeldAmount').innerHTML = fmt(r.kindergeld) + ' <span>' + suffix + '</span>';
+    document.getElementById('kindergeldDetail').textContent = `${numChildren} × ${KINDERGELD_PER_CHILD} € | ${t('Jährlich','Annual','Éves','Jaarlijks')}: ${fmt(r.kindergeld * 12)} €`;
+  } else {
+    kCard.style.display = 'none';
+  }
+}
+
+function renderBreakdown(r, gross) {
+
+  const hasBonus = r.annualBonus > 0;
+  const tbl = document.getElementById('breakdownTable');
+  let rows = '';
+  const row = (label, amount, cls = '', bonusExtra) => {
+    let val = (cls.includes('benefit') ? '+' : cls.includes('deduction') ? '−' : '') + ' ' + fmt(Math.round(Math.abs(amount))) + ' €';
+    if (hasBonus && bonusExtra !== undefined && Math.round(bonusExtra) !== 0) {
+      const sign = cls.includes('deduction') ? '+' : '+';
+      val += `<span class="bonus-tag">Ø ${cls.includes('deduction') ? '+' : '+'}${fmt(Math.round(Math.abs(bonusExtra / 12)))}</span>`;
+    }
+    return `<tr class="${cls}"><td class="row-header">${label}</td><td>${val}</td></tr>`;
+  };
+
+  rows += row('💰 ' + t('Bruttolohn', 'Gross Salary', 'Bruttó bér', 'Brutoloon'), gross, 'subtotal', r.annualBonus);
+
+  rows += `<tr><td colspan="2" style="padding:4px;font-size:0.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px">${t('Steuern','Taxes','Adók','Belastingen')}</td></tr>`;
+  rows += row(t('Lohnsteuer','Income Tax','Jövedelemadó','Loonbelasting'), r.monthlyTax, 'deduction', r.bonusTax);
+  rows += row(t('Solidaritätszuschlag','Solidarity Surcharge','Szolidaritási pótlék','Solidariteitsbijdrage'), r.monthlySoli, 'deduction', r.bonusSoli);
+  if (r.monthlyChurch > 0) rows += row(t('Kirchensteuer','Church Tax','Egyházi adó','Kerkbelasting'), r.monthlyChurch, 'deduction', r.bonusChurch);
+
+  rows += `<tr><td colspan="2" style="padding:4px;font-size:0.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px">${t('Sozialversicherung (AN-Anteil)','Social Security (Employee)','Társadalombiztosítás (munkavállalói rész)','Sociale zekerheid (werknemer)')}</td></tr>`;
+  rows += row(t('Rentenversicherung 9,3%','Pension Insurance 9.3%','Nyugdíjbiztosítás 9,3%','Pensioenverz. 9,3%'), r.empPension, 'deduction', r.bonusPension);
+  rows += row(t('Krankenversicherung','Health Insurance','Egészségbiztosítás','Zorgverzekering'), r.empHealth, 'deduction', r.bonusHealth);
+  rows += row(t('Arbeitslosenversicherung 1,3%','Unemployment Ins. 1.3%','Munkanélküliségi bizt. 1,3%','Werkloosheidsverz. 1,3%'), r.empUnemployment, 'deduction', r.bonusUnemploy);
+  rows += row(t('Pflegeversicherung','Nursing Care Ins.','Ápolásbiztosítás','Zorgverz.'), r.empNursing, 'deduction', r.bonusNursing);
+
+  rows += row('📌 ' + t('Abzüge gesamt','Total Deductions','Összes levonás','Totale inhoudingen'), r.totalDeductions, 'subtotal deduction', r.bonusDeductions);
+  rows += row('✅ ' + t('Nettolohn','Net Salary','Nettó bér','Nettoloon'), r.netSalary, 'subtotal', r.bonusNet);
+
+  if (hasBonus) {
+    rows += `<tr><td colspan="2" style="padding:4px;font-size:0.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;padding-top:12px">${t('Sonderzahlungen (Jahreseffekt)','Bonus Payments (Annual Effect)','Bónusz kifizetések (éves hatás)','Bonusbetalingen (jaareffect)')}</td></tr>`;
+    rows += `<tr><td class="row-header">${'🎁 ' + t('Bonus brutto (Jahr)','Bonus gross (annual)','Bónusz bruttó (éves)','Bonus bruto (jaarlijks)')}</td><td>${fmt(Math.round(r.annualBonus))} €</td></tr>`;
+    rows += `<tr class="deduction"><td class="row-header">${t('Abzüge auf Bonus','Deductions on bonus','Levonások a bónuszból','Inhoudingen op bonus')}</td><td>− ${fmt(Math.round(r.bonusDeductions))} €</td></tr>`;
+    rows += `<tr class="subtotal"><td class="row-header">${'🎁 ' + t('Bonus netto (Jahr)','Bonus net (annual)','Bónusz nettó (éves)','Bonus netto (jaarlijks)')}</td><td style="color:#0d9488">${fmt(Math.round(r.bonusNet))} €</td></tr>`;
+    rows += `<tr><td class="row-header" style="color:var(--text-light);font-size:0.85rem">${t('Ø Effektiv netto/Monat','Avg. effective net/month','Átl. effektív nettó/hó','Gem. effectief netto/mnd')}</td><td style="color:#0d9488;font-size:0.85rem">${fmt(Math.round(r.effMonthlyNet))} €</td></tr>`;
+  }
+
+  if (r.kindergeld > 0) {
+    rows += `<tr><td colspan="2" style="padding:4px;font-size:0.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;padding-top:12px">${t('Staatliche Leistung','State Benefit','Állami juttatás','Overheidsuitkering')}</td></tr>`;
+    rows += `<tr class="benefit"><td class="row-header">${'👶 ' + t('Kindergeld','Child Benefit','Családi pótlék','Kinderbijslag')}</td><td>+ ${fmt(r.kindergeld)} €</td></tr>`;
+    const totalWithBenefits = hasBonus ? r.effMonthlyNet + r.kindergeld : r.netSalary + r.kindergeld;
+    rows += `<tr class="subtotal"><td class="row-header">${'💚 ' + t('Netto + Kindergeld','Net + Child Benefit','Nettó + Családi pótlék','Netto + Kinderbijslag')}</td><td>${fmt(Math.round(totalWithBenefits))} €${hasBonus ? '/Ø' : ''}</td></tr>`;
+  }
+
+  tbl.innerHTML = rows;
+}
+
+function renderDonut(r, gross) {
+  const svg = document.getElementById('donutChart');
+  const legend = document.getElementById('chartLegend');
+
+  const total = gross > 0 ? gross : 1;
+  const segments = [
+    { label: t('Nettolohn','Net Salary','Nettó bér','Nettoloon'), value: Math.max(0, r.netSalary), color: '#059669' },
+    { label: t('Lohnsteuer','Income Tax','Jövedelemadó','Loonbelasting'), value: r.monthlyTax, color: '#e94560' },
+    { label: t('Soli + Kirche','Soli + Church','Soli + Egyházi','Soli + Kerk'), value: r.monthlySoli + r.monthlyChurch, color: '#f59e0b' },
+    { label: t('Rentenvers.','Pension','Nyugdíj','Pensioen'), value: r.empPension, color: '#3b82f6' },
+    { label: t('Krankenvers.','Health Ins.','Eü. bizt.','Zorgverz.'), value: r.empHealth, color: '#8b5cf6' },
+    { label: t('Arbeitslosen + Pflege','Unemployment + Care','Munkanélk. + Ápolás','Werkl. + Zorg'), value: r.empUnemployment + r.empNursing, color: '#6366f1' },
+  ];
+  const cx=100,cy=100,R1=85,R2=55;
+  let startAngle = -Math.PI/2, paths='';
+  segments.forEach(seg => {
+    if(seg.value<=0)return;
+    const angle=(seg.value/total)*Math.PI*2;
+    const endAngle=startAngle+angle;
+    const la=angle>Math.PI?1:0;
+    const x1o=cx+R1*Math.cos(startAngle),y1o=cy+R1*Math.sin(startAngle);
+    const x2o=cx+R1*Math.cos(endAngle),y2o=cy+R1*Math.sin(endAngle);
+    const x1i=cx+R2*Math.cos(endAngle),y1i=cy+R2*Math.sin(endAngle);
+    const x2i=cx+R2*Math.cos(startAngle),y2i=cy+R2*Math.sin(startAngle);
+    paths+=`<path d="M${x1o},${y1o} A${R1},${R1} 0 ${la} 1 ${x2o},${y2o} L${x1i},${y1i} A${R2},${R2} 0 ${la} 0 ${x2i},${y2i} Z" fill="${seg.color}" opacity="0.85"><title>${seg.label}: ${fmt(Math.round(seg.value))} €</title></path>`;
+    startAngle=endAngle;
+  });
+  const netPct=gross>0?Math.round(Math.max(0,r.netSalary)/gross*100):0;
+  paths+=`<text x="${cx}" y="${cy-6}" text-anchor="middle" font-size="22" font-weight="800" fill="#1a1a2e">${netPct}%</text>`;
+  paths+=`<text x="${cx}" y="${cy+14}" text-anchor="middle" font-size="9" fill="#6b7280">${t('Netto-Anteil','net ratio','nettó arány','nettoverhouding')}</text>`;
+  svg.innerHTML=paths;
+
+  let lh='';
+  segments.forEach(seg=>{
+    const p=gross>0?Math.round(seg.value/gross*100):0;
+    lh+=`<div class="legend-item"><div class="legend-color" style="background:${seg.color}"></div><span>${seg.label} (${p}%)</span><span class="legend-value">${fmt(Math.round(seg.value))} €</span></div>`;
+  });
+  legend.innerHTML=lh;
+}
+
+function renderEmployerBars(r, gross) {
+  const c = document.getElementById('employerBars');
+
+  const max = r.totalEmployerCost;
+  const items = [
+    { label: t('Bruttolohn','Gross Salary','Bruttó bér','Brutoloon'), value: gross, color: '#3b82f6' },
+    { label: t('AG-Rentenversicherung','Employer Pension','Munkáltatói nyugdíj','WG-Pensioen'), value: r.erPension, color: '#0f3460' },
+    { label: t('AG-Krankenversicherung','Employer Health Ins.','Munkáltatói eü. bizt.','WG-Zorgverz.'), value: r.erHealth, color: '#8b5cf6' },
+    { label: t('AG-Arbeitslosenvers.','Employer Unemployment','Munkáltatói munkanélk.','WG-Werkloosheid'), value: r.erUnemployment, color: '#6366f1' },
+    { label: t('AG-Pflegevers.','Employer Nursing Care','Munkáltatói ápolás','WG-Zorgverz.'), value: r.erNursing, color: '#a78bfa' },
+    { label: t('Insolvenzumlage','Insolvency Levy','Fizetésképtelenségi járulék','Insolventieomslag'), value: r.erInsolvency, color: '#c4b5fd' },
+  ];
+  let html='';
+  items.forEach(item=>{
+    if(item.value<=0)return;
+    const w=max>0?(item.value/max*100):0;
+    html+=`<div class="bar-group"><div class="bar-label">${item.label}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.max(w,8)}%;background:${item.color}">${fmt(Math.round(item.value))} €</div></div></div>`;
+  });
+  c.innerHTML=html;
+}
+
+function renderAnnualBar(r) {
+  const svg = document.getElementById('annualBarChart');
+  const legendDiv = document.getElementById('annualBarLegend');
+
+  const hasBonus = r.annualBonus > 0;
+  const total = r.totalEmployerCost * 12 + (hasBonus ? r.annualBonus + r.erBonusSS : 0);
+  if (total === 0) { svg.innerHTML=''; legendDiv.innerHTML=''; return; }
+  const segments = [
+    { label: t('Netto','Net','Nettó','Netto'), value:Math.round(r.netSalary*12 + (hasBonus ? r.bonusNet : 0)), color:'#059669' },
+    { label: t('Steuern','Taxes','Adók','Belastingen'), value:Math.round(r.totalMonthlyTax*12 + (hasBonus ? r.totalBonusTax : 0)), color:'#e94560' },
+    { label: t('SV (AN)','SS (EE)','TB (MV)','SV (WN)'), value:Math.round(r.totalEmpSS*12 + (hasBonus ? r.bonusSS : 0)), color:'#3b82f6' },
+    { label: t('SV (AG)','SS (ER)','TB (MA)','SV (WG)'), value:Math.round(r.totalErSS*12 + (hasBonus ? r.erBonusSS : 0)), color:'#8b5cf6' },
+  ];
+  let x=0,paths='';
+  segments.forEach(seg=>{
+    const w=(seg.value/total)*800;
+    if(w>0){
+      paths+=`<rect x="${x}" y="0" width="${w}" height="50" rx="4" fill="${seg.color}" opacity="0.85"><title>${seg.label}: ${fmt(seg.value)} €</title></rect>`;
+      if(w>60) paths+=`<text x="${x+w/2}" y="30" text-anchor="middle" fill="white" font-size="11" font-weight="600">${fmt(seg.value)}</text>`;
+    }
+    x+=w;
+  });
+  svg.innerHTML=paths;
+  let lh='';
+  segments.forEach(seg=>{
+    lh+=`<div style="display:flex;align-items:center;gap:6px;font-size:0.82rem"><div style="width:12px;height:12px;border-radius:3px;background:${seg.color}"></div>${seg.label}: ${fmt(seg.value)} €</div>`;
+  });
+  legendDiv.innerHTML=lh;
+}
+
+// ====== CURVE CHARTS ======
+function renderCurveCharts(currentGross) {
+  renderNetVsGrossChart(currentGross);
+  renderTaxRateChart(currentGross);
+}
+
+function computeForGross(g, withBenefits) {
+  if (!withBenefits) {
+    // No benefits: standard class I, no children, no church, with Vorsorgepauschale
+    const pb = Math.min(g, PENSION_CEIL);
+    const hb = Math.min(g, HEALTH_CEIL);
+    const pension = pb * 0.093;
+    const health = hb * (0.073 + 0.0145);
+    const unemployment = pb * 0.013;
+    const nursing = hb * 0.024; // childless
+    const ss = pension + health + unemployment + nursing;
+    // Vorsorgepauschale baseline (2026: 12% rule abolished, TB4 unemployment added)
+    const annualPen = pension * 12;
+    const annualHealthDed = health * 12 * 0.96;
+    const annualNursDed = nursing * 12;
+    const annualUnemplDed = unemployment * 12;
+    const tb2_tb3_chart = annualHealthDed + annualNursDed;
+    const tb4_chart = Math.min(annualUnemplDed, Math.max(0, 1900 - tb2_tb3_chart));
+    const vsp = annualPen + tb2_tb3_chart + tb4_chart;
+    const zvE = Math.max(0, g * 12 - 1230 - 36 - vsp);
+    const annualTax = computeAnnualIncomeTax(zvE);
+    const monthlyTax = annualTax / 12;
+    return { net: g - monthlyTax - ss, deductions: monthlyTax + ss, kindergeld: 0 };
+  }
+  const r = computeBreakdown(g);
+  return { net: r.netSalary + r.kindergeld, deductions: r.totalDeductions, kindergeld: r.kindergeld };
+}
+
+function renderNetVsGrossChart(currentGross) {
+  const canvas = document.getElementById('netVsGrossChart');
+  const ctx = canvas.getContext('2d');
+
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = canvas.offsetWidth * dpr;
+  canvas.height = canvas.offsetHeight * dpr;
+  ctx.scale(dpr, dpr);
+  const W = canvas.offsetWidth, H = canvas.offsetHeight;
+  const pad = { top:20, right:24, bottom:50, left:70 };
+  const plotW = W-pad.left-pad.right, plotH = H-pad.top-pad.bottom;
+  const minG=500, maxG=12000, steps=100;
+  const maxY=12000;
+
+  const dataWith=[], dataWithout=[], dataGross=[];
+  for(let i=0;i<=steps;i++){
+    const g=minG+(maxG-minG)*(i/steps);
+    const w=computeForGross(g,true);
+    const wo=computeForGross(g,false);
+    dataWith.push({x:g,y:w.net});
+    dataWithout.push({x:g,y:wo.net});
+    dataGross.push({x:g,y:g});
+  }
+
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='rgba(255,255,255,0.07)'; ctx.lineWidth=1;
+  const yTicks=[0,2000,4000,6000,8000,10000,12000];
+  yTicks.forEach(v=>{const y=pad.top+plotH-(v/maxY)*plotH;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(pad.left+plotW,y);ctx.stroke();});
+  const xTicks=[1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,11000];
+  xTicks.forEach(v=>{const x=pad.left+((v-minG)/(maxG-minG))*plotW;if(x>=pad.left&&x<=pad.left+plotW){ctx.beginPath();ctx.moveTo(x,pad.top);ctx.lineTo(x,pad.top+plotH);ctx.stroke();}});
+
+  ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='11px system-ui';ctx.textAlign='right';
+  yTicks.forEach(v=>{const y=pad.top+plotH-(v/maxY)*plotH;ctx.fillText(fmtShort(v)+'€',pad.left-8,y+4);});
+  ctx.textAlign='center';
+  xTicks.forEach(v=>{const x=pad.left+((v-minG)/(maxG-minG))*plotW;if(x>=pad.left&&x<=pad.left+plotW)ctx.fillText(fmtShort(v)+'€',x,pad.top+plotH+20);});
+
+  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='10px system-ui';ctx.textAlign='center';
+  ctx.fillText(t('BRUTTOGEHALT (€)','GROSS SALARY (€)','BRUTTÓ BÉR (€)','BRUTOLOON (€)'),pad.left+plotW/2,H-6);
+  ctx.save();ctx.translate(14,pad.top+plotH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText(t('NETTOEINKOMMEN (€)','NET INCOME (€)','NETTÓ JÖVEDELEM (€)','NETTO-INKOMEN (€)'),0,0);ctx.restore();
+
+  function drawLine(data,color,lw,dashed){
+    ctx.strokeStyle=color;ctx.lineWidth=lw;ctx.setLineDash(dashed?[6,4]:[]);ctx.beginPath();
+    data.forEach((p,i)=>{const x=pad.left+((p.x-minG)/(maxG-minG))*plotW;const y=pad.top+plotH-(Math.min(p.y,maxY)/maxY)*plotH;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});
+    ctx.stroke();ctx.setLineDash([]);
+  }
+
+  if(numChildren>0){
+    ctx.fillStyle='rgba(46,204,113,0.12)';ctx.beginPath();
+    dataWith.forEach((p,i)=>{const x=pad.left+((p.x-minG)/(maxG-minG))*plotW;const y=pad.top+plotH-(Math.min(p.y,maxY)/maxY)*plotH;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});
+    for(let i=dataWithout.length-1;i>=0;i--){const p=dataWithout[i];const x=pad.left+((p.x-minG)/(maxG-minG))*plotW;const y=pad.top+plotH-(Math.min(p.y,maxY)/maxY)*plotH;ctx.lineTo(x,y);}
+    ctx.closePath();ctx.fill();
+  }
+
+  drawLine(dataGross,'rgba(196,181,107,0.6)',1.5,true);
+  drawLine(dataWithout,'rgba(100,140,230,0.8)',2,false);
+  drawLine(dataWith,'#2ecc71',2.5,false);
+
+  if(currentGross>=minG&&currentGross<=maxG){
+    const cx2=pad.left+((currentGross-minG)/(maxG-minG))*plotW;
+    const curR=computeForGross(currentGross,true);
+    const cy2=pad.top+plotH-(Math.min(curR.net,maxY)/maxY)*plotH;
+    ctx.strokeStyle='rgba(46,204,113,0.4)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(cx2,pad.top);ctx.lineTo(cx2,pad.top+plotH);ctx.stroke();ctx.setLineDash([]);
+    ctx.beginPath();ctx.arc(cx2,cy2,6,0,Math.PI*2);ctx.fillStyle='#2ecc71';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold 11px system-ui';ctx.textAlign=cx2>W/2?'right':'left';
+    ctx.fillText(fmt(Math.round(curR.net))+' €',cx2>W/2?cx2-12:cx2+12,cy2-12);
+  }
+
+  const legendDiv=document.getElementById('netVsGrossLegend');
+  legendDiv.innerHTML=[
+    {color:'#2ecc71',label:t('Netto (mit Leistungen)','Net (with benefits)','Nettó (juttatásokkal)','Netto (met toeslagen)'),dash:false},
+    {color:'rgba(196,181,107,0.8)',label:t('Brutto (Referenz)','Gross (reference)','Bruttó (referencia)','Bruto (referentie)'),dash:true},
+    {color:'rgba(100,140,230,0.9)',label:t('Netto ohne Kinder','Net without children','Nettó gyermekek nélkül','Netto zonder kinderen'),dash:false},
+  ].map(l=>`<div style="display:flex;align-items:center;gap:6px"><div style="width:20px;height:3px;background:${l.color};border-radius:2px;${l.dash?'border-top:2px dashed '+l.color+';background:transparent;height:0':''}"></div><span style="color:var(--text-light)">${l.label}</span></div>`).join('');
+}
+
+function renderTaxRateChart(currentGross) {
+  const canvas = document.getElementById('taxRateChart');
+  const ctx = canvas.getContext('2d');
+
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = canvas.offsetWidth * dpr;
+  canvas.height = canvas.offsetHeight * dpr;
+  ctx.scale(dpr, dpr);
+  const W=canvas.offsetWidth, H=canvas.offsetHeight;
+  const pad={top:20,right:24,bottom:50,left:55};
+  const plotW=W-pad.left-pad.right, plotH=H-pad.top-pad.bottom;
+  const minG=500, maxG=12000, steps=100, maxPct=55;
+
+  const dataWith=[], dataWithout=[], dataMarginal=[];
+  for(let i=0;i<=steps;i++){
+    const g=minG+(maxG-minG)*(i/steps);
+    const w=computeForGross(g,true);
+    const wo=computeForGross(g,false);
+    dataWith.push({x:g,y:g>0?(w.deductions/g)*100:0});
+    dataWithout.push({x:g,y:g>0?(wo.deductions/g)*100:0});
+    // Marginal rate: what % of an extra €100 goes to taxes/deductions
+    const delta=100;
+    const wPlus=computeForGross(g+delta,true);
+    const marg=(wPlus.deductions-w.deductions)/delta*100;
+    dataMarginal.push({x:g,y:Math.min(maxPct,Math.max(0,marg))});
+  }
+
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='rgba(255,255,255,0.07)';ctx.lineWidth=1;
+  const yTicks=[0,5,10,15,20,25,30,35,40,45,50,55];
+  yTicks.forEach(v=>{const y=pad.top+plotH-(v/maxPct)*plotH;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(pad.left+plotW,y);ctx.stroke();});
+  const xTicks=[1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,11000];
+  xTicks.forEach(v=>{const x=pad.left+((v-minG)/(maxG-minG))*plotW;if(x>=pad.left&&x<=pad.left+plotW){ctx.beginPath();ctx.moveTo(x,pad.top);ctx.lineTo(x,pad.top+plotH);ctx.stroke();}});
+
+  ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='11px system-ui';ctx.textAlign='right';
+  yTicks.forEach(v=>{const y=pad.top+plotH-(v/maxPct)*plotH;ctx.fillText(v+'%',pad.left-8,y+4);});
+  ctx.textAlign='center';
+  xTicks.forEach(v=>{const x=pad.left+((v-minG)/(maxG-minG))*plotW;if(x>=pad.left&&x<=pad.left+plotW)ctx.fillText(fmtShort(v)+'€',x,pad.top+plotH+20);});
+  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='10px system-ui';ctx.textAlign='center';
+  ctx.fillText(t('BRUTTOGEHALT (€)','GROSS SALARY (€)','BRUTTÓ BÉR (€)','BRUTOLOON (€)'),pad.left+plotW/2,H-6);
+
+  if(numChildren>0){
+    ctx.fillStyle='rgba(241,196,15,0.1)';ctx.beginPath();
+    dataWithout.forEach((p,i)=>{const x=pad.left+((p.x-minG)/(maxG-minG))*plotW;const y=pad.top+plotH-(Math.min(p.y,maxPct)/maxPct)*plotH;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});
+    for(let i=dataWith.length-1;i>=0;i--){const p=dataWith[i];const x=pad.left+((p.x-minG)/(maxG-minG))*plotW;const y=pad.top+plotH-(Math.min(p.y,maxPct)/maxPct)*plotH;ctx.lineTo(x,y);}
+    ctx.closePath();ctx.fill();
+  }
+
+  function drawLine(data,color,lw){ctx.strokeStyle=color;ctx.lineWidth=lw;ctx.beginPath();data.forEach((p,i)=>{const x=pad.left+((p.x-minG)/(maxG-minG))*plotW;const y=pad.top+plotH-(Math.min(p.y,maxPct)/maxPct)*plotH;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();}
+
+  drawLine(dataWithout,'rgba(196,181,107,0.7)',2);
+  drawLine(dataWith,'#f1c40f',2.5);
+  drawLine(dataMarginal,'#E87722',1.8);
+
+  if(currentGross>=minG&&currentGross<=maxG){
+    const cx2=pad.left+((currentGross-minG)/(maxG-minG))*plotW;
+    const curR=computeForGross(currentGross,true);
+    const curPct=currentGross>0?(curR.deductions/currentGross)*100:0;
+    const cy2=pad.top+plotH-(Math.min(curPct,maxPct)/maxPct)*plotH;
+    ctx.strokeStyle='rgba(241,196,15,0.4)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(cx2,pad.top);ctx.lineTo(cx2,pad.top+plotH);ctx.stroke();ctx.setLineDash([]);
+    ctx.beginPath();ctx.arc(cx2,cy2,6,0,Math.PI*2);ctx.fillStyle='#f1c40f';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold 11px system-ui';ctx.textAlign=cx2>W/2?'right':'left';
+    ctx.fillText(curPct.toFixed(1)+'%',cx2>W/2?cx2-12:cx2+12,cy2-12);
+  }
+
+  const legendDiv=document.getElementById('taxRateLegend');
+  legendDiv.innerHTML=[
+    {color:'#f1c40f',label:t('Effektive Abgabenquote (aktuell)','Effective rate (current settings)','Effektív adókulcs (aktuális)','Effectieve belastingdruk (huidig)')},
+    {color:'rgba(196,181,107,0.8)',label:t('Basis-Abgabenquote (ledig, keine Kinder)','Base rate (single, no children)','Alapkulcs (egyedülálló, gyermektelen)','Basisdruk (ongehuwd, geen kinderen)')},
+    {color:'#E87722',label:t('Grenzabgabenquote','Marginal tax rate','Marginális adókulcs','Marginale belastingdruk')},
+  ].map(l=>`<div style="display:flex;align-items:center;gap:6px"><div style="width:20px;height:3px;background:${l.color};border-radius:2px"></div><span style="color:var(--text-light)">${l.label}</span></div>`).join('');
+}
+
+// ====== EVENT LISTENERS ======
+// Language buttons
+document.querySelectorAll('.lang-btn[data-lang]').forEach(btn => {
+  btn.addEventListener('click', () => setLang(btn.dataset.lang, btn));
+});
+
+// Salary controls
+document.getElementById('salarySlider').addEventListener('input', updateFromSlider);
+document.getElementById('salaryInput').addEventListener('input', updateFromInput);
+
+// Calc mode tabs
+document.querySelectorAll('.tab-btn[data-mode]').forEach(btn => {
+  btn.addEventListener('click', () => setCalcMode(btn.dataset.mode, btn));
+});
+
+// Dropdowns
+document.getElementById('taxClass').addEventListener('change', toggleJointSection);
+
+// Joint assessment partner inputs
+document.getElementById('partnerAInput').addEventListener('input', function() { updateJointHint(); calculate(); });
+document.getElementById('partnerBInput').addEventListener('input', function() { updateJointHint(); calculate(); });
+
+// Joint partner health insurance toggles
+document.getElementById('healthTypeA').addEventListener('change', function() {
+  document.getElementById('gkvRowA').style.display = this.value === 'statutory' ? 'block' : 'none';
+  document.getElementById('pkvRowA').style.display = this.value === 'private' ? 'block' : 'none';
+  calculate();
+});
+document.getElementById('healthTypeB').addEventListener('change', function() {
+  document.getElementById('gkvRowB').style.display = this.value === 'statutory' ? 'block' : 'none';
+  document.getElementById('pkvRowB').style.display = this.value === 'private' ? 'block' : 'none';
+  calculate();
+});
+document.getElementById('additionalHealthA').addEventListener('change', calculate);
+document.getElementById('additionalHealthB').addEventListener('change', calculate);
+document.getElementById('pkvPremiumA').addEventListener('change', calculate);
+document.getElementById('pkvPremiumB').addEventListener('change', calculate);
+document.getElementById('churchTaxA').addEventListener('change', calculate);
+document.getElementById('churchTaxB').addEventListener('change', calculate);
+document.getElementById('bundesland').addEventListener('change', onBundeslandChange);
+
+// Toggles
+document.getElementById('churchTax').addEventListener('change', calculate);
+document.getElementById('bonusToggle').addEventListener('change', toggleBonusSection);
+
+// Health insurance
+document.getElementById('healthType').addEventListener('change', function() {
+  document.getElementById('gkvRow').style.display = this.value === 'statutory' ? 'flex' : 'none';
+  document.getElementById('pkvRow').style.display = this.value === 'private' ? 'flex' : 'none';
+  calculate();
+});
+document.getElementById('additionalHealth').addEventListener('change', calculate);
+document.getElementById('pkvPremium').addEventListener('change', calculate);
+
+// Children counters
+document.querySelectorAll('.counter-btn[data-action]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const delta = parseInt(btn.dataset.delta);
+    if (btn.dataset.action === 'children') changeChildren(delta);
+    else if (btn.dataset.action === 'childrenU25') changeChildrenU25(delta);
+  });
+});
+
+// Bonus presets
+document.querySelectorAll('[data-bonus-preset]').forEach(btn => {
+  btn.addEventListener('click', () => setBonusPreset(btn.dataset.bonusPreset));
+});
+
+// Bonus input
+document.getElementById('bonusInput').addEventListener('input', onBonusInput);
+
+// ====== RESPONSIVE CANVAS (ResizeObserver) ======
+const canvasObserver = new ResizeObserver(() => {
+  const rawVal = document.getElementById('salaryInput').value.replace(/\s/g, '');
+  const currentGross = parseInt(rawVal) || 0;
+  renderCurveCharts(currentGross);
+});
+canvasObserver.observe(document.getElementById('netVsGrossChart'));
+canvasObserver.observe(document.getElementById('taxRateChart'));
+
+// ====== INIT ======
+calculate();
+</script>
+
+<script src="../nav.js"></script>
+<script src="../shared.js"></script>
+</body>
+</html>

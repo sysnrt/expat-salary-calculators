@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" id="metaDesc" content="Calculadora salarial España 2026 — Calcula tu salario neto con IRPF, Seguridad Social y régimen Beckham Law.">
+<title>Calculadora Salarial España 2026 | Spanish Salary Calculator</title>
+<link rel="stylesheet" href="../shared.css">
+<style>
+  :root {
+    --primary: #1a1a2e;
+    --primary-light: #c60b1e;
+    --accent: #c60b1e;
+    --accent-green: #006341;
+    --bg: #f5f5f7;
+    --card: #ffffff;
+    --text: #1a1a2e;
+    --text-light: #6b7280;
+    --border: #e5e7eb;
+    --shadow: 0 4px 24px rgba(0,0,0,0.07);
+    --radius: 16px;
+    --gold: #ffc400;
+    --red: #c60b1e;
+    --green: #006341;
+    --teal: #16a085;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #c60b1e 0%, #1a1a2e 50%, #ffc400 100%);
+    color: white; padding: 48px 24px 36px; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -60%; left: -30%; width: 160%; height: 220%;
+    background: radial-gradient(ellipse, rgba(198,11,30,0.08) 0%, transparent 60%);
+    animation: pulse 10s ease-in-out infinite;
+  }
+
+  .badge { display:inline-block; background:rgba(198,11,30,0.25); padding:4px 16px; border-radius:20px; font-size:0.85rem; margin-top:12px; position:relative; backdrop-filter:blur(4px); border:1px solid rgba(198,11,30,0.3); }
+
+  .salary-display { font-size:2.4rem; font-weight:800; color:var(--red); margin:4px 0 12px; letter-spacing:-1px; }
+
+  input[type="range"] { background:linear-gradient(90deg,#ffc400,#c60b1e); }
+  input[type="range"]::-webkit-slider-thumb { border:3px solid var(--red); }
+  input[type="range"]::-moz-range-thumb { border:3px solid var(--red); }
+
+  .number-input:focus { border-color:var(--red); }
+
+  .toggle input:checked + .slider { background:var(--red); }
+
+  .custom-select:focus { border-color:var(--red); }
+
+  .result-hero {
+    background: linear-gradient(135deg, #c60b1e, #1a1a2e);
+    color:white; border-radius:var(--radius); padding:32px; text-align:center; margin-bottom:24px; box-shadow:var(--shadow);
+  }
+
+  .summary-box.blue .value { color:var(--red); }
+
+  footer a { color:var(--red); text-decoration:none; }
+</style>
+</head>
+<body data-page="spain">
+
+<div class="hero">
+  <div class="lang-selector">
+    <button class="lang-btn active" data-lang="es" title="Español">🇪🇸</button>
+    <button class="lang-btn" data-lang="en" title="English">🇬🇧</button>
+    <button class="lang-btn" data-lang="de" title="Deutsch">🇩🇪</button>
+    <button class="lang-btn" data-lang="hu" title="Magyar">🇭🇺</button>
+  </div>
+  <h1 id="heroTitle">Calculadora Salarial 2026</h1>
+  <p id="heroSub" data-es="Calcula tu salario neto con IRPF, Seguridad Social y deducciones familiares" data-en="Calculate your net salary with income tax, Social Security and family deductions" data-de="Berechne dein Nettogehalt mit Einkommensteuer, Sozialversicherung und Familienabzügen" data-hu="Számold ki a nettó béred jövedelemadóval, társadalombiztosítással és családi kedvezményekkel">Calcula tu salario neto con IRPF, Seguridad Social y deducciones familiares</p>
+  <div class="badge" data-es="Válido desde 1 de enero de 2026" data-en="Valid from January 1, 2026" data-de="Gültig ab 1. Januar 2026" data-hu="2026. január 1-től érvényes">Válido desde 1 de enero de 2026</div>
+  <div class="flag-strip">
+    <div style="background:#c60b1e"></div><div style="background:#ffc400"></div><div style="background:#c60b1e"></div>
+  </div>
+</div>
+
+<div class="container">
+<div class="grid">
+
+  <!-- LEFT: Inputs -->
+  <div>
+    <!-- Gross Salary -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-blue">💰</span> <span data-es="Salario Bruto" data-en="Gross Salary" data-de="Bruttogehalt" data-hu="Bruttó bér">Salario Bruto</span></h2>
+      <div class="salary-input-group">
+        <label data-es="Salario bruto mensual (€)" data-en="Monthly gross salary (€)" data-de="Monatliches Bruttogehalt (€)" data-hu="Havi bruttó bér (€)">Salario bruto mensual (€)</label>
+        <div class="salary-display" id="salaryDisplay">2 500 <span>€/mes</span></div>
+        <input type="range" id="salarySlider" min="500" max="15000" step="50" value="2500" aria-label="Monthly gross salary slider">
+        <div class="range-labels">
+          <span>500 €</span><span>15 000 €</span>
+        </div>
+
+    <div class="whatif-bar" id="whatifBar">
+      <button class="whatif-btn" data-whatif="raise10"><span class="emoji">📈</span>+10% Raise</button>
+      <button class="whatif-btn" data-whatif="raise20"><span class="emoji">🚀</span>+20% Raise</button>
+      <button class="whatif-btn" data-whatif="bonus1k"><span class="emoji">💎</span>+1K Bonus</button>
+      <button class="whatif-btn" data-whatif="bonus2k"><span class="emoji">🎯</span>+2K Bonus</button>
+      <button class="whatif-btn" data-whatif="min"><span class="emoji">📉</span>Min Wage</button>
+    </div>
+
+        <div style="margin-top:12px">
+          <input type="text" class="number-input" id="salaryInput" value="2 500" aria-label="Monthly gross salary input" data-es-placeholder="Introducir importe..." data-en-placeholder="Enter amount..." data-de-placeholder="Betrag eingeben..." data-hu-placeholder="Összeg megadása..." placeholder="Introducir importe...">
+        </div>
+      </div>
+      <div class="tab-bar">
+        <button class="tab-btn active" data-mode="gross" data-es="Del Bruto" data-en="From Gross" data-de="Vom Brutto" data-hu="Bruttóból">Del Bruto</button>
+        <button class="tab-btn" data-mode="total" data-es="Del Coste Empresa" data-en="From Employer Cost" data-de="Von Arbeitgeberkosten" data-hu="Munkáltatói költségből">Del Coste Empresa</button>
+      </div>
+    </div>
+
+    <!-- Number of Payments -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-teal">📅</span> <span data-es="Número de Pagas" data-en="Number of Payments" data-de="Gehaltszahlungen" data-hu="Fizetések száma">Número de Pagas</span></h2>
+      <div class="select-row">
+        <label data-es="Pagas anuales" data-en="Annual payments" data-de="Jährliche Zahlungen" data-hu="Éves kifizetések">Pagas anuales</label>
+        <select class="custom-select" id="numPayments" style="max-width:220px" aria-label="Number of payments">
+          <option value="14" selected>14 pagas</option>
+          <option value="12">12 pagas</option>
+        </select>
+      </div>
+      <div class="option-row" style="border-bottom:none">
+        <div>
+          <div class="option-sublabel" data-es="14 pagas: 12 meses + 2 pagas extra (junio y diciembre). El salario anual es el mismo." data-en="14 payments: 12 months + 2 extra pays (June & December). Annual salary stays the same." data-de="14 Zahlungen: 12 Monate + 2 Sonderzahlungen (Juni & Dezember)." data-hu="14 kifizetés: 12 hónap + 2 extra (június és december).">14 pagas: 12 meses + 2 pagas extra (junio y diciembre). El salario anual es el mismo.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Personal Status -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-purple">📋</span> <span data-es="Situación Personal" data-en="Personal Status" data-de="Persönliche Situation" data-hu="Személyes helyzet">Situación Personal</span></h2>
+      <div class="select-row">
+        <label data-es="Situación familiar" data-en="Family situation" data-de="Familiensituation" data-hu="Családi helyzet">Situación familiar</label>
+        <select class="custom-select" id="familyStatus" style="max-width:220px" aria-label="Family status">
+          <option value="single" data-es="Soltero/a" data-en="Single">Soltero/a</option>
+          <option value="married" data-es="Casado/a (declaración conjunta)" data-en="Married (joint filing)">Casado/a (declaración conjunta)</option>
+        </select>
+      </div>
+      <div class="option-row">
+        <div>
+          <div class="option-label" data-es="Mayor de 65 años" data-en="Over 65 years old" data-de="Über 65 Jahre" data-hu="65 év felett">Mayor de 65 años</div>
+          <div class="option-sublabel" data-es="Mínimo personal adicional: +1.150 €/año" data-en="Additional personal minimum: +€1,150/year" data-de="Zusätzlicher Freibetrag: +1.150 €/Jahr" data-hu="Kiegészítő személyi minimum: +1.150 €/év">Mínimo personal adicional: +1.150 €/año</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="over65Toggle" aria-label="Over 65 toggle"><span class="slider"></span></label>
+      </div>
+      <div class="option-row" style="margin-top:8px">
+        <div>
+          <div class="option-label" data-es="Mayor de 75 años" data-en="Over 75" data-de="Über 75" data-hu="75 év felett">Mayor de 75 años</div>
+          <div class="option-sublabel" data-es="Mínimo personal adicional: +1.400 €/año (acumulable con +65)" data-en="Additional personal minimum: +€1,400/year (cumulative with 65+)" data-de="Zusätzlicher Freibetrag: +1.400 €/Jahr (kumulierbar mit 65+)" data-hu="Kiegészítő személyi minimum: +1.400 €/év (halmozható 65+ felett)">Mínimo personal adicional: +1.400 €/año (acumulable con +65)</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="over75Toggle" aria-label="Over 75 toggle"><span class="slider"></span></label>
+      </div>
+    </div>
+
+    <!-- Tax Options -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-red">⚙️</span> <span data-es="Opciones Fiscales" data-en="Tax Options" data-de="Steueroptionen" data-hu="Adó beállítások">Opciones Fiscales</span></h2>
+      <div class="option-row">
+        <div>
+          <div class="option-label" data-es="Ley Beckham" data-en="Beckham Law" data-de="Beckham-Gesetz" data-hu="Beckham-törvény">Ley Beckham</div>
+          <div class="option-sublabel" data-es="Tipo fijo 24% para expatriados elegibles (hasta 600.000 €)" data-en="24% flat rate for eligible expats (up to €600,000)" data-de="24% Pauschalsteuersatz für berechtigte Expats (bis 600.000 €)" data-hu="24% fix ráta a jogosult külföldiekben (600.000 €-ig)">Tipo fijo 24% para expatriados elegibles (hasta 600.000 €)</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="beckhamToggle" aria-label="Beckham Law toggle"><span class="slider"></span></label>
+      </div>
+      <div class="option-row">
+        <div>
+          <div class="option-label" data-es="Ceuta / Melilla" data-en="Ceuta / Melilla" data-de="Ceuta / Melilla" data-hu="Ceuta / Melilla">Ceuta / Melilla</div>
+          <div class="option-sublabel" data-es="Deducción del 60% en IRPF (Art. 68.4 LIRPF)" data-en="60% IRPF deduction (Art. 68.4 LIRPF)" data-de="60% IRPF-Abzug (Art. 68.4 LIRPF)" data-hu="60% IRPF levonás (Art. 68.4 LIRPF)">Deducción del 60% en IRPF (Art. 68.4 LIRPF)</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="ceutaMelillaToggle" aria-label="Ceuta Melilla toggle"><span class="slider"></span></label>
+      </div>
+      <div class="select-row">
+        <label data-es="Tipo de contrato" data-en="Contract type" data-de="Vertragsart" data-hu="Szerződés típusa">Tipo de contrato</label>
+        <select class="custom-select" id="contractType" style="max-width:220px" aria-label="Contract type">
+          <option value="permanent" data-es="Indefinido" data-en="Permanent">Indefinido</option>
+          <option value="temporary" data-es="Temporal" data-en="Temporary">Temporal</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Children & Family -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-green">👨‍👩‍👧‍👦</span> <span data-es="Hijos y Familia" data-en="Children & Family" data-de="Kinder & Familie" data-hu="Gyermekek & Család">Hijos y Familia</span></h2>
+      <div style="margin-bottom:16px">
+        <label style="font-weight:600;font-size:0.92rem;display:block;margin-bottom:10px" data-es="Número de hijos" data-en="Number of children" data-de="Anzahl der Kinder" data-hu="Gyermekek száma">Número de hijos</label>
+        <div class="children-counter">
+          <button class="counter-btn" data-action="children" data-delta="-1" aria-label="Decrease children">−</button>
+          <span class="counter-value" id="childrenCount">0</span>
+          <button class="counter-btn" data-action="children" data-delta="1" aria-label="Increase children">+</button>
+        </div>
+      </div>
+      <div id="childUnder3Row" style="display:none;margin-bottom:16px">
+        <label style="font-weight:600;font-size:0.92rem;display:block;margin-bottom:10px" data-es="Hijos menores de 3 años" data-en="Children under 3 years" data-de="Kinder unter 3 Jahren" data-hu="3 év alatti gyermekek">Hijos menores de 3 años</label>
+        <div class="children-counter">
+          <button class="counter-btn" data-action="childrenU3" data-delta="-1" aria-label="Decrease children under 3">−</button>
+          <span class="counter-value" id="childrenU3Count">0</span>
+          <button class="counter-btn" data-action="childrenU3" data-delta="1" aria-label="Increase children under 3">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Results -->
+  <div>
+    <div class="result-hero">
+      <div class="net-label" data-es="Salario Neto Mensual" data-en="Monthly Net Salary" data-de="Monatliches Nettogehalt" data-hu="Havi nettó bér">Salario Neto Mensual</div>
+      <div class="net-amount" id="netAmount">0 €</div>
+      <div class="net-sub" id="netSub">-</div>
+    </div>
+
+    <div class="summary-grid" style="margin-bottom:24px">
+      <div class="summary-box green">
+        <div class="label" data-es="Salario Neto" data-en="Net Salary" data-de="Nettolohn" data-hu="Nettó bér">Salario Neto</div>
+        <div class="value" id="sumNet">0</div>
+      </div>
+      <div class="summary-box red">
+        <div class="label" data-es="Deducciones" data-en="Deductions" data-de="Abzüge" data-hu="Levonások">Deducciones</div>
+        <div class="value" id="sumDeductions">0</div>
+      </div>
+      <div class="summary-box blue">
+        <div class="label" data-es="Coste Empresa" data-en="Employer Cost" data-de="Arbeitgeberkosten" data-hu="Munkáltatói költség">Coste Empresa</div>
+        <div class="value" id="sumEmployer">0</div>
+      </div>
+      <div class="summary-box purple">
+        <div class="label" data-es="Pagas Extra" data-en="Extra Payments" data-de="Sonderzahlungen" data-hu="Extra kifizetések">Pagas Extra</div>
+        <div class="value" id="sumExtra">-</div>
+      </div>
+    </div>
+
+    <!-- Donut -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-teal">📊</span> <span data-es="Composición Salarial" data-en="Salary Composition" data-de="Gehaltszusammensetzung" data-hu="Béred összetétele">Composición Salarial</span></h2>
+      <div class="chart-container">
+        <svg class="donut-chart" id="donutChart" viewBox="0 0 200 200" width="220" height="220"></svg>
+      </div>
+      <div class="chart-legend" id="chartLegend"></div>
+    </div>
+
+    <!-- Breakdown -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-red">📋</span> <span data-es="Desglose Detallado" data-en="Detailed Breakdown" data-de="Detaillierte Aufstellung" data-hu="Részletes bontás">Desglose Detallado</span></h2>
+      <table class="breakdown-table" id="breakdownTable"></table>
+    </div>
+
+    <!-- Employer Bars -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-orange">🏢</span> <span data-es="Contribuciones Empresa" data-en="Employer Contributions" data-de="Arbeitgeberanteile" data-hu="Munkáltatói terhek">Contribuciones Empresa</span></h2>
+      <div id="employerBars"></div>
+      <div style="margin-top:16px;padding-top:16px;border-top:2px solid var(--border);display:flex;justify-content:space-between;font-weight:700">
+        <span data-es="Coste Total Empresa" data-en="Total Employer Cost" data-de="Gesamte Arbeitgeberkosten" data-hu="Teljes munkáltatói költség">Coste Total Empresa</span>
+        <span id="totalEmployerCost">0 €</span>
+      </div>
+    </div>
+
+    <!-- Family Deduction Card -->
+    <div class="card" id="familyCard" style="margin-bottom:24px;display:none">
+      <h2><span class="icon icon-gold">👶</span> <span data-es="Mínimo Familiar" data-en="Family Allowance" data-de="Familienfreibetrag" data-hu="Családi kedvezmény">Mínimo Familiar</span></h2>
+      <div class="allowance-card">
+        <h3 data-es="Reducción fiscal anual" data-en="Annual Tax Reduction" data-de="Jährliche Steuerermäßigung" data-hu="Éves adócsökkentés">Reducción fiscal anual</h3>
+        <div class="allowance-amount" id="familyAmount">0 <span>€/año</span></div>
+      </div>
+      <div style="margin-top:12px;font-size:0.85rem;color:var(--text-light)" id="familyDetail"></div>
+    </div>
+  </div>
+
+  <!-- Net vs Gross Chart -->
+  <div class="card full-width" style="margin-bottom:0">
+    <h2><span class="icon icon-green">📈</span> <span data-es="Salario Neto vs. Bruto" data-en="Net Take-Home vs. Gross Salary" data-de="Nettoeinkommen vs. Bruttogehalt" data-hu="Nettó bevétel a bruttó függvényében">Salario Neto vs. Bruto</span></h2>
+    <div class="chart-subtitle" data-es="Importes mensuales en euros · 2026" data-en="Monthly amounts in EUR · 2026" data-de="Monatliche Beträge in Euro · 2026" data-hu="Havi összegek euróban · 2026" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-light);margin:-12px 0 12px">Importes mensuales en euros · 2026</div>
+    <div id="netVsGrossLegend" style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;font-size:0.82rem"></div>
+    <div style="position:relative;width:100%;overflow:hidden;border-radius:12px;background:#0f1729">
+      <canvas id="netVsGrossChart" style="width:100%;height:340px;display:block"></canvas>
+    </div>
+  </div>
+
+  <!-- Effective Tax Rate Chart -->
+  <div class="card full-width" style="margin-bottom:0">
+    <h2><span class="icon icon-red">📉</span> <span data-es="Tipo Efectivo de Gravamen" data-en="Effective Tax Rate" data-de="Effektive Abgabenquote" data-hu="Effektív adókulcs">Tipo Efectivo de Gravamen</span></h2>
+    <div class="chart-subtitle" data-es="Deducciones totales en % del salario bruto" data-en="Total deductions as % of gross salary" data-de="Gesamtabzüge in % des Bruttolohns" data-hu="Összes levonás a bruttó %-ában" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-light);margin:-12px 0 12px">Deducciones totales en % del salario bruto</div>
+    <div id="taxRateLegend" style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;font-size:0.82rem"></div>
+    <div style="position:relative;width:100%;overflow:hidden;border-radius:12px;background:#0f1729">
+      <canvas id="taxRateChart" style="width:100%;height:300px;display:block"></canvas>
+    </div>
+  </div>
+
+  <!-- Annual Overview -->
+  <div class="card full-width">
+    <h2><span class="icon icon-blue">📅</span> <span data-es="Resumen Anual" data-en="Annual Overview" data-de="Jahresübersicht" data-hu="Éves áttekintés">Resumen Anual</span></h2>
+    <div class="summary-grid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="summary-box green"><div class="label" data-es="Neto Anual" data-en="Annual Net" data-de="Jahres-Netto" data-hu="Éves nettó">Neto Anual</div><div class="value" id="annualNet">0</div></div>
+      <div class="summary-box red"><div class="label" data-es="IRPF Anual" data-en="Annual IRPF" data-de="Jahres-Steuern" data-hu="Éves adók">IRPF Anual</div><div class="value" id="annualTax">0</div></div>
+      <div class="summary-box blue"><div class="label" data-es="SS Anual" data-en="Annual SS" data-de="Jahres-SV" data-hu="Éves TB">SS Anual</div><div class="value" id="annualSS">0</div></div>
+      <div class="summary-box purple"><div class="label" data-es="Coste Anual Emp." data-en="Annual Employer Cost" data-de="Jahres-AG-Kosten" data-hu="Éves munkáltatói ktg.">Coste Anual Emp.</div><div class="value" id="annualEmployer">0</div></div>
+    </div>
+    <div style="margin-top:16px">
+      <svg id="annualBarChart" viewBox="0 0 800 60" width="100%" height="60"></svg>
+      <div id="annualBarLegend" style="display:flex;gap:20px;justify-content:center;margin-top:8px;flex-wrap:wrap"></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+
+
+  <!-- ══════ SAVE & HISTORY ══════ -->
+  <div class="history-card full-width" id="historyCard">
+    <h2><span class="icon icon-green" style="background:#d1fae5;color:#059669">💾</span> Recent Calculations</h2>
+    <button class="save-btn" id="saveCalcBtn" onclick="saveCalculation()">
+      <span>💾</span> Save Calculation
+    </button>
+    <div class="history-search-wrap">
+      <input type="text" class="history-search" id="historySearch" placeholder="Search saved calculations..." oninput="renderHistory()">
+    </div>
+    <div class="history-list" id="historyList">
+      <div class="history-empty">No saved calculations yet. Use the button above to save one.</div>
+    </div>
+  </div>
+
+<footer>
+  <p data-es="Calculadora Salarial España 2026 — Solo con fines informativos, no constituye asesoramiento fiscal." data-en="Spanish Salary Calculator 2026 — For informational purposes only, not tax advice." data-de="Spanischer Gehaltsrechner 2026 — Nur zur Information, keine Steuerberatung." data-hu="Spanyol bérkalkulus 2026 — Csak tájékoztató jellegű, nem minősül adótanácsadásnak.">Calculadora Salarial España 2026 — Solo con fines informativos, no constituye asesoramiento fiscal.</p>
+  <p style="margin-top:4px" data-es="Salario Mínimo Interprofesional 2026: 1.221 €/mes (14 pagas)" data-en="Minimum wage 2026: €1,221/month (14 payments)" data-de="Mindestlohn 2026: 1.221 €/Monat (14 Zahlungen)" data-hu="Minimálbér 2026: 1.221 €/hónap (14 kifizetés)">Salario Mínimo Interprofesional 2026: 1.221 €/mes (14 pagas)</p>
+</footer>
+
+<script>
+// ====== SPANISH TAX BRACKETS 2026 (combined state + typical regional) ======
+const IRPF_BRACKETS = [
+  { limit: 12450,  rate: 0.19 },
+  { limit: 20200,  rate: 0.24 },
+  { limit: 35200,  rate: 0.30 },
+  { limit: 60000,  rate: 0.37 },
+  { limit: 300000, rate: 0.45 },
+  { limit: Infinity, rate: 0.47 }
+];
+
+// ====== SOCIAL SECURITY 2026 ======
+// Employee rates
+const SS_COMMON_EE = 0.0470;       // Contingencias comunes
+const SS_UNEMPLOYMENT_PERM_EE = 0.0155; // Desempleo (indefinido)
+const SS_UNEMPLOYMENT_TEMP_EE = 0.0160; // Desempleo (temporal)
+const SS_TRAINING_EE = 0.0010;     // Formación profesional
+const SS_MEI_EE = 0.0015;          // Mecanismo de Equidad Intergeneracional
+
+// Employer rates
+const SS_COMMON_ER = 0.2360;       // Contingencias comunes
+const SS_UNEMPLOYMENT_PERM_ER = 0.0550; // Desempleo (indefinido)
+const SS_UNEMPLOYMENT_TEMP_ER = 0.0670; // Desempleo (temporal)
+const SS_TRAINING_ER = 0.0060;     // Formación profesional
+const SS_FOGASA_ER = 0.0020;       // Fondo de Garantía Salarial
+const SS_MEI_ER = 0.0075;          // MEI
+const SS_ACCIDENTS_ER = 0.0150;    // Contingencias profesionales (average)
+
+// Max monthly contribution base 2026
+const SS_MAX_BASE = 5101.20;
+const SS_MIN_BASE = 1424.50;
+
+// ====== PERSONAL & FAMILY MINIMUMS ======
+const MINIMO_PERSONAL = 5550;
+const MINIMO_PERSONAL_65 = 1150;
+const MINIMO_PERSONAL_75 = 1400;
+const GASTOS_DEDUCIBLES = 2000; // General deductible expenses for employment income
+
+// Reducción por rendimientos del trabajo
+const REDUCCION_TIER1_MAX = 7302;
+const REDUCCION_TIER1_LIMIT = 14852;
+const REDUCCION_TIER2_LIMIT = 17673.52;
+const REDUCCION_TIER3_LIMIT = 19747.50;
+
+// Children minimums (annual)
+const CHILD_MINIMUMS = [2400, 2700, 4000, 4500]; // 1st, 2nd, 3rd, 4th+
+const CHILD_UNDER_3_EXTRA = 2800;
+
+// Beckham Law
+const BECKHAM_RATE = 0.24;
+const BECKHAM_THRESHOLD = 600000;
+const BECKHAM_EXCESS_RATE = 0.47;
+
+// Solidarity contribution 2026 (for salaries above max base)
+const SOLIDARITY_TIERS = [
+  { limit: 5611.32, rate: 0.0115, erRate: 0.0096, eeRate: 0.0019 },  // up to 110% of max base
+  { limit: 7651.80, rate: 0.0125, erRate: 0.0104, eeRate: 0.0021 },  // up to 150% of max base
+  { limit: Infinity, rate: 0.0146, erRate: 0.0122, eeRate: 0.0024 }   // above 150% of max base
+];
+
+let lang = 'es';
+let calcMode = 'gross';
+let numChildren = 0;
+let numChildrenU3 = 0;
+
+// ====== FORMAT ======
+function fmt(n) { return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+function fmtShort(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1).replace('.0','') + 'M';
+  if (n >= 1000) return Math.round(n/1000) + 'K';
+  return n.toString();
+}
+
+// ====== TITLE & META MAPS ======
+const TITLE_MAP = {
+  es: 'Calculadora Salarial España 2026 | Spanish Salary Calculator',
+  en: 'Spanish Salary Calculator 2026 | Calculadora Salarial España',
+  de: 'Spanischer Gehaltsrechner 2026 | Calculadora Salarial España',
+  hu: 'Spanyol bérkalkulátor 2026 | Calculadora Salarial España'
+};
+const META_DESC_MAP = {
+  es: 'Calculadora salarial España 2026 — Calcula tu salario neto con IRPF, Seguridad Social y régimen Beckham Law.',
+  en: 'Spanish Salary Calculator 2026 — Calculate your net salary with IRPF, Social Security and Beckham Law regime.',
+  de: 'Spanischer Gehaltsrechner 2026 — Berechne dein Nettogehalt mit IRPF, Sozialversicherung und Beckham-Gesetz.',
+  hu: 'Spanyol bérkalkulátor 2026 — Számold ki a nettó béred IRPF adóval, társadalombiztosítással és Beckham-törvénnyel.'
+};
+
+// ====== LANG ======
+function setLang(newLang, btnEl) {
+  if (lang === newLang) return;
+  lang = newLang;
+  document.documentElement.lang = lang;
+
+  document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+
+  document.title = TITLE_MAP[lang] || TITLE_MAP.en;
+  document.getElementById('metaDesc').setAttribute('content', META_DESC_MAP[lang] || META_DESC_MAP.en);
+
+  document.querySelectorAll('[data-es]').forEach(el => {
+    const t = el.getAttribute('data-' + lang) || el.getAttribute('data-en');
+    if (t) el.textContent = t;
+  });
+  document.querySelectorAll('[data-es-placeholder]').forEach(el => {
+    const t = el.getAttribute('data-' + lang + '-placeholder') || el.getAttribute('data-en-placeholder');
+    if (t) el.placeholder = t;
+  });
+
+  // Update dropdowns
+  const fs = document.getElementById('familyStatus');
+  const fsLabels = {
+    es: ['Soltero/a', 'Casado/a (declaración conjunta)'],
+    en: ['Single', 'Married (joint filing)'],
+    de: ['Ledig', 'Verheiratet (gemeinsame Veranlagung)'],
+    hu: ['Egyedülálló', 'Házas (közös adóbevallás)']
+  };
+  const labels = fsLabels[lang] || fsLabels.en;
+  for (let i = 0; i < fs.options.length; i++) fs.options[i].textContent = labels[i];
+
+  const ct = document.getElementById('contractType');
+  const ctLabels = {
+    es: ['Indefinido', 'Temporal'],
+    en: ['Permanent', 'Temporary'],
+    de: ['Unbefristet', 'Befristet'],
+    hu: ['Határozatlan idejű', 'Határozott idejű']
+  };
+  const ctL = ctLabels[lang] || ctLabels.en;
+  for (let i = 0; i < ct.options.length; i++) ct.options[i].textContent = ctL[i];
+
+  const np = document.getElementById('numPayments');
+  const npLabels = {
+    es: ['14 pagas', '12 pagas'],
+    en: ['14 payments', '12 payments'],
+    de: ['14 Zahlungen', '12 Zahlungen'],
+    hu: ['14 kifizetés', '12 kifizetés']
+  };
+  const npL = npLabels[lang] || npLabels.en;
+  for (let i = 0; i < np.options.length; i++) np.options[i].textContent = npL[i];
+
+  calculate();
+}
+
+// ====== INPUT ======
+function updateSalaryDisplay(v) {
+  const suffix = lang === 'es' ? '€/mes' : lang === 'de' ? '€/Monat' : lang === 'hu' ? '€/hó' : '€/month';
+  document.getElementById('salaryDisplay').innerHTML = fmt(v) + ' <span>' + suffix + '</span>';
+}
+function updateFromSlider() {
+  const v = parseInt(document.getElementById('salarySlider').value);
+  document.getElementById('salaryInput').value = fmt(v);
+  updateSalaryDisplay(v);
+  calculate();
+}
+function updateFromInput() {
+  const raw = document.getElementById('salaryInput').value.replace(/\s/g,'');
+  const v = parseInt(raw) || 0;
+  document.getElementById('salarySlider').value = Math.min(Math.max(v,500),15000);
+  updateSalaryDisplay(v);
+  calculate();
+}
+function setCalcMode(mode, btn) {
+  calcMode = mode;
+  document.querySelectorAll('.tab-bar .tab-btn[data-mode]').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  calculate();
+}
+
+// ====== CHILDREN ======
+function changeChildren(d) {
+  numChildren = Math.max(0, Math.min(10, numChildren + d));
+  document.getElementById('childrenCount').textContent = numChildren;
+  document.getElementById('childUnder3Row').style.display = numChildren > 0 ? 'block' : 'none';
+  if (d < 0) {
+    numChildrenU3 = Math.min(numChildrenU3, numChildren);
+    document.getElementById('childrenU3Count').textContent = numChildrenU3;
+  }
+  calculate();
+}
+function changeChildrenU3(d) {
+  numChildrenU3 = Math.max(0, Math.min(numChildren, numChildrenU3 + d));
+  document.getElementById('childrenU3Count').textContent = numChildrenU3;
+  calculate();
+}
+
+// ====== IRPF PROGRESSIVE TAX ======
+function computeIRPF(taxableBase) {
+  let tax = 0;
+  let prevLimit = 0;
+  for (const bracket of IRPF_BRACKETS) {
+    if (taxableBase <= prevLimit) break;
+    const base = Math.min(taxableBase, bracket.limit) - prevLimit;
+    tax += base * bracket.rate;
+    prevLimit = bracket.limit;
+  }
+  return Math.max(0, tax);
+}
+
+// ====== COMPUTE MINIMO PERSONAL Y FAMILIAR ======
+function computeMinimos() {
+  let minimo = MINIMO_PERSONAL;
+  if (document.getElementById('over65Toggle').checked) {
+    minimo += MINIMO_PERSONAL_65;
+    if (document.getElementById('over75Toggle').checked) {
+      minimo += MINIMO_PERSONAL_75;
+    }
+  }
+
+  // Descendants
+  let childMinimo = 0;
+  for (let i = 0; i < numChildren; i++) {
+    const idx = Math.min(i, CHILD_MINIMUMS.length - 1);
+    childMinimo += CHILD_MINIMUMS[idx];
+  }
+  childMinimo += numChildrenU3 * CHILD_UNDER_3_EXTRA;
+
+  return { personal: minimo, family: childMinimo, total: minimo + childMinimo };
+}
+
+// ====== REDUCCION POR RENDIMIENTOS DEL TRABAJO ======
+function computeReduccion(netEmploymentIncome) {
+  // Only applies if net employment income ≤ 19,747.50
+  // and no other non-exempt income > 6,500 (we assume salary-only)
+  if (netEmploymentIncome <= REDUCCION_TIER1_LIMIT) {
+    return REDUCCION_TIER1_MAX;
+  }
+  if (netEmploymentIncome <= REDUCCION_TIER2_LIMIT) {
+    return Math.max(0, 7302 - 1.75 * (netEmploymentIncome - 14852));
+  }
+  if (netEmploymentIncome <= REDUCCION_TIER3_LIMIT) {
+    return Math.max(0, 2364.34 - 1.14 * (netEmploymentIncome - 17673.52));
+  }
+  return 0;
+}
+
+// ====== EMPLOYEE SOCIAL SECURITY ======
+function computeEmployeeSS(monthlyGross) {
+  const isTemp = document.getElementById('contractType').value === 'temporary';
+  const base = Math.max(SS_MIN_BASE, Math.min(monthlyGross, SS_MAX_BASE));
+
+  const common = base * SS_COMMON_EE;
+  const unemployment = base * (isTemp ? SS_UNEMPLOYMENT_TEMP_EE : SS_UNEMPLOYMENT_PERM_EE);
+  const training = base * SS_TRAINING_EE;
+  const mei = base * SS_MEI_EE;
+
+  // Solidarity contribution on excess above max base
+  let solidarity = 0;
+  if (monthlyGross > SS_MAX_BASE) {
+    let prevLimit = SS_MAX_BASE;
+    for (const tier of SOLIDARITY_TIERS) {
+      if (monthlyGross <= prevLimit) break;
+      const excess = Math.min(monthlyGross, tier.limit) - prevLimit;
+      solidarity += excess * tier.eeRate;
+      prevLimit = tier.limit;
+    }
+  }
+
+  const total = common + unemployment + training + mei + solidarity;
+  return { common, unemployment, training, mei, solidarity, total, base };
+}
+
+// ====== EMPLOYER SOCIAL SECURITY ======
+function computeEmployerSS(monthlyGross) {
+  const isTemp = document.getElementById('contractType').value === 'temporary';
+  const base = Math.max(SS_MIN_BASE, Math.min(monthlyGross, SS_MAX_BASE));
+
+  const common = base * SS_COMMON_ER;
+  const unemployment = base * (isTemp ? SS_UNEMPLOYMENT_TEMP_ER : SS_UNEMPLOYMENT_PERM_ER);
+  const training = base * SS_TRAINING_ER;
+  const fogasa = base * SS_FOGASA_ER;
+  const mei = base * SS_MEI_ER;
+  const accidents = base * SS_ACCIDENTS_ER;
+
+  // Solidarity contribution on excess above max base
+  let solidarity = 0;
+  if (monthlyGross > SS_MAX_BASE) {
+    let prevLimit = SS_MAX_BASE;
+    for (const tier of SOLIDARITY_TIERS) {
+      if (monthlyGross <= prevLimit) break;
+      const excess = Math.min(monthlyGross, tier.limit) - prevLimit;
+      solidarity += excess * tier.erRate;
+      prevLimit = tier.limit;
+    }
+  }
+
+  const total = common + unemployment + training + fogasa + mei + accidents + solidarity;
+  return { common, unemployment, training, fogasa, mei, accidents, solidarity, total, base };
+}
+
+// ====== CORE CALCULATION ======
+function calculate() {
+  const rawVal = document.getElementById('salaryInput').value.replace(/\s/g,'');
+  let inputAmount = parseInt(rawVal) || 0;
+  let monthlyGross;
+
+  if (calcMode === 'gross') {
+    monthlyGross = inputAmount;
+  } else {
+    // Reverse from total employer cost using binary search
+    let lo = 0, hi = inputAmount;
+    for (let i = 0; i < 60; i++) {
+      const mid = (lo + hi) / 2;
+      const r = computeBreakdown(mid);
+      if (r.totalEmployerCost < inputAmount) lo = mid;
+      else hi = mid;
+    }
+    monthlyGross = Math.round((lo + hi) / 2);
+  }
+
+  const result = computeBreakdown(monthlyGross);
+  renderResults(result, monthlyGross);
+}
+
+function computeBreakdown(monthlyGross) {
+  const numPays = parseInt(document.getElementById('numPayments').value);
+  const beckham = document.getElementById('beckhamToggle').checked;
+
+  const annualGross = monthlyGross * numPays;
+
+  // Employee Social Security — prorate base for 14-pay: base = monthlyGross × numPays/12
+  const ssMonthlyBase = monthlyGross * numPays / 12;
+  const eeSS = computeEmployeeSS(ssMonthlyBase);
+  const annualEeSS = eeSS.total * 12;
+
+  // Net employment income (rendimiento neto del trabajo) for IRPF
+  const netEmploymentIncome = annualGross - annualEeSS - GASTOS_DEDUCIBLES;
+
+  // Reducción por rendimientos del trabajo
+  const reduccion = computeReduccion(Math.max(0, netEmploymentIncome));
+
+  // Base imponible general (taxable base)
+  let baseImponible = Math.max(0, netEmploymentIncome - reduccion);
+
+  // Reducción por tributación conjunta (joint filing)
+  const familyStatus = document.getElementById('familyStatus').value;
+  if (familyStatus === 'married') {
+    baseImponible = Math.max(0, baseImponible - 3400);
+  }
+
+  // Mínimo personal y familiar
+  const minimos = computeMinimos();
+
+  // IRPF calculation
+  let annualIRPF;
+  if (beckham) {
+    // Beckham Law: flat 24% up to €600,000, 47% above
+    if (annualGross <= BECKHAM_THRESHOLD) {
+      annualIRPF = annualGross * BECKHAM_RATE;
+    } else {
+      annualIRPF = BECKHAM_THRESHOLD * BECKHAM_RATE + (annualGross - BECKHAM_THRESHOLD) * BECKHAM_EXCESS_RATE;
+    }
+  } else {
+    // Progressive IRPF: tax on base imponible minus tax on mínimos
+    const taxOnBase = computeIRPF(baseImponible);
+    const taxOnMinimos = computeIRPF(minimos.total);
+    annualIRPF = Math.max(0, taxOnBase - taxOnMinimos);
+  }
+
+  // Ceuta/Melilla 60% IRPF deduction (Art. 68.4 LIRPF)
+  if (document.getElementById('ceutaMelillaToggle').checked) {
+    annualIRPF *= 0.40;
+  }
+
+  // Monthly values
+  const monthlyIRPF = annualIRPF / numPays;
+  // SS is paid 12 months/year; for regular months deduct eeSS.total, for extra pays deduct 0 SS
+  const monthlyDeductions = monthlyIRPF + eeSS.total;
+  const monthlyNet = monthlyGross - monthlyDeductions;
+
+  // Extra pay info (for 14-pay system): extra pay has IRPF but no SS deduction
+  const extraPayIRPF = numPays === 14 ? monthlyIRPF : 0;
+  const extraPayNet = numPays === 14 ? (monthlyGross - extraPayIRPF) : 0;
+
+  // Employer contributions (same prorated base)
+  const erSS = computeEmployerSS(ssMonthlyBase);
+  const totalEmployerCost = monthlyGross + erSS.total;
+
+  return {
+    monthlyGross, monthlyIRPF, eeSS, monthlyDeductions, monthlyNet,
+    erSS, totalEmployerCost, numPays, extraPayNet,
+    annualGross, annualIRPF, annualEeSS,
+    baseImponible, minimos, reduccion, beckham
+  };
+}
+
+// ====== RENDER ======
+function renderResults(r, gross) {
+  const isEs = lang === 'es';
+  updateSalaryDisplay(parseInt(document.getElementById('salaryInput').value.replace(/\s/g,'')) || 0);
+
+  // Net amount hero
+  animateOdometer(document.getElementById('netAmount'), Math.round(r.monthlyNet), '', ' €');
+  const pct = gross > 0 ? Math.round(r.monthlyNet / gross * 100) : 0;
+  let subText = isEs
+    ? `${pct}% del salario bruto | Bruto: ${fmt(gross)} € | ${r.numPays} pagas`
+    : `${pct}% of gross salary | Gross: ${fmt(gross)} € | ${r.numPays} payments`;
+  document.getElementById('netSub').innerHTML = subText;
+
+  // Summary boxes
+  document.getElementById('sumNet').innerHTML = fmt(Math.round(r.monthlyNet));
+  document.getElementById('sumDeductions').innerHTML = fmt(Math.round(r.monthlyDeductions));
+  document.getElementById('sumEmployer').innerHTML = fmt(Math.round(r.totalEmployerCost));
+
+  const extraLabel = {
+    es: r.numPays === 14 ? `${fmt(Math.round(r.extraPayNet))} €` : 'N/A (12 pagas)',
+    en: r.numPays === 14 ? `${fmt(Math.round(r.extraPayNet))} €` : 'N/A (12 payments)',
+    de: r.numPays === 14 ? `${fmt(Math.round(r.extraPayNet))} €` : 'N/A (12 Zahlungen)',
+    hu: r.numPays === 14 ? `${fmt(Math.round(r.extraPayNet))} €` : 'N/A (12 kifizetés)'
+  };
+  document.getElementById('sumExtra').textContent = extraLabel[lang] || extraLabel.en;
+
+  document.getElementById('totalEmployerCost').innerHTML = fmt(Math.round(r.totalEmployerCost)) + ' €';
+
+  // Annual overview
+  document.getElementById('annualNet').textContent = fmt(Math.round(r.monthlyNet * r.numPays));
+  document.getElementById('annualTax').textContent = fmt(Math.round(r.annualIRPF));
+  document.getElementById('annualSS').textContent = fmt(Math.round(r.annualEeSS));
+  document.getElementById('annualEmployer').textContent = fmt(Math.round(r.totalEmployerCost * r.numPays));
+
+  renderBreakdown(r, gross);
+  renderDonut(r, gross);
+  renderEmployerBars(r, gross);
+  renderAnnualBar(r);
+  renderCurveCharts(gross);
+
+  // Family card
+  const fCard = document.getElementById('familyCard');
+  if (numChildren > 0) {
+    fCard.style.display = 'block';
+    const suffix = isEs ? '€/año' : '€/year';
+    document.getElementById('familyAmount').innerHTML = fmt(r.minimos.family) + ' <span>' + suffix + '</span>';
+    document.getElementById('familyDetail').textContent = isEs
+      ? `${numChildren} hijo(s) · Mínimo personal: ${fmt(r.minimos.personal)} € · Total mínimos: ${fmt(r.minimos.total)} €`
+      : `${numChildren} child(ren) · Personal minimum: ${fmt(r.minimos.personal)} € · Total minimums: ${fmt(r.minimos.total)} €`;
+  } else {
+    fCard.style.display = 'none';
+  }
+}
+
+function renderBreakdown(r, gross) {
+  const isEs = lang === 'es';
+  const t = document.getElementById('breakdownTable');
+  let rows = '';
+  const row = (label, amount, cls = '') => {
+    let val = (cls.includes('benefit') ? '+' : cls.includes('deduction') ? '−' : '') + ' ' + fmt(Math.round(Math.abs(amount))) + ' €';
+    return `<tr class="${cls}"><td class="row-header">${label}</td><td>${val}</td></tr>`;
+  };
+
+  rows += row(isEs ? '💰 Salario Bruto' : '💰 Gross Salary', gross, 'subtotal');
+
+  rows += `<tr><td colspan="2" style="padding:4px;font-size:0.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px">${isEs ? 'Impuesto sobre la Renta (IRPF)' : 'Income Tax (IRPF)'}</td></tr>`;
+  if (r.beckham) {
+    rows += row(isEs ? 'IRPF — Ley Beckham (24%)' : 'IRPF — Beckham Law (24%)', r.monthlyIRPF, 'deduction');
+  } else {
+    rows += row(isEs ? 'IRPF (retención)' : 'IRPF (withholding)', r.monthlyIRPF, 'deduction');
+  }
+
+  rows += `<tr><td colspan="2" style="padding:4px;font-size:0.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px">${isEs ? 'Seguridad Social (Trabajador)' : 'Social Security (Employee)'}</td></tr>`;
+  rows += row(isEs ? 'Contingencias Comunes 4,70%' : 'Common Contingencies 4.70%', r.eeSS.common, 'deduction');
+  rows += row(isEs ? 'Desempleo' : 'Unemployment', r.eeSS.unemployment, 'deduction');
+  rows += row(isEs ? 'Formación Profesional 0,10%' : 'Vocational Training 0.10%', r.eeSS.training, 'deduction');
+  rows += row(isEs ? 'MEI 0,15%' : 'MEI 0.15%', r.eeSS.mei, 'deduction');
+  if (r.eeSS.solidarity > 0) {
+    rows += row(isEs ? 'Cotización solidaridad' : 'Solidarity contribution', r.eeSS.solidarity, 'deduction');
+  }
+
+  rows += row(isEs ? '📌 Deducciones Totales' : '📌 Total Deductions', r.monthlyDeductions, 'subtotal deduction');
+  rows += row(isEs ? '✅ Salario Neto' : '✅ Net Salary', r.monthlyNet, 'subtotal');
+
+  if (r.numPays === 14) {
+    rows += `<tr><td colspan="2" style="padding:4px;font-size:0.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;padding-top:12px">${isEs ? 'Pagas Extra (junio y diciembre)' : 'Extra Payments (June & December)'}</td></tr>`;
+    rows += `<tr class="benefit"><td class="row-header">${isEs ? '🎁 Paga extra neta' : '🎁 Net extra payment'}</td><td>+ ${fmt(Math.round(r.extraPayNet))} €</td></tr>`;
+  }
+
+  t.innerHTML = rows;
+}
+
+function renderDonut(r, gross) {
+  const svg = document.getElementById('donutChart');
+  const legend = document.getElementById('chartLegend');
+  const isEs = lang === 'es';
+  const total = gross > 0 ? gross : 1;
+  const segments = [
+    { label: isEs ? 'Salario Neto' : 'Net Salary', value: Math.max(0, r.monthlyNet), color: '#059669' },
+    { label: isEs ? 'IRPF' : 'Income Tax', value: r.monthlyIRPF, color: '#e94560' },
+    { label: isEs ? 'Seguridad Social' : 'Social Security', value: r.eeSS.total, color: '#3b82f6' },
+  ];
+  const cx=100,cy=100,R1=85,R2=55;
+  let startAngle = -Math.PI/2, paths='';
+
+  segments.forEach(seg => {
+    if(seg.value<=0)return;
+    const angle=(seg.value/total)*Math.PI*2;
+    const endAngle=startAngle+angle;
+    const la=angle>Math.PI?1:0;
+    const x1o=cx+R1*Math.cos(startAngle),y1o=cy+R1*Math.sin(startAngle);
+    const x2o=cx+R1*Math.cos(endAngle),y2o=cy+R1*Math.sin(endAngle);
+    const x1i=cx+R2*Math.cos(endAngle),y1i=cy+R2*Math.sin(endAngle);
+    const x2i=cx+R2*Math.cos(startAngle),y2i=cy+R2*Math.sin(startAngle);
+    paths+=`<path d="M${x1o},${y1o} A${R1},${R1} 0 ${la} 1 ${x2o},${y2o} L${x1i},${y1i} A${R2},${R2} 0 ${la} 0 ${x2i},${y2i} Z" fill="${seg.color}" opacity="0.85"><title>${seg.label}: ${fmt(Math.round(seg.value))} €</title></path>`;
+    startAngle=endAngle;
+  });
+  const netPct=gross>0?Math.round(Math.max(0,r.monthlyNet)/gross*100):0;
+  paths+=`<text x="${cx}" y="${cy-6}" text-anchor="middle" font-size="22" font-weight="800" fill="#1a1a2e">${netPct}%</text>`;
+  paths+=`<text x="${cx}" y="${cy+14}" text-anchor="middle" font-size="9" fill="#6b7280">${isEs?'neto':'net'}</text>`;
+  svg.innerHTML=paths;
+
+  let lh='';
+  segments.forEach(seg=>{
+    const p=gross>0?Math.round(seg.value/gross*100):0;
+    lh+=`<div class="legend-item"><div class="legend-color" style="background:${seg.color}"></div><span>${seg.label} (${p}%)</span><span class="legend-value">${fmt(Math.round(seg.value))} €</span></div>`;
+  });
+  legend.innerHTML=lh;
+}
+
+function renderEmployerBars(r, gross) {
+  const c = document.getElementById('employerBars');
+  const isEs = lang === 'es';
+  const max = r.totalEmployerCost;
+  const items = [
+    { label: isEs ? 'Salario Bruto' : 'Gross Salary', value: gross, color: '#3b82f6' },
+    { label: isEs ? 'Contingencias Comunes' : 'Common Contingencies', value: r.erSS.common, color: '#8b5cf6' },
+    { label: isEs ? 'Desempleo' : 'Unemployment', value: r.erSS.unemployment, color: '#ec4899' },
+    { label: isEs ? 'Otros (FP, FOGASA, MEI, AT)' : 'Other (Training, FOGASA, MEI, Accidents)', value: r.erSS.training + r.erSS.fogasa + r.erSS.mei + r.erSS.accidents + r.erSS.solidarity, color: '#f59e0b' },
+  ];
+  let html='';
+  items.forEach(item=>{
+    if(item.value<=0)return;
+    const w=max>0?(item.value/max*100):0;
+    html+=`<div class="bar-group"><div class="bar-label">${item.label}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.max(w,8)}%;background:${item.color}">${fmt(Math.round(item.value))} €</div></div></div>`;
+  });
+  c.innerHTML=html;
+}
+
+function renderAnnualBar(r) {
+  const svg = document.getElementById('annualBarChart');
+  const legendDiv = document.getElementById('annualBarLegend');
+  const isEs = lang === 'es';
+  const total = r.totalEmployerCost * r.numPays;
+  if (total === 0) { svg.innerHTML=''; legendDiv.innerHTML=''; return; }
+  const segments = [
+    { label: isEs?'Neto':'Net', value:Math.round(r.monthlyNet*r.numPays), color:'#059669' },
+    { label: 'IRPF', value:Math.round(r.annualIRPF), color:'#e94560' },
+    { label: isEs?'SS (Trabajador)':'SS (Employee)', value:Math.round(r.annualEeSS), color:'#3b82f6' },
+    { label: isEs?'SS (Empresa)':'SS (Employer)', value:Math.round(r.erSS.total*r.numPays), color:'#8b5cf6' },
+  ];
+  let x=0,paths='';
+  segments.forEach(seg=>{
+    const w=(seg.value/total)*800;
+    if(w>0){
+      paths+=`<rect x="${x}" y="0" width="${w}" height="50" rx="4" fill="${seg.color}" opacity="0.85"><title>${seg.label}: ${fmt(seg.value)} €</title></rect>`;
+      if(w>60) paths+=`<text x="${x+w/2}" y="30" text-anchor="middle" fill="white" font-size="11" font-weight="600">${fmt(seg.value)}</text>`;
+    }
+    x+=w;
+  });
+  svg.innerHTML=paths;
+  let lh='';
+  segments.forEach(seg=>{
+    lh+=`<div style="display:flex;align-items:center;gap:6px;font-size:0.82rem"><div style="width:12px;height:12px;border-radius:3px;background:${seg.color}"></div>${seg.label}: ${fmt(seg.value)} €</div>`;
+  });
+  legendDiv.innerHTML=lh;
+}
+
+// ====== CURVE CHARTS ======
+function renderCurveCharts(currentGross) {
+  renderNetVsGrossChart(currentGross);
+  renderTaxRateChart(currentGross);
+}
+
+function computeForGross(g) {
+  const numPays = parseInt(document.getElementById('numPayments').value);
+  const beckham = document.getElementById('beckhamToggle').checked;
+  const annualGross = g * numPays;
+
+  const ssMonthlyBase = g * numPays / 12;
+  const eeSS = computeEmployeeSS(ssMonthlyBase);
+  const annualEeSS = eeSS.total * 12;
+  const netEmploymentIncome = annualGross - annualEeSS - GASTOS_DEDUCIBLES;
+  const reduccion = computeReduccion(Math.max(0, netEmploymentIncome));
+  let baseImponible = Math.max(0, netEmploymentIncome - reduccion);
+  const familyStatus = document.getElementById('familyStatus').value;
+  if (familyStatus === 'married') {
+    baseImponible = Math.max(0, baseImponible - 3400);
+  }
+  const minimos = computeMinimos();
+
+  let annualIRPF;
+  if (beckham) {
+    if (annualGross <= BECKHAM_THRESHOLD) {
+      annualIRPF = annualGross * BECKHAM_RATE;
+    } else {
+      annualIRPF = BECKHAM_THRESHOLD * BECKHAM_RATE + (annualGross - BECKHAM_THRESHOLD) * BECKHAM_EXCESS_RATE;
+    }
+  } else {
+    annualIRPF = Math.max(0, computeIRPF(baseImponible) - computeIRPF(minimos.total));
+  }
+
+  // Ceuta/Melilla 60% IRPF deduction
+  if (document.getElementById('ceutaMelillaToggle').checked) {
+    annualIRPF *= 0.40;
+  }
+
+  const monthlyIRPF = annualIRPF / numPays;
+  const deductions = monthlyIRPF + eeSS.total;
+  const net = g - deductions;
+
+  return { net: Math.max(0, net), deductions: deductions };
+}
+
+function renderNetVsGrossChart(currentGross) {
+  const canvas = document.getElementById('netVsGrossChart');
+  const ctx = canvas.getContext('2d');
+  const isEs = lang === 'es';
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = canvas.offsetWidth * dpr;
+  canvas.height = canvas.offsetHeight * dpr;
+  ctx.scale(dpr, dpr);
+  const W = canvas.offsetWidth, H = canvas.offsetHeight;
+  const pad = { top:20, right:24, bottom:50, left:70 };
+  const plotW = W-pad.left-pad.right, plotH = H-pad.top-pad.bottom;
+  const minG=500, maxG=12000, steps=100;
+  const maxY=12000;
+
+  const dataNet=[], dataGross=[];
+  for(let i=0;i<=steps;i++){
+    const g=minG+(maxG-minG)*(i/steps);
+    const w=computeForGross(g);
+    dataNet.push({x:g,y:w.net});
+    dataGross.push({x:g,y:g});
+  }
+
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='rgba(255,255,255,0.07)'; ctx.lineWidth=1;
+  const yTicks=[0,2000,4000,6000,8000,10000,12000];
+  yTicks.forEach(v=>{const y=pad.top+plotH-(v/maxY)*plotH;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(pad.left+plotW,y);ctx.stroke();});
+  const xTicks=[1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,11000];
+  xTicks.forEach(v=>{const x=pad.left+((v-minG)/(maxG-minG))*plotW;if(x>=pad.left&&x<=pad.left+plotW){ctx.beginPath();ctx.moveTo(x,pad.top);ctx.lineTo(x,pad.top+plotH);ctx.stroke();}});
+
+  ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='11px system-ui';ctx.textAlign='right';
+  yTicks.forEach(v=>{const y=pad.top+plotH-(v/maxY)*plotH;ctx.fillText(fmtShort(v)+'€',pad.left-8,y+4);});
+  ctx.textAlign='center';
+  xTicks.forEach(v=>{const x=pad.left+((v-minG)/(maxG-minG))*plotW;if(x>=pad.left&&x<=pad.left+plotW)ctx.fillText(fmtShort(v)+'€',x,pad.top+plotH+20);});
+
+  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='10px system-ui';ctx.textAlign='center';
+  ctx.fillText(isEs?'SALARIO BRUTO (€)':'GROSS SALARY (€)',pad.left+plotW/2,H-6);
+  ctx.save();ctx.translate(14,pad.top+plotH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText(isEs?'SALARIO NETO (€)':'NET INCOME (€)',0,0);ctx.restore();
+
+  function drawLine(data,color,lw,dashed){
+    ctx.strokeStyle=color;ctx.lineWidth=lw;ctx.setLineDash(dashed?[6,4]:[]);ctx.beginPath();
+    data.forEach((p,i)=>{const x=pad.left+((p.x-minG)/(maxG-minG))*plotW;const y=pad.top+plotH-(Math.min(p.y,maxY)/maxY)*plotH;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});
+    ctx.stroke();ctx.setLineDash([]);
+  }
+
+  drawLine(dataGross,'rgba(196,181,107,0.6)',1.5,true);
+  drawLine(dataNet,'#2ecc71',2.5,false);
+
+  if(currentGross>=minG&&currentGross<=maxG){
+    const cx2=pad.left+((currentGross-minG)/(maxG-minG))*plotW;
+    const curR=computeForGross(currentGross);
+    const cy2=pad.top+plotH-(Math.min(curR.net,maxY)/maxY)*plotH;
+    ctx.strokeStyle='rgba(46,204,113,0.4)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(cx2,pad.top);ctx.lineTo(cx2,pad.top+plotH);ctx.stroke();ctx.setLineDash([]);
+    ctx.beginPath();ctx.arc(cx2,cy2,6,0,Math.PI*2);ctx.fillStyle='#2ecc71';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold 11px system-ui';ctx.textAlign=cx2>W/2?'right':'left';
+    ctx.fillText(fmt(Math.round(curR.net))+' €',cx2>W/2?cx2-12:cx2+12,cy2-12);
+  }
+
+  const legendDiv=document.getElementById('netVsGrossLegend');
+  legendDiv.innerHTML=[
+    {color:'#2ecc71',label:isEs?'Salario Neto':'Net Salary',dash:false},
+    {color:'rgba(196,181,107,0.8)',label:isEs?'Salario Bruto (Referencia)':'Gross (Reference)',dash:true},
+  ].map(l=>`<div style="display:flex;align-items:center;gap:6px"><div style="width:20px;height:3px;background:${l.color};border-radius:2px;${l.dash?'border-top:2px dashed '+l.color+';background:transparent;height:0':''}"></div><span style="color:var(--text-light)">${l.label}</span></div>`).join('');
+}
+
+function renderTaxRateChart(currentGross) {
+  const canvas = document.getElementById('taxRateChart');
+  const ctx = canvas.getContext('2d');
+  const isEs = lang === 'es';
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = canvas.offsetWidth * dpr;
+  canvas.height = canvas.offsetHeight * dpr;
+  ctx.scale(dpr, dpr);
+  const W=canvas.offsetWidth, H=canvas.offsetHeight;
+  const pad={top:20,right:24,bottom:50,left:55};
+  const plotW=W-pad.left-pad.right, plotH=H-pad.top-pad.bottom;
+  const minG=500, maxG=12000, steps=100, maxPct=55;
+
+  const dataRate=[], dataMarginal=[];
+  for(let i=0;i<=steps;i++){
+    const g=minG+(maxG-minG)*(i/steps);
+    const w=computeForGross(g);
+    dataRate.push({x:g,y:g>0?(w.deductions/g)*100:0});
+    const delta=100;
+    const wPlus=computeForGross(g+delta);
+    const marg=(wPlus.deductions-w.deductions)/delta*100;
+    dataMarginal.push({x:g,y:Math.min(maxPct,Math.max(0,marg))});
+  }
+
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='rgba(255,255,255,0.07)';ctx.lineWidth=1;
+  const yTicks=[0,5,10,15,20,25,30,35,40,45,50,55];
+  yTicks.forEach(v=>{const y=pad.top+plotH-(v/maxPct)*plotH;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(pad.left+plotW,y);ctx.stroke();});
+  const xTicks=[1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,11000];
+  xTicks.forEach(v=>{const x=pad.left+((v-minG)/(maxG-minG))*plotW;if(x>=pad.left&&x<=pad.left+plotW){ctx.beginPath();ctx.moveTo(x,pad.top);ctx.lineTo(x,pad.top+plotH);ctx.stroke();}});
+
+  ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='11px system-ui';ctx.textAlign='right';
+  yTicks.forEach(v=>{const y=pad.top+plotH-(v/maxPct)*plotH;ctx.fillText(v+'%',pad.left-8,y+4);});
+  ctx.textAlign='center';
+  xTicks.forEach(v=>{const x=pad.left+((v-minG)/(maxG-minG))*plotW;if(x>=pad.left&&x<=pad.left+plotW)ctx.fillText(fmtShort(v)+'€',x,pad.top+plotH+20);});
+  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='10px system-ui';ctx.textAlign='center';
+  ctx.fillText(isEs?'SALARIO BRUTO (€)':'GROSS SALARY (€)',pad.left+plotW/2,H-6);
+
+  function drawLine(data,color,lw){ctx.strokeStyle=color;ctx.lineWidth=lw;ctx.beginPath();data.forEach((p,i)=>{const x=pad.left+((p.x-minG)/(maxG-minG))*plotW;const y=pad.top+plotH-(Math.min(p.y,maxPct)/maxPct)*plotH;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();}
+
+  drawLine(dataRate,'#f1c40f',2.5);
+  drawLine(dataMarginal,'#E87722',1.8);
+
+  if(currentGross>=minG&&currentGross<=maxG){
+    const cx2=pad.left+((currentGross-minG)/(maxG-minG))*plotW;
+    const curR=computeForGross(currentGross);
+    const curPct=currentGross>0?(curR.deductions/currentGross)*100:0;
+    const cy2=pad.top+plotH-(Math.min(curPct,maxPct)/maxPct)*plotH;
+    ctx.strokeStyle='rgba(241,196,15,0.4)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(cx2,pad.top);ctx.lineTo(cx2,pad.top+plotH);ctx.stroke();ctx.setLineDash([]);
+    ctx.beginPath();ctx.arc(cx2,cy2,6,0,Math.PI*2);ctx.fillStyle='#f1c40f';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold 11px system-ui';ctx.textAlign=cx2>W/2?'right':'left';
+    ctx.fillText(curPct.toFixed(1)+'%',cx2>W/2?cx2-12:cx2+12,cy2-12);
+  }
+
+  const legendDiv=document.getElementById('taxRateLegend');
+  legendDiv.innerHTML=[
+    {color:'#f1c40f',label:isEs?'Tipo efectivo':'Effective tax rate'},
+    {color:'#E87722',label:isEs?'Tipo marginal':'Marginal tax rate'},
+  ].map(l=>`<div style="display:flex;align-items:center;gap:6px"><div style="width:20px;height:3px;background:${l.color};border-radius:2px"></div><span style="color:var(--text-light)">${l.label}</span></div>`).join('');
+}
+
+// ====== EVENT LISTENERS ======
+document.querySelectorAll('.lang-btn[data-lang]').forEach(btn => {
+  btn.addEventListener('click', () => setLang(btn.dataset.lang, btn));
+});
+
+document.getElementById('salarySlider').addEventListener('input', updateFromSlider);
+document.getElementById('salaryInput').addEventListener('input', updateFromInput);
+
+document.querySelectorAll('.tab-btn[data-mode]').forEach(btn => {
+  btn.addEventListener('click', () => setCalcMode(btn.dataset.mode, btn));
+});
+
+document.getElementById('familyStatus').addEventListener('change', calculate);
+document.getElementById('numPayments').addEventListener('change', calculate);
+document.getElementById('contractType').addEventListener('change', calculate);
+document.getElementById('over65Toggle').addEventListener('change', calculate);
+document.getElementById('over75Toggle').addEventListener('change', calculate);
+document.getElementById('beckhamToggle').addEventListener('change', calculate);
+document.getElementById('ceutaMelillaToggle').addEventListener('change', calculate);
+
+document.querySelectorAll('.counter-btn[data-action]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const action = btn.dataset.action;
+    const delta = parseInt(btn.dataset.delta);
+    if (action === 'children') changeChildren(delta);
+    else if (action === 'childrenU3') changeChildrenU3(delta);
+  });
+});
+
+// ResizeObserver for canvas charts
+const canvasObserver = new ResizeObserver(() => {
+  const rawVal = document.getElementById('salaryInput').value.replace(/\s/g, '');
+  const currentGross = parseInt(rawVal) || 0;
+  renderCurveCharts(currentGross);
+});
+canvasObserver.observe(document.getElementById('netVsGrossChart'));
+canvasObserver.observe(document.getElementById('taxRateChart'));
+
+// Initialize
+calculate();
+let resizeTimer;
+window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>calculate(),150);});
+</script>
+
+<script src="../nav.js"></script>
+<script src="../shared.js"></script>
+</body>
+</html>

@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" id="metaDesc" content="Calculadora salarial Portugal 2026 — Calcule o seu salário líquido com IRS, Segurança Social e subsídio de refeição.">
+<title>Calculadora Salarial Portugal 2026 | Portuguese Salary Calculator</title>
+<link rel="stylesheet" href="../shared.css">
+<style>
+  :root {
+    --primary: #1a1a2e;
+    --primary-light: #cc0000;
+    --accent: #cc0000;
+    --accent-green: #006600;
+    --bg: #f5f5f7;
+    --card: #ffffff;
+    --text: #1a1a2e;
+    --text-light: #6b7280;
+    --border: #e5e7eb;
+    --shadow: 0 4px 24px rgba(0,0,0,0.07);
+    --radius: 16px;
+    --gold: #d4a843;
+    --red: #cc0000;
+    --green: #006600;
+    --teal: #16a085;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #003300 0%, #1a1a2e 40%, #660000 100%);
+    color: white; padding: 48px 24px 36px; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -60%; left: -30%; width: 160%; height: 220%;
+    background: radial-gradient(ellipse, rgba(204,0,0,0.08) 0%, transparent 60%);
+    animation: pulse 10s ease-in-out infinite;
+  }
+
+  .badge { display:inline-block; background:rgba(204,0,0,0.25); padding:4px 16px; border-radius:20px; font-size:0.85rem; margin-top:12px; position:relative; backdrop-filter:blur(4px); border:1px solid rgba(204,0,0,0.3); }
+
+  .salary-display { font-size:2.4rem; font-weight:800; color:var(--green); margin:4px 0 12px; letter-spacing:-1px; }
+
+  input[type="range"] { -webkit-appearance:none; width:100%; height:8px; border-radius:4px; background:linear-gradient(90deg,#006600,#cc0000); outline:none; margin:8px 0; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:24px; height:24px; border-radius:50%; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.2); cursor:pointer; border:3px solid var(--red); }
+  input[type="range"]::-moz-range-thumb { width:24px; height:24px; border-radius:50%; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.2); cursor:pointer; border:3px solid var(--red); }
+
+  .number-input:focus { outline:none; border-color:var(--red); }
+
+  .toggle input:checked + .slider { background:var(--red); }
+
+  .custom-select:focus { outline:none; border-color:var(--red); }
+
+  .result-hero {
+    background: linear-gradient(135deg, #003300, #1a1a2e);
+    color:white; border-radius:var(--radius); padding:32px; text-align:center; margin-bottom:24px; box-shadow:var(--shadow);
+  }
+
+  footer a { color:var(--red); text-decoration:none; }
+</style>
+</head>
+<body data-page="portugal">
+
+<div class="hero">
+  <div class="lang-selector">
+    <button class="lang-btn active" data-lang="pt" title="Português">🇵🇹</button>
+    <button class="lang-btn" data-lang="hu" title="Magyar">🇭🇺</button>
+    <button class="lang-btn" data-lang="de" title="Deutsch">🇩🇪</button>
+    <button class="lang-btn" data-lang="en" title="English">🇬🇧</button>
+  </div>
+  <h1 id="heroTitle">Calculadora Salarial 2026</h1>
+  <p id="heroSub" data-pt="Cálculo completo de salário líquido com todos os descontos" data-en="Complete net salary calculator with all deductions" data-hu="Teljes nettó bérkalkulus összes levonással" data-de="Umfassender Netto-Gehaltsrechner mit allen Abzügen">Cálculo completo de salário líquido com todos os descontos</p>
+  <div class="badge" data-pt="Válido a partir de 1 de janeiro de 2026" data-en="Valid from January 1, 2026" data-hu="2026. január 1-től érvényes" data-de="Gültig ab 1. Januar 2026">Válido a partir de 1 de janeiro de 2026</div>
+  <div class="flag-strip">
+    <div style="background:#006600"></div><div style="background:#cc0000"></div>
+  </div>
+</div>
+
+<div class="container">
+<div class="grid">
+
+  <!-- LEFT: Inputs -->
+  <div>
+    <!-- Gross Salary -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-blue">💰</span> <span data-pt="Salário Bruto" data-en="Gross Salary" data-hu="Bruttó bér" data-de="Bruttogehalt">Salário Bruto</span></h2>
+      <div class="salary-input-group">
+        <label data-pt="Salário bruto mensal (€)" data-en="Monthly gross salary (€)" data-hu="Havi bruttó bér (€)" data-de="Monatliches Bruttogehalt (€)">Salário bruto mensal (€)</label>
+        <div class="salary-display" id="salaryDisplay">1 500 <span>€/mês</span></div>
+        <input type="range" id="salarySlider" min="500" max="15000" step="50" value="1500" aria-label="Monthly gross salary slider">
+        <div class="range-labels">
+          <span>500 €</span><span>15 000 €</span>
+        </div>
+
+    <div class="whatif-bar" id="whatifBar">
+      <button class="whatif-btn" data-whatif="raise10"><span class="emoji">📈</span>+10% Raise</button>
+      <button class="whatif-btn" data-whatif="raise20"><span class="emoji">🚀</span>+20% Raise</button>
+      <button class="whatif-btn" data-whatif="bonus1k"><span class="emoji">💎</span>+1K Bonus</button>
+      <button class="whatif-btn" data-whatif="bonus2k"><span class="emoji">🎯</span>+2K Bonus</button>
+      <button class="whatif-btn" data-whatif="min"><span class="emoji">📉</span>Min Wage</button>
+    </div>
+
+        <div style="margin-top:12px">
+          <input type="text" class="number-input" id="salaryInput" value="1 500" aria-label="Monthly gross salary input" data-pt-placeholder="Introduzir montante..." data-en-placeholder="Enter amount..." data-hu-placeholder="Összeg megadása..." data-de-placeholder="Betrag eingeben..." placeholder="Introduzir montante...">
+        </div>
+      </div>
+      <div class="tab-bar">
+        <button class="tab-btn active" data-mode="gross" data-pt="Do Bruto" data-en="From Gross" data-hu="Bruttóból" data-de="Vom Brutto">Do Bruto</button>
+        <button class="tab-btn" data-mode="total" data-pt="Do Custo Empregador" data-en="From Employer Cost" data-hu="Munkáltatói költségből" data-de="Von Arbeitgeberkosten">Do Custo Empregador</button>
+      </div>
+    </div>
+
+    <!-- Personal Status -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-purple">📋</span> <span data-pt="Estado Civil & Dependentes" data-en="Marital Status & Dependents" data-hu="Családi állapot & eltartottak" data-de="Familienstand & Angehörige">Estado Civil & Dependentes</span></h2>
+      <div class="select-row">
+        <label data-pt="Estado Civil" data-en="Marital Status" data-hu="Családi állapot" data-de="Familienstand">Estado Civil</label>
+        <select class="custom-select" id="maritalStatus" style="max-width:220px" aria-label="Marital status">
+          <option value="single" data-pt="Solteiro/a" data-en="Single">Solteiro/a</option>
+          <option value="married2" data-pt="Casado (2 titulares)" data-en="Married (2 earners)">Casado (2 titulares)</option>
+          <option value="married1" data-pt="Casado (único titular)" data-en="Married (sole earner)">Casado (único titular)</option>
+        </select>
+      </div>
+      <div style="margin-bottom:16px">
+        <label style="font-weight:600;font-size:0.92rem;display:block;margin-bottom:10px" data-pt="Número de dependentes" data-en="Number of dependents" data-hu="Eltartottak száma" data-de="Anzahl der Angehörigen">Número de dependentes</label>
+        <div class="children-counter">
+          <button class="counter-btn" data-action="dependents" data-delta="-1" aria-label="Decrease dependents">−</button>
+          <span class="counter-value" id="dependentCount">0</span>
+          <button class="counter-btn" data-action="dependents" data-delta="1" aria-label="Increase dependents">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tax Options -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-red">⚙️</span> <span data-pt="Opções Fiscais" data-en="Tax Options" data-hu="Adó beállítások" data-de="Steueroptionen">Opções Fiscais</span></h2>
+      <div class="option-row">
+        <div>
+          <div class="option-label" data-pt="Regime IFICI" data-en="IFICI Regime" data-hu="IFICI rendszer" data-de="IFICI-Regime">Regime IFICI</div>
+          <div class="option-sublabel" data-pt="Taxa fixa 20% para expatriados elegíveis" data-en="20% flat rate for eligible expats" data-hu="20% fix ráta a jogosult külföldiekben" data-de="20%-Flatrate für berechtigte Expats">Taxa fixa 20% para expatriados elegíveis</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="ificiToggle" aria-label="IFICI regime toggle"><span class="slider"></span></label>
+      </div>
+      <div class="option-row">
+        <div>
+          <div class="option-label" data-pt="Subsídio de Refeição" data-en="Meal Allowance" data-hu="Étkezési hozzájárulás" data-de="Essenszuschuss">Subsídio de Refeição</div>
+          <div class="option-sublabel" data-pt="Isento até ao limite diário" data-en="Tax-free up to daily limit" data-hu="Adómentes a napi korlát szerint" data-de="Steuerfrei bis Tageslimit">Isento até ao limite diário</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="mealToggle" aria-label="Meal allowance toggle"><span class="slider"></span></label>
+      </div>
+      <div id="mealSection" style="display:none;margin-top:16px;border-top:1px solid #f0f0f0;padding-top:12px">
+        <div class="meal-type-selector">
+          <button class="meal-type-btn active" data-mealtype="cash" data-pt="Dinheiro" data-en="Cash">Dinheiro (€6)</button>
+          <button class="meal-type-btn" data-mealtype="card" data-pt="Cartão" data-en="Card">Cartão (€10.46)</button>
+        </div>
+        <div class="option-row" id="mealValueRow" style="margin-top:12px">
+          <div>
+            <div class="option-label" data-pt="Valor diário (€)" data-en="Daily value (€)" data-de="Tageswert (€)" data-hu="Napi érték (€)">Valor diário (€)</div>
+            <div class="option-sublabel" id="mealThresholdHint" data-pt="Isento até 6,15 €/dia (dinheiro)" data-en="Tax-free up to €6.15/day (cash)" data-de="Steuerfrei bis 6,15 €/Tag (Bargeld)" data-hu="Adómentes 6,15 €/nap-ig (készpénz)">Isento até 6,15 €/dia (dinheiro)</div>
+          </div>
+          <input type="number" class="number-input" id="mealValue" value="7.63" step="0.01" min="0" aria-label="Daily meal allowance value" style="max-width:120px;text-align:center">
+        </div>
+      </div>
+    </div>
+
+    <!-- Children -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-green">👨‍👩‍👧‍👦</span> <span data-pt="Filhos & Família" data-en="Children & Family" data-hu="Gyermekek & Család" data-de="Kinder & Familie">Filhos & Família</span></h2>
+      <div style="margin-bottom:16px">
+        <label style="font-weight:600;font-size:0.92rem;display:block;margin-bottom:10px" data-pt="Número de filhos" data-en="Number of children" data-hu="Gyermekek száma" data-de="Anzahl der Kinder">Número de filhos</label>
+        <div class="children-counter">
+          <button class="counter-btn" data-action="children" data-delta="-1" aria-label="Decrease children">−</button>
+          <span class="counter-value" id="childrenCount">0</span>
+          <button class="counter-btn" data-action="children" data-delta="1" aria-label="Increase children">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Results -->
+  <div>
+    <div class="result-hero">
+      <div class="net-label" data-pt="Salário Líquido Mensal" data-en="Monthly Net Salary" data-hu="Havi nettó bér" data-de="Monatliches Nettogehalt">Salário Líquido Mensal</div>
+      <div class="net-amount" id="netAmount">0 €</div>
+      <div class="net-sub" id="netSub">-</div>
+    </div>
+
+    <div class="summary-grid" style="margin-bottom:24px">
+      <div class="summary-box green">
+        <div class="label" data-pt="Salário Líquido" data-en="Net Salary" data-hu="Nettó bér" data-de="Nettolohn">Salário Líquido</div>
+        <div class="value" id="sumNet">0</div>
+      </div>
+      <div class="summary-box red">
+        <div class="label" data-pt="Deduções" data-en="Deductions" data-hu="Levonások" data-de="Abzüge">Deduções</div>
+        <div class="value" id="sumDeductions">0</div>
+      </div>
+      <div class="summary-box blue">
+        <div class="label" data-pt="Custo Empregador" data-en="Employer Cost" data-hu="Munkáltatói költség" data-de="Arbeitgeberkosten">Custo Empregador</div>
+        <div class="value" id="sumEmployer">0</div>
+      </div>
+      <div class="summary-box purple">
+        <div class="label" data-pt="Subsídio Refeição" data-en="Meal Allowance" data-hu="Étkezési hozzájárulás" data-de="Essenszuschuss">Subsídio Refeição</div>
+        <div class="value" id="sumMeal">0</div>
+      </div>
+      <div class="summary-box purple">
+        <div class="label" data-pt="Abono de Família" data-en="Child Benefit" data-hu="Családi pótlék" data-de="Kindergeld">Abono de Família</div>
+        <div class="value" id="sumAbono">0</div>
+      </div>
+    </div>
+
+    <!-- Donut -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-teal">📊</span> <span data-pt="Composição Salarial" data-en="Salary Composition" data-hu="Béred összetétele" data-de="Gehaltszusammensetzung">Composição Salarial</span></h2>
+      <div class="chart-container">
+        <svg class="donut-chart" id="donutChart" viewBox="0 0 200 200" width="220" height="220"></svg>
+      </div>
+      <div class="chart-legend" id="chartLegend"></div>
+    </div>
+
+    <!-- Breakdown -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-red">📋</span> <span data-pt="Decomposição Detalhada" data-en="Detailed Breakdown" data-hu="Részletes bontás" data-de="Detaillierte Aufstellung">Decomposição Detalhada</span></h2>
+      <table class="breakdown-table" id="breakdownTable"></table>
+    </div>
+
+    <!-- Employer Bars -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-orange">🏢</span> <span data-pt="Contribuições Empregador" data-en="Employer Contributions" data-hu="Munkáltatói terhek" data-de="Arbeitgeberanteile">Contribuições Empregador</span></h2>
+      <div id="employerBars"></div>
+      <div style="margin-top:16px;padding-top:16px;border-top:2px solid var(--border);display:flex;justify-content:space-between;font-weight:700">
+        <span data-pt="Custo Total Empregador" data-en="Total Employer Cost" data-hu="Teljes munkáltatói költség" data-de="Gesamte Arbeitgeberkosten">Custo Total Empregador</span>
+        <span id="totalEmployerCost">0 €</span>
+      </div>
+    </div>
+
+    <!-- Meal Allowance Card -->
+    <div class="card" id="mealCard" style="margin-bottom:24px;display:none">
+      <h2><span class="icon icon-gold">🍽️</span> <span data-pt="Subsídio de Refeição" data-en="Meal Allowance" data-hu="Étkezési hozzájárulás" data-de="Essenszuschuss">Subsídio de Refeição</span></h2>
+      <div class="allowance-card">
+        <h3 data-pt="Subsídio Mensal" data-en="Monthly Allowance" data-hu="Havi hozzájárulás" data-de="Monatlicher Zuschuss">Subsídio Mensal</h3>
+        <div class="allowance-amount" id="mealAmount">0 <span>€/mês</span></div>
+      </div>
+      <div style="margin-top:12px;font-size:0.85rem;color:var(--text-light)" id="mealDetail"></div>
+    </div>
+
+    <!-- Abono de Família -->
+    <div class="card" id="abonoCard" style="margin-bottom:24px;display:none">
+      <h2><span class="icon icon-gold">👶</span> <span data-pt="Abono de Família (Estado)" data-en="Child Benefit (State)" data-hu="Családi pótlék (állami)" data-de="Kindergeld (staatlich)">Abono de Família (Estado)</span></h2>
+      <div class="allowance-card">
+        <h3 data-pt="Abono Mensal" data-en="Monthly Child Benefit" data-hu="Havi családi pótlék" data-de="Monatliches Kindergeld">Abono Mensal</h3>
+        <div class="allowance-amount" id="abonoAmount">0 <span>€/mês</span></div>
+      </div>
+      <div style="margin-top:12px;font-size:0.85rem;color:var(--text-light)" id="abonoDetail"></div>
+    </div>
+  </div>
+
+  <!-- Net vs Gross Chart -->
+  <div class="card full-width" style="margin-bottom:0">
+    <h2><span class="icon icon-green">📈</span> <span data-pt="Salário Líquido vs. Bruto" data-en="Net Take-Home vs. Gross Salary" data-hu="Nettó bevétel a bruttó függvényében" data-de="Nettoeinkommen vs. Bruttogehalt">Salário Líquido vs. Bruto</span></h2>
+    <div class="chart-subtitle" data-pt="Montantes mensais em Euro · 2026" data-en="Monthly amounts in EUR · 2026" data-hu="Havi összegek euróban · 2026" data-de="Monatliche Beträge in Euro · 2026" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-light);margin:-12px 0 12px">Montantes mensais em Euro · 2026</div>
+    <div id="netVsGrossLegend" style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;font-size:0.82rem"></div>
+    <div style="position:relative;width:100%;overflow:hidden;border-radius:12px;background:#0f1729">
+      <canvas id="netVsGrossChart" style="width:100%;height:340px;display:block"></canvas>
+    </div>
+  </div>
+
+  <!-- Effective Tax Rate Chart -->
+  <div class="card full-width" style="margin-bottom:0">
+    <h2><span class="icon icon-red">📉</span> <span data-pt="Taxa Efetiva de Imposto" data-en="Effective Tax Rate" data-hu="Effektív adókulcs" data-de="Effektive Abgabenquote">Taxa Efetiva de Imposto</span></h2>
+    <div class="chart-subtitle" data-pt="Deduções totais em % do bruto" data-en="Total deductions as % of gross salary" data-hu="Összes levonás a bruttó %-ában" data-de="Gesamtabzüge in % des Bruttolohns" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-light);margin:-12px 0 12px">Deduções totais em % do bruto</div>
+    <div id="taxRateLegend" style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;font-size:0.82rem"></div>
+    <div style="position:relative;width:100%;overflow:hidden;border-radius:12px;background:#0f1729">
+      <canvas id="taxRateChart" style="width:100%;height:300px;display:block"></canvas>
+    </div>
+  </div>
+
+  <!-- Annual Overview -->
+  <div class="card full-width">
+    <h2><span class="icon icon-blue">📅</span> <span data-pt="Resumo Anual" data-en="Annual Overview" data-hu="Éves áttekintés" data-de="Jahresübersicht">Resumo Anual</span></h2>
+    <div class="summary-grid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="summary-box green"><div class="label" data-pt="Anual Líquido" data-en="Annual Net" data-hu="Éves nettó" data-de="Jahres-Netto">Anual Líquido</div><div class="value" id="annualNet">0</div></div>
+      <div class="summary-box red"><div class="label" data-pt="Anual Impostos" data-en="Annual Taxes" data-hu="Éves adók" data-de="Jahres-Steuern">Anual Impostos</div><div class="value" id="annualTax">0</div></div>
+      <div class="summary-box blue"><div class="label" data-pt="Anual SS" data-en="Annual SS" data-hu="Éves TB" data-de="Jahres-SV">Anual SS</div><div class="value" id="annualSS">0</div></div>
+      <div class="summary-box purple"><div class="label" data-pt="Custo Anual Emp." data-en="Annual Employer Cost" data-hu="Éves munkáltatói ktg." data-de="Jahres-AG-Kosten">Custo Anual Emp.</div><div class="value" id="annualEmployer">0</div></div>
+    </div>
+    <div style="margin-top:16px">
+      <svg id="annualBarChart" viewBox="0 0 800 60" width="100%" height="60"></svg>
+      <div id="annualBarLegend" style="display:flex;gap:20px;justify-content:center;margin-top:8px;flex-wrap:wrap"></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+
+
+  <!-- ══════ SAVE & HISTORY ══════ -->
+  <div class="history-card full-width" id="historyCard">
+    <h2><span class="icon icon-green" style="background:#d1fae5;color:#059669">💾</span> Recent Calculations</h2>
+    <button class="save-btn" id="saveCalcBtn" onclick="saveCalculation()">
+      <span>💾</span> Save Calculation
+    </button>
+    <div class="history-search-wrap">
+      <input type="text" class="history-search" id="historySearch" placeholder="Search saved calculations..." oninput="renderHistory()">
+    </div>
+    <div class="history-list" id="historyList">
+      <div class="history-empty">No saved calculations yet. Use the button above to save one.</div>
+    </div>
+  </div>
+
+<footer>
+  <p data-pt="Calculadora Salarial Portugal 2026 — Apenas para fins informativos, não constitui aconselhamento fiscal." data-en="Portuguese Salary Calculator 2026 — For informational purposes only, not tax advice." data-hu="Portugál bérkalkulus 2026 — Csak tájékoztató jellegű, nem minősül adótanácsadásnak." data-de="Portugiesischer Gehaltsrechner 2026 — Nur zur Information, keine Steuerberatung.">Calculadora Salarial Portugal 2026 — Apenas para fins informativos, não constitui aconselhamento fiscal.</p>
+  <p style="margin-top:4px" data-pt="Salário mínimo 2026: 920 €/mês" data-en="Minimum wage 2026: €920/month" data-hu="Minimálbér 2026: 920 €/hónap" data-de="Mindestlohn 2026: 920 €/Monat">Salário mínimo 2026: 920 €/mês</p>
+</footer>
+
+<script>
+// ====== PORTUGUESE TAX BRACKETS 2026 ======
+const BRACKETS = [
+  { limit: 8342,  rate: 0.1250, parcela: 0 },
+  { limit: 12587, rate: 0.1570, parcela: 266.94 },
+  { limit: 17838, rate: 0.2120, parcela: 959.26 },
+  { limit: 23089, rate: 0.2410, parcela: 1476.45 },
+  { limit: 29397, rate: 0.3110, parcela: 3092.77 },
+  { limit: 43090, rate: 0.3490, parcela: 4209.94 },
+  { limit: 46566, rate: 0.4310, parcela: 7743.27 },
+  { limit: 86634, rate: 0.4460, parcela: 8441.48 },
+  { limit: Infinity, rate: 0.4800, parcela: 11387.17 }
+];
+
+const SOCIAL_SECURITY_EMPLOYEE = 0.11;
+const SOCIAL_SECURITY_EMPLOYER = 0.2375;
+const SPECIFIC_DEDUCTION = 4587.09;
+const MINIMO_EXISTENCIA = 12880;
+const MEAL_WORKING_DAYS = 22;
+const ABONO_PER_CHILD = 42.07;
+
+let lang = 'pt';
+let calcMode = 'gross';
+let numDependents = 0;
+let numChildren = 0;
+let mealType = 'cash';
+let ificiEnabled = false;
+let mealEnabled = false;
+
+// ====== FORMAT ======
+function fmt(n) { return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+function fmtShort(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1).replace('.0','') + 'M';
+  if (n >= 1000) return Math.round(n/1000) + 'K';
+  return n.toString();
+}
+
+// ====== TITLE & META MAPS ======
+const TITLE_MAP = {
+  pt: 'Calculadora Salarial Portugal 2026 | Portuguese Salary Calculator',
+  en: 'Portuguese Salary Calculator 2026 | Calculadora Salarial Portugal',
+  de: 'Portugiesischer Gehaltsrechner 2026 | Calculadora Salarial Portugal',
+  hu: 'Portugál bérkalkulátor 2026 | Calculadora Salarial Portugal'
+};
+const META_DESC_MAP = {
+  pt: 'Calculadora salarial Portugal 2026 — Calcule o seu salário líquido com IRS, Segurança Social e subsídio de refeição.',
+  en: 'Portuguese Salary Calculator 2026 — Calculate your net salary with IRS tax, Social Security and meal allowance.',
+  de: 'Portugiesischer Gehaltsrechner 2026 — Berechne dein Nettogehalt mit IRS, Sozialversicherung und Essenszuschuss.',
+  hu: 'Portugál bérkalkulátor 2026 — Számold ki a nettó béred IRS adóval, társadalombiztosítással és étkezési támogatással.'
+};
+
+// ====== LANG ======
+function setLang(newLang, btnEl) {
+  if (lang === newLang) return;
+  lang = newLang;
+  document.documentElement.lang = lang;
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  if (btnEl) btnEl.classList.add('active');
+
+  document.title = TITLE_MAP[lang] || TITLE_MAP.en;
+  document.getElementById('metaDesc').setAttribute('content', META_DESC_MAP[lang] || META_DESC_MAP.en);
+
+  document.querySelectorAll('[data-pt]').forEach(el => {
+    const t = el.getAttribute('data-' + lang) || el.getAttribute('data-en');
+    if (t) el.textContent = t;
+  });
+  document.querySelectorAll('[data-pt-placeholder]').forEach(el => {
+    const t = el.getAttribute('data-' + lang + '-placeholder') || el.getAttribute('data-en-placeholder');
+    if (t) el.placeholder = t;
+  });
+
+  const ms = document.getElementById('maritalStatus');
+  const msLabels = { pt: ['Solteiro/a', 'Casado (2 titulares)', 'Casado (único titular)'], en: ['Single', 'Married (2 earners)', 'Married (sole earner)'], hu: ['Egyedülálló', 'Házas (2 keresővel)', 'Házas (1 keresővel)'], de: ['Ledig', 'Verheiratet (2 Verdiener)', 'Verheiratet (1 Verdiener)'] };
+  const labels = msLabels[lang] || msLabels.en;
+  for (let i = 0; i < ms.options.length; i++) ms.options[i].textContent = labels[i];
+
+  // Update meal threshold hint
+  updateMealThresholdHint();
+
+  calculate();
+}
+
+// ====== INPUT ======
+function updateSalaryDisplay(v) {
+  const suffix = lang === 'pt' ? '€/mês' : lang === 'de' ? '€/Monat' : lang === 'hu' ? '€/hó' : '€/month';
+  document.getElementById('salaryDisplay').innerHTML = fmt(v) + ' <span>' + suffix + '</span>';
+}
+function updateFromSlider() {
+  const v = parseInt(document.getElementById('salarySlider').value);
+  document.getElementById('salaryInput').value = fmt(v);
+  updateSalaryDisplay(v);
+  calculate();
+}
+function updateFromInput() {
+  const raw = document.getElementById('salaryInput').value.replace(/\s/g,'');
+  const v = parseInt(raw) || 0;
+  document.getElementById('salarySlider').value = Math.min(Math.max(v,500),15000);
+  updateSalaryDisplay(v);
+  calculate();
+}
+function setCalcMode(mode, btn) {
+  calcMode = mode;
+  document.querySelectorAll('.tab-bar .tab-btn[data-mode]').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  calculate();
+}
+
+// ====== DEPENDENTS & CHILDREN ======
+function changeDependents(d) {
+  numDependents = Math.max(0, Math.min(10, numDependents + d));
+  document.getElementById('dependentCount').textContent = numDependents;
+  calculate();
+}
+function changeChildren(d) {
+  numChildren = Math.max(0, Math.min(10, numChildren + d));
+  document.getElementById('childrenCount').textContent = numChildren;
+  calculate();
+}
+
+// ====== IFICI TOGGLE ======
+function toggleIFICI() {
+  ificiEnabled = document.getElementById('ificiToggle').checked;
+  calculate();
+}
+
+// ====== MEAL ALLOWANCE ======
+function toggleMealSection() {
+  mealEnabled = document.getElementById('mealToggle').checked;
+  document.getElementById('mealSection').style.display = mealEnabled ? 'block' : 'none';
+  calculate();
+}
+function setMealType(type, btn) {
+  mealType = type;
+  document.querySelectorAll('.meal-type-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  updateMealThresholdHint();
+  calculate();
+}
+function updateMealThresholdHint() {
+  const hint = document.getElementById('mealThresholdHint');
+  if (!hint) return;
+  const isPt = lang === 'pt';
+  const hints = {
+    pt: { cash: 'Isento até 6,15 €/dia (dinheiro)', card: 'Isento até 10,46 €/dia (cartão)' },
+    en: { cash: 'Tax-free up to €6.15/day (cash)', card: 'Tax-free up to €10.46/day (card)' },
+    de: { cash: 'Steuerfrei bis 6,15 €/Tag (Bargeld)', card: 'Steuerfrei bis 10,46 €/Tag (Karte)' },
+    hu: { cash: 'Adómentes 6,15 €/nap-ig (készpénz)', card: 'Adómentes 10,46 €/nap-ig (kártya)' }
+  };
+  const langHints = hints[lang] || hints.en;
+  const text = langHints[mealType];
+  if (text) hint.textContent = text;
+}
+
+// ====== PORTUGUESE IRS CALCULATION ======
+function computeIRS(taxableIncome) {
+  for (let i = 0; i < BRACKETS.length; i++) {
+    const bracket = BRACKETS[i];
+    if (taxableIncome <= bracket.limit) {
+      return Math.max(0, taxableIncome * bracket.rate - bracket.parcela);
+    }
+  }
+  return Math.max(0, taxableIncome * BRACKETS[BRACKETS.length-1].rate - BRACKETS[BRACKETS.length-1].parcela);
+}
+
+// ====== CORE CALCULATION ======
+function calculate() {
+  const rawVal = document.getElementById('salaryInput').value.replace(/\s/g,'');
+  let inputAmount = parseInt(rawVal) || 0;
+  let monthlyGross;
+
+  if (calcMode === 'gross') {
+    monthlyGross = inputAmount;
+  } else {
+    // Reverse from total employer cost using binary search
+    let lo = 0, hi = inputAmount;
+    for (let i = 0; i < 60; i++) {
+      const mid = (lo + hi) / 2;
+      const r = computeBreakdown(mid);
+      if (r.totalEmployerCost < inputAmount) lo = mid;
+      else hi = mid;
+    }
+    monthlyGross = Math.round((lo + hi) / 2);
+  }
+
+  const result = computeBreakdown(monthlyGross);
+  renderResults(result, monthlyGross);
+}
+
+function computeBreakdown(monthlyGross) {
+  const annualGross = monthlyGross * 14; // 14 payments
+  const annualSS = annualGross * SOCIAL_SECURITY_EMPLOYEE;
+
+  // Meal allowance per-day calculation
+  const MEAL_TAX_FREE_CASH = 6.15;
+  const MEAL_TAX_FREE_CARD = 10.46;
+  const dailyMealValue = mealEnabled ? parseFloat(document.getElementById('mealValue').value) || 0 : 0;
+  const taxFreeLimit = mealType === 'card' ? MEAL_TAX_FREE_CARD : MEAL_TAX_FREE_CASH;
+  const dailyMealTaxable = Math.max(0, dailyMealValue - taxFreeLimit);
+  const monthlyMealTaxable = dailyMealTaxable * MEAL_WORKING_DAYS;
+  const monthlyMealTaxFree = Math.min(dailyMealValue, taxFreeLimit) * MEAL_WORKING_DAYS;
+  const monthlyMeal = dailyMealValue * MEAL_WORKING_DAYS;
+
+  // Specific deduction
+  const specificDeduction = SPECIFIC_DEDUCTION;
+  const taxableIncome = Math.max(0, annualGross - annualSS - specificDeduction + monthlyMealTaxable * 12);
+
+  // Mínimo de existência: IRS cannot reduce net income (after SS) below 12,880 €/year
+  const netAfterSS = annualGross - annualSS;
+  const maritalStatus = document.getElementById('maritalStatus').value;
+  const divisor = (maritalStatus === 'married1') ? 2 : 1; // quociente conjugal
+
+  let annualIRS = 0;
+  if (netAfterSS > MINIMO_EXISTENCIA) {
+    if (ificiEnabled) {
+      annualIRS = taxableIncome * 0.20;
+    } else {
+      // Apply quociente conjugal for married sole earner
+      const splitIncome = taxableIncome / divisor;
+      annualIRS = computeIRS(splitIncome) * divisor;
+      // Cap IRS so take-home after SS never falls below the mínimo de existência
+      annualIRS = Math.min(annualIRS, netAfterSS - MINIMO_EXISTENCIA);
+    }
+    // Solidarity surcharge: 2.5% on taxable income 80k-250k, 5% above 250k (Art. 68-A CIRS)
+    if (!ificiEnabled && taxableIncome > 80000) {
+      const soliBase1 = Math.min(taxableIncome, 250000) - 80000;
+      annualIRS += soliBase1 * 0.025;
+      if (taxableIncome > 250000) annualIRS += (taxableIncome - 250000) * 0.05;
+    }
+    // Dependent deduction (dedução à coleta, Art. 78-A CIRS)
+    const dependentCredit = numDependents * 600;
+    annualIRS = Math.max(0, annualIRS - dependentCredit);
+  }
+
+  // Monthly values
+  const monthlyIRS = annualIRS / 12;
+  const monthlySS = annualSS / 12;
+  const monthlyDeductions = monthlyIRS + monthlySS;
+  const monthlyNet = monthlyGross - monthlyDeductions;
+
+  // Employer contributions (no ceiling)
+  const employerSS = monthlyGross * SOCIAL_SECURITY_EMPLOYER;
+  const totalEmployerCost = monthlyGross + employerSS;
+
+  // Abono de Família (child benefit)
+  const abono = numChildren * ABONO_PER_CHILD;
+
+  return {
+    monthlyGross, monthlyIRS, monthlySS, monthlyDeductions, monthlyNet,
+    employerSS, totalEmployerCost,
+    monthlyMeal, monthlyMealTaxFree, monthlyMealTaxable,
+    annualGross, annualIRS, annualSS, taxableIncome,
+    abono
+  };
+}
+
+// ====== RENDER ======
+function renderResults(r, gross) {
+  const isPt = lang === 'pt';
+  updateSalaryDisplay(parseInt(document.getElementById('salaryInput').value.replace(/\s/g,'')) || 0);
+
+  // Net amount hero
+  animateOdometer(document.getElementById('netAmount'), Math.round(r.monthlyNet), '', ' €');
+  const pct = gross > 0 ? Math.round(r.monthlyNet / gross * 100) : 0;
+  let subText = isPt
+    ? `${pct}% do salário bruto | Bruto: ${fmt(gross)} €`
+    : `${pct}% of gross salary | Gross: ${fmt(gross)} €`;
+  document.getElementById('netSub').innerHTML = subText;
+
+  // Summary boxes
+  animateOdometer(document.getElementById('sumNet'), Math.round(r.monthlyNet));
+  animateOdometer(document.getElementById('sumDeductions'), Math.round(r.monthlyDeductions));
+  animateOdometer(document.getElementById('sumEmployer'), Math.round(r.totalEmployerCost));
+  document.getElementById('sumMeal').textContent = fmt(Math.round(r.monthlyMeal));
+  document.getElementById('sumAbono').textContent = fmt(r.abono);
+  animateOdometer(document.getElementById('totalEmployerCost'), Math.round(r.totalEmployerCost), '', ' €');
+
+  // Annual overview
+  document.getElementById('annualNet').textContent = fmt(Math.round(r.monthlyNet * 12));
+  document.getElementById('annualTax').textContent = fmt(Math.round(r.annualIRS));
+  document.getElementById('annualSS').textContent = fmt(Math.round(r.annualSS));
+  document.getElementById('annualEmployer').textContent = fmt(Math.round(r.totalEmployerCost * 12));
+
+  renderBreakdown(r, gross);
+  renderDonut(r, gross);
+  renderEmployerBars(r, gross);
+  renderAnnualBar(r);
+  renderCurveCharts(gross);
+
+  // Meal allowance card
+  const mealCard = document.getElementById('mealCard');
+  if (mealEnabled) {
+    mealCard.style.display = 'block';
+    const suffix = isPt ? '€/mês' : '€/month';
+    document.getElementById('mealAmount').innerHTML = fmt(Math.round(r.monthlyMeal)) + ' <span>' + suffix + '</span>';
+    const dailyRate = mealType === 'card' ? '10,46' : '6,00';
+    const typeLabel = mealType === 'card' ? (isPt ? 'Cartão' : 'Card') : (isPt ? 'Dinheiro' : 'Cash');
+    document.getElementById('mealDetail').textContent = isPt
+      ? `${typeLabel}: €${dailyRate}/dia · ${MEAL_WORKING_DAYS} dias | Anual: €${fmt(Math.round(r.monthlyMeal * 12))}`
+      : `${typeLabel}: €${dailyRate}/day · ${MEAL_WORKING_DAYS} days | Annual: €${fmt(Math.round(r.monthlyMeal * 12))}`;
+  } else {
+    mealCard.style.display = 'none';
+  }
+
+  // Abono de Família card
+  const abonoCard = document.getElementById('abonoCard');
+  if (numChildren > 0) {
+    abonoCard.style.display = 'block';
+    const suffix = isPt ? '€/mês' : '€/month';
+    document.getElementById('abonoAmount').innerHTML = fmt(r.abono) + ' <span>' + suffix + '</span>';
+    document.getElementById('abonoDetail').textContent = isPt
+      ? `${numChildren} × ${ABONO_PER_CHILD} € | Anual: ${fmt(r.abono * 12)} €`
+      : `${numChildren} × ${ABONO_PER_CHILD} € | Annual: ${fmt(r.abono * 12)} €`;
+  } else {
+    abonoCard.style.display = 'none';
+  }
+}
+
+function renderBreakdown(r, gross) {
+  const isPt = lang === 'pt';
+  const t = document.getElementById('breakdownTable');
+  let rows = '';
+  const row = (label, amount, cls = '') => {
+    let val = (cls.includes('benefit') ? '+' : cls.includes('deduction') ? '−' : '') + ' ' + fmt(Math.round(Math.abs(amount))) + ' €';
+    return `<tr class="${cls}"><td class="row-header">${label}</td><td>${val}</td></tr>`;
+  };
+
+  rows += row(isPt ? '💰 Salário Bruto' : '💰 Gross Salary', gross, 'subtotal');
+
+  rows += `<tr><td colspan="2" style="padding:4px;font-size:0.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px">${isPt ? 'Impostos' : 'Taxes'}</td></tr>`;
+  rows += row(isPt ? 'Imposto Sobre Rendimento (IRS)' : 'Income Tax (IRS)', r.monthlyIRS, 'deduction');
+
+  rows += `<tr><td colspan="2" style="padding:4px;font-size:0.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px">${isPt ? 'Segurança Social (Contribuição Trabalhador)' : 'Social Security (Employee)'}</td></tr>`;
+  rows += row(isPt ? 'Segurança Social 11%' : 'Social Security 11%', r.monthlySS, 'deduction');
+
+  rows += row(isPt ? '📌 Deduções Totais' : '📌 Total Deductions', r.monthlyDeductions, 'subtotal deduction');
+  rows += row(isPt ? '✅ Salário Líquido' : '✅ Net Salary', r.monthlyNet, 'subtotal');
+
+  if (mealEnabled) {
+    rows += `<tr><td colspan="2" style="padding:4px;font-size:0.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;padding-top:12px">${isPt ? 'Subsídio Isento' : 'Tax-Free Benefit'}</td></tr>`;
+    const mealLabel = mealType === 'card' ? (isPt ? '🍽️ Subsídio Refeição (Cartão)' : '🍽️ Meal Allowance (Card)') : (isPt ? '🍽️ Subsídio Refeição (Dinheiro)' : '🍽️ Meal Allowance (Cash)');
+    rows += `<tr class="benefit"><td class="row-header">${mealLabel}</td><td>+ ${fmt(Math.round(r.monthlyMeal))} €</td></tr>`;
+  }
+
+  if (r.abono > 0) {
+    rows += `<tr><td colspan="2" style="padding:4px;font-size:0.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;padding-top:12px">${isPt ? 'Prestação Social' : 'State Benefit'}</td></tr>`;
+    rows += `<tr class="benefit"><td class="row-header">${'👶 ' + (isPt ? 'Abono de Família' : 'Child Benefit')}</td><td>+ ${fmt(r.abono)} €</td></tr>`;
+    const totalWithBenefits = r.monthlyNet + r.abono;
+    rows += `<tr class="subtotal"><td class="row-header">${'💚 ' + (isPt ? 'Líquido + Abono' : 'Net + Child Benefit')}</td><td>${fmt(Math.round(totalWithBenefits))} €</td></tr>`;
+  }
+
+  t.innerHTML = rows;
+}
+
+function renderDonut(r, gross) {
+  const svg = document.getElementById('donutChart');
+  const legend = document.getElementById('chartLegend');
+  const isPt = lang === 'pt';
+  const total = gross > 0 ? gross : 1;
+  const segments = [
+    { label: isPt ? 'Salário Líquido' : 'Net Salary', value: Math.max(0, r.monthlyNet), color: '#059669' },
+    { label: isPt ? 'Imposto' : 'Income Tax', value: r.monthlyIRS, color: '#e94560' },
+    { label: isPt ? 'Segurança Social' : 'Social Security', value: r.monthlySS, color: '#3b82f6' },
+  ];
+  const cx=100,cy=100,R1=85,R2=55;
+  let startAngle = -Math.PI/2, paths='';
+
+  segments.forEach(seg => {
+    if(seg.value<=0)return;
+    const angle=(seg.value/total)*Math.PI*2;
+    const endAngle=startAngle+angle;
+    const la=angle>Math.PI?1:0;
+    const x1o=cx+R1*Math.cos(startAngle),y1o=cy+R1*Math.sin(startAngle);
+    const x2o=cx+R1*Math.cos(endAngle),y2o=cy+R1*Math.sin(endAngle);
+    const x1i=cx+R2*Math.cos(endAngle),y1i=cy+R2*Math.sin(endAngle);
+    const x2i=cx+R2*Math.cos(startAngle),y2i=cy+R2*Math.sin(startAngle);
+    paths+=`<path d="M${x1o},${y1o} A${R1},${R1} 0 ${la} 1 ${x2o},${y2o} L${x1i},${y1i} A${R2},${R2} 0 ${la} 0 ${x2i},${y2i} Z" fill="${seg.color}" opacity="0.85"><title>${seg.label}: ${fmt(Math.round(seg.value))} €</title></path>`;
+    startAngle=endAngle;
+  });
+  const netPct=gross>0?Math.round(Math.max(0,r.monthlyNet)/gross*100):0;
+  paths+=`<text x="${cx}" y="${cy-6}" text-anchor="middle" font-size="22" font-weight="800" fill="#1a1a2e">${netPct}%</text>`;
+  paths+=`<text x="${cx}" y="${cy+14}" text-anchor="middle" font-size="9" fill="#6b7280">${isPt?'Líquido':'net'}</text>`;
+  svg.innerHTML=paths;
+
+  let lh='';
+  segments.forEach(seg=>{
+    const p=gross>0?Math.round(seg.value/gross*100):0;
+    lh+=`<div class="legend-item"><div class="legend-color" style="background:${seg.color}"></div><span>${seg.label} (${p}%)</span><span class="legend-value">${fmt(Math.round(seg.value))} €</span></div>`;
+  });
+  legend.innerHTML=lh;
+}
+
+function renderEmployerBars(r, gross) {
+  const c = document.getElementById('employerBars');
+  const isPt = lang === 'pt';
+  const max = r.totalEmployerCost;
+  const items = [
+    { label: isPt ? 'Salário Bruto' : 'Gross Salary', value: gross, color: '#3b82f6' },
+    { label: isPt ? 'Segurança Social Empregador' : 'Employer Social Security', value: r.employerSS, color: '#8b5cf6' },
+  ];
+  let html='';
+  items.forEach(item=>{
+    if(item.value<=0)return;
+    const w=max>0?(item.value/max*100):0;
+    html+=`<div class="bar-group"><div class="bar-label">${item.label}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.max(w,8)}%;background:${item.color}">${fmt(Math.round(item.value))} €</div></div></div>`;
+  });
+  c.innerHTML=html;
+}
+
+function renderAnnualBar(r) {
+  const svg = document.getElementById('annualBarChart');
+  const legendDiv = document.getElementById('annualBarLegend');
+  const isPt = lang === 'pt';
+  const total = r.totalEmployerCost * 12;
+  if (total === 0) { svg.innerHTML=''; legendDiv.innerHTML=''; return; }
+  const segments = [
+    { label: isPt?'Líquido':'Net', value:Math.round(r.monthlyNet*12), color:'#059669' },
+    { label: isPt?'Impostos':'Taxes', value:Math.round(r.annualIRS), color:'#e94560' },
+    { label: isPt?'SS (Trabalhador)':'SS (Employee)', value:Math.round(r.annualSS), color:'#3b82f6' },
+    { label: isPt?'SS (Empregador)':'SS (Employer)', value:Math.round(r.employerSS*12), color:'#8b5cf6' },
+  ];
+  let x=0,paths='';
+  segments.forEach(seg=>{
+    const w=(seg.value/total)*800;
+    if(w>0){
+      paths+=`<rect x="${x}" y="0" width="${w}" height="50" rx="4" fill="${seg.color}" opacity="0.85"><title>${seg.label}: ${fmt(seg.value)} €</title></rect>`;
+      if(w>60) paths+=`<text x="${x+w/2}" y="30" text-anchor="middle" fill="white" font-size="11" font-weight="600">${fmt(seg.value)}</text>`;
+    }
+    x+=w;
+  });
+  svg.innerHTML=paths;
+  let lh='';
+  segments.forEach(seg=>{
+    lh+=`<div style="display:flex;align-items:center;gap:6px;font-size:0.82rem"><div style="width:12px;height:12px;border-radius:3px;background:${seg.color}"></div>${seg.label}: ${fmt(seg.value)} €</div>`;
+  });
+  legendDiv.innerHTML=lh;
+}
+
+// ====== CURVE CHARTS ======
+function renderCurveCharts(currentGross) {
+  renderNetVsGrossChart(currentGross);
+  renderTaxRateChart(currentGross);
+}
+
+function computeForGross(g, withBenefits) {
+  if (!withBenefits) {
+    const annualGross = g * 14;
+    const annualSS = annualGross * SOCIAL_SECURITY_EMPLOYEE;
+    const taxableIncome = Math.max(0, annualGross - annualSS - SPECIFIC_DEDUCTION);
+
+    const maritalStatus = document.getElementById('maritalStatus').value;
+    const divisor = (maritalStatus === 'married1') ? 2 : 1;
+
+    const netAfterSS2 = annualGross - annualSS;
+    let annualIRS = 0;
+    if (netAfterSS2 > MINIMO_EXISTENCIA) {
+      if (ificiEnabled) {
+        annualIRS = taxableIncome * 0.20;
+      } else {
+        const splitIncome = taxableIncome / divisor;
+        annualIRS = computeIRS(splitIncome) * divisor;
+        annualIRS = Math.min(annualIRS, netAfterSS2 - MINIMO_EXISTENCIA);
+      }
+      if (!ificiEnabled && taxableIncome > 80000) {
+        const soliBase1 = Math.min(taxableIncome, 250000) - 80000;
+        annualIRS += soliBase1 * 0.025;
+        if (taxableIncome > 250000) annualIRS += (taxableIncome - 250000) * 0.05;
+      }
+      const dependentCredit = numDependents * 600;
+      annualIRS = Math.max(0, annualIRS - dependentCredit);
+    }
+
+    const monthlyIRS = annualIRS / 12;
+    const monthlySS = annualSS / 12;
+    const deductions = monthlyIRS + monthlySS;
+    const net = g - deductions;
+
+    return { net: Math.max(0, net), deductions: deductions, abono: 0 };
+  }
+  const r = computeBreakdown(g);
+  return { net: r.monthlyNet + r.abono, deductions: r.monthlyDeductions, abono: r.abono };
+}
+
+function renderNetVsGrossChart(currentGross) {
+  const canvas = document.getElementById('netVsGrossChart');
+  const ctx = canvas.getContext('2d');
+  const isPt = lang === 'pt';
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = canvas.offsetWidth * dpr;
+  canvas.height = canvas.offsetHeight * dpr;
+  ctx.scale(dpr, dpr);
+  const W = canvas.offsetWidth, H = canvas.offsetHeight;
+  const pad = { top:20, right:24, bottom:50, left:70 };
+  const plotW = W-pad.left-pad.right, plotH = H-pad.top-pad.bottom;
+  const minG=500, maxG=12000, steps=100;
+  const maxY=12000;
+
+  const dataWith=[], dataWithout=[], dataGross=[];
+  for(let i=0;i<=steps;i++){
+    const g=minG+(maxG-minG)*(i/steps);
+    const w=computeForGross(g,true);
+    const wo=computeForGross(g,false);
+    dataWith.push({x:g,y:w.net});
+    dataWithout.push({x:g,y:wo.net});
+    dataGross.push({x:g,y:g});
+  }
+
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='rgba(255,255,255,0.07)'; ctx.lineWidth=1;
+  const yTicks=[0,2000,4000,6000,8000,10000,12000];
+  yTicks.forEach(v=>{const y=pad.top+plotH-(v/maxY)*plotH;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(pad.left+plotW,y);ctx.stroke();});
+  const xTicks=[1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,11000];
+  xTicks.forEach(v=>{const x=pad.left+((v-minG)/(maxG-minG))*plotW;if(x>=pad.left&&x<=pad.left+plotW){ctx.beginPath();ctx.moveTo(x,pad.top);ctx.lineTo(x,pad.top+plotH);ctx.stroke();}});
+
+  ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='11px system-ui';ctx.textAlign='right';
+  yTicks.forEach(v=>{const y=pad.top+plotH-(v/maxY)*plotH;ctx.fillText(fmtShort(v)+'€',pad.left-8,y+4);});
+  ctx.textAlign='center';
+  xTicks.forEach(v=>{const x=pad.left+((v-minG)/(maxG-minG))*plotW;if(x>=pad.left&&x<=pad.left+plotW)ctx.fillText(fmtShort(v)+'€',x,pad.top+plotH+20);});
+
+  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='10px system-ui';ctx.textAlign='center';
+  ctx.fillText(isPt?'SALÁRIO BRUTO (€)':'GROSS SALARY (€)',pad.left+plotW/2,H-6);
+  ctx.save();ctx.translate(14,pad.top+plotH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText(isPt?'SALÁRIO LÍQUIDO (€)':'NET INCOME (€)',0,0);ctx.restore();
+
+  function drawLine(data,color,lw,dashed){
+    ctx.strokeStyle=color;ctx.lineWidth=lw;ctx.setLineDash(dashed?[6,4]:[]);ctx.beginPath();
+    data.forEach((p,i)=>{const x=pad.left+((p.x-minG)/(maxG-minG))*plotW;const y=pad.top+plotH-(Math.min(p.y,maxY)/maxY)*plotH;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});
+    ctx.stroke();ctx.setLineDash([]);
+  }
+
+  if(numChildren>0){
+    ctx.fillStyle='rgba(46,204,113,0.12)';ctx.beginPath();
+    dataWith.forEach((p,i)=>{const x=pad.left+((p.x-minG)/(maxG-minG))*plotW;const y=pad.top+plotH-(Math.min(p.y,maxY)/maxY)*plotH;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});
+    for(let i=dataWithout.length-1;i>=0;i--){const p=dataWithout[i];const x=pad.left+((p.x-minG)/(maxG-minG))*plotW;const y=pad.top+plotH-(Math.min(p.y,maxY)/maxY)*plotH;ctx.lineTo(x,y);}
+    ctx.closePath();ctx.fill();
+  }
+
+  drawLine(dataGross,'rgba(196,181,107,0.6)',1.5,true);
+  drawLine(dataWithout,'rgba(100,140,230,0.8)',2,false);
+  drawLine(dataWith,'#2ecc71',2.5,false);
+
+  if(currentGross>=minG&&currentGross<=maxG){
+    const cx2=pad.left+((currentGross-minG)/(maxG-minG))*plotW;
+    const curR=computeForGross(currentGross,true);
+    const cy2=pad.top+plotH-(Math.min(curR.net,maxY)/maxY)*plotH;
+    ctx.strokeStyle='rgba(46,204,113,0.4)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(cx2,pad.top);ctx.lineTo(cx2,pad.top+plotH);ctx.stroke();ctx.setLineDash([]);
+    ctx.beginPath();ctx.arc(cx2,cy2,6,0,Math.PI*2);ctx.fillStyle='#2ecc71';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold 11px system-ui';ctx.textAlign=cx2>W/2?'right':'left';
+    ctx.fillText(fmt(Math.round(curR.net))+' €',cx2>W/2?cx2-12:cx2+12,cy2-12);
+  }
+
+  const legendDiv=document.getElementById('netVsGrossLegend');
+  legendDiv.innerHTML=[
+    {color:'#2ecc71',label:isPt?'Líquido (com prestações)':'Net (with benefits)',dash:false},
+    {color:'rgba(196,181,107,0.8)',label:isPt?'Salário Bruto (Referência)':'Gross (Reference)',dash:true},
+    {color:'rgba(100,140,230,0.9)',label:isPt?'Líquido sem filhos':'Net without children',dash:false},
+  ].map(l=>`<div style="display:flex;align-items:center;gap:6px"><div style="width:20px;height:3px;background:${l.color};border-radius:2px;${l.dash?'border-top:2px dashed '+l.color+';background:transparent;height:0':''}"></div><span style="color:var(--text-light)">${l.label}</span></div>`).join('');
+}
+
+function renderTaxRateChart(currentGross) {
+  const canvas = document.getElementById('taxRateChart');
+  const ctx = canvas.getContext('2d');
+  const isPt = lang === 'pt';
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = canvas.offsetWidth * dpr;
+  canvas.height = canvas.offsetHeight * dpr;
+  ctx.scale(dpr, dpr);
+  const W=canvas.offsetWidth, H=canvas.offsetHeight;
+  const pad={top:20,right:24,bottom:50,left:55};
+  const plotW=W-pad.left-pad.right, plotH=H-pad.top-pad.bottom;
+  const minG=500, maxG=12000, steps=100, maxPct=55;
+
+  const dataRate=[], dataMarginal=[];
+  for(let i=0;i<=steps;i++){
+    const g=minG+(maxG-minG)*(i/steps);
+    const w=computeForGross(g);
+    dataRate.push({x:g,y:g>0?(w.deductions/g)*100:0});
+    // Marginal rate
+    const delta=100;
+    const wPlus=computeForGross(g+delta);
+    const marg=(wPlus.deductions-w.deductions)/delta*100;
+    dataMarginal.push({x:g,y:Math.min(maxPct,Math.max(0,marg))});
+  }
+
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='rgba(255,255,255,0.07)';ctx.lineWidth=1;
+  const yTicks=[0,5,10,15,20,25,30,35,40,45,50,55];
+  yTicks.forEach(v=>{const y=pad.top+plotH-(v/maxPct)*plotH;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(pad.left+plotW,y);ctx.stroke();});
+  const xTicks=[1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,11000];
+  xTicks.forEach(v=>{const x=pad.left+((v-minG)/(maxG-minG))*plotW;if(x>=pad.left&&x<=pad.left+plotW){ctx.beginPath();ctx.moveTo(x,pad.top);ctx.lineTo(x,pad.top+plotH);ctx.stroke();}});
+
+  ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='11px system-ui';ctx.textAlign='right';
+  yTicks.forEach(v=>{const y=pad.top+plotH-(v/maxPct)*plotH;ctx.fillText(v+'%',pad.left-8,y+4);});
+  ctx.textAlign='center';
+  xTicks.forEach(v=>{const x=pad.left+((v-minG)/(maxG-minG))*plotW;if(x>=pad.left&&x<=pad.left+plotW)ctx.fillText(fmtShort(v)+'€',x,pad.top+plotH+20);});
+  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='10px system-ui';ctx.textAlign='center';
+  ctx.fillText(isPt?'SALÁRIO BRUTO (€)':'GROSS SALARY (€)',pad.left+plotW/2,H-6);
+
+  function drawLine(data,color,lw){ctx.strokeStyle=color;ctx.lineWidth=lw;ctx.beginPath();data.forEach((p,i)=>{const x=pad.left+((p.x-minG)/(maxG-minG))*plotW;const y=pad.top+plotH-(Math.min(p.y,maxPct)/maxPct)*plotH;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();}
+
+  drawLine(dataRate,'#f1c40f',2.5);
+  drawLine(dataMarginal,'#E87722',1.8);
+
+  if(currentGross>=minG&&currentGross<=maxG){
+    const cx2=pad.left+((currentGross-minG)/(maxG-minG))*plotW;
+    const curR=computeForGross(currentGross);
+    const curPct=currentGross>0?(curR.deductions/currentGross)*100:0;
+    const cy2=pad.top+plotH-(Math.min(curPct,maxPct)/maxPct)*plotH;
+    ctx.strokeStyle='rgba(241,196,15,0.4)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(cx2,pad.top);ctx.lineTo(cx2,pad.top+plotH);ctx.stroke();ctx.setLineDash([]);
+    ctx.beginPath();ctx.arc(cx2,cy2,6,0,Math.PI*2);ctx.fillStyle='#f1c40f';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold 11px system-ui';ctx.textAlign=cx2>W/2?'right':'left';
+    ctx.fillText(curPct.toFixed(1)+'%',cx2>W/2?cx2-12:cx2+12,cy2-12);
+  }
+
+  const legendDiv=document.getElementById('taxRateLegend');
+  legendDiv.innerHTML=[
+    {color:'#f1c40f',label:isPt?'Taxa Efetiva de Imposto':'Effective tax rate'},
+    {color:'#E87722',label:isPt?'Taxa Marginal de Imposto':'Marginal tax rate'},
+  ].map(l=>`<div style="display:flex;align-items:center;gap:6px"><div style="width:20px;height:3px;background:${l.color};border-radius:2px"></div><span style="color:var(--text-light)">${l.label}</span></div>`).join('');
+}
+
+// ====== EVENT LISTENERS ======
+document.querySelectorAll('.lang-btn[data-lang]').forEach(btn => {
+  btn.addEventListener('click', () => setLang(btn.dataset.lang, btn));
+});
+
+document.getElementById('salarySlider').addEventListener('input', updateFromSlider);
+document.getElementById('salaryInput').addEventListener('input', updateFromInput);
+
+document.querySelectorAll('.tab-btn[data-mode]').forEach(btn => {
+  btn.addEventListener('click', () => setCalcMode(btn.dataset.mode, btn));
+});
+
+document.getElementById('maritalStatus').addEventListener('change', calculate);
+document.getElementById('ificiToggle').addEventListener('change', toggleIFICI);
+document.getElementById('mealToggle').addEventListener('change', toggleMealSection);
+
+document.querySelectorAll('.meal-type-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    setMealType(this.dataset.mealtype, this);
+  });
+});
+
+document.getElementById('mealValue').addEventListener('change', calculate);
+
+document.querySelectorAll('.counter-btn[data-action]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const action = btn.dataset.action;
+    const delta = parseInt(btn.dataset.delta);
+    if (action === 'dependents') changeDependents(delta);
+    else if (action === 'children') changeChildren(delta);
+  });
+});
+
+// ResizeObserver for canvas charts
+const canvasObserver = new ResizeObserver(() => {
+  const rawVal = document.getElementById('salaryInput').value.replace(/\s/g, '');
+  const currentGross = parseInt(rawVal) || 0;
+  renderCurveCharts(currentGross);
+});
+canvasObserver.observe(document.getElementById('netVsGrossChart'));
+canvasObserver.observe(document.getElementById('taxRateChart'));
+
+// Initialize
+calculate();
+let resizeTimer;
+window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>calculate(),150);});
+</script>
+
+<script src="../nav.js"></script>
+<script src="../shared.js"></script>
+</body>
+</html>

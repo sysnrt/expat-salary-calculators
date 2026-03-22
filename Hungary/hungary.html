@@ -1,0 +1,1916 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" id="metaDesc" content="Magyar bérkalkulátor 2026 — Nettó bér, adók és családi kedvezmények részletes számítása.">
+<title>Magyar Bérkalkulátor 2026 | Hungarian Salary Calculator</title>
+<link rel="stylesheet" href="../shared.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #c8a44e;
+    --primary-light: #dbb964;
+    --accent: #8b1a3a;
+    --accent-green: #2d9b7a;
+    --bg: #0d0f14;
+    --card: rgba(22,25,35,0.85);
+    --text: #e8dcc8;
+    --text-light: #8a8070;
+    --border: rgba(200,164,78,0.15);
+    --shadow: 0 8px 40px rgba(0,0,0,0.4);
+    --radius: 16px;
+    --gold: #c8a44e;
+    --gold-dim: rgba(200,164,78,0.3);
+    --wine: #8b1a3a;
+    --wine-light: #a83050;
+    --danube: #1a4a6e;
+    --thermal: #1a8a7d;
+    --stone: #e8dcc8;
+    --midnight: #0d0f14;
+  }
+
+  body {
+    font-family: 'Outfit', 'Segoe UI', system-ui, sans-serif !important;
+    background: var(--bg) !important;
+    color: var(--text) !important;
+  }
+
+  /* ══════ ORNAMENTAL BACKGROUND ══════ */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 0%, rgba(200,164,78,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 100%, rgba(139,26,58,0.06) 0%, transparent 50%),
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 120px,
+        rgba(200,164,78,0.015) 120px,
+        rgba(200,164,78,0.015) 121px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 120px,
+        rgba(200,164,78,0.015) 120px,
+        rgba(200,164,78,0.015) 121px
+      );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body > * { position: relative; z-index: 1; }
+
+  /* ══════ TYPOGRAPHY ══════ */
+  h1, h2, h3 {
+    font-family: 'Cormorant Garamond', Georgia, serif !important;
+  }
+
+  /* ══════ HERO ══════ */
+  .hero {
+    background: linear-gradient(165deg, #0d0f14 0%, #1a1520 30%, #2a1525 50%, #1a1520 70%, #0d0f14 100%) !important;
+    padding: 64px 24px 48px !important;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--gold-dim);
+  }
+  .hero::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(circle at 50% 120%, rgba(200,164,78,0.12) 0%, transparent 50%),
+      radial-gradient(circle at 20% 20%, rgba(139,26,58,0.08) 0%, transparent 40%),
+      radial-gradient(circle at 80% 30%, rgba(26,74,110,0.08) 0%, transparent 40%);
+    animation: heroGlow 12s ease-in-out infinite !important;
+    width: 100% !important;
+    height: 100% !important;
+    top: 0 !important;
+    left: 0 !important;
+  }
+  @keyframes heroGlow {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1.2; }
+  }
+
+  /* Parliament silhouette - ornamental top border */
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      var(--gold-dim) 15%,
+      var(--gold) 30%,
+      var(--gold-dim) 45%,
+      var(--gold) 50%,
+      var(--gold-dim) 55%,
+      var(--gold) 70%,
+      var(--gold-dim) 85%,
+      transparent 100%
+    );
+  }
+
+  .hero h1 {
+    font-size: 2.8rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px !important;
+    background: linear-gradient(135deg, #e8dcc8 0%, #c8a44e 40%, #f0d878 60%, #c8a44e 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    position: relative;
+    animation: titleReveal 1s ease-out;
+  }
+  @keyframes titleReveal {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero p {
+    color: var(--stone) !important;
+    opacity: 0.6 !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-weight: 300 !important;
+    letter-spacing: 0.5px;
+    animation: fadeUp 1s ease-out 0.15s both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 0.6; transform: translateY(0); }
+  }
+
+  .badge {
+    background: rgba(200,164,78,0.1) !important;
+    border: 1px solid rgba(200,164,78,0.25) !important;
+    color: var(--gold) !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 0.8rem !important;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    animation: fadeUp 1s ease-out 0.3s both;
+  }
+
+  /* Flag strip: ornamental gold divider */
+  .flag-strip {
+    margin-top: 24px !important;
+    gap: 4px !important;
+  }
+  .flag-strip div {
+    height: 4px !important;
+    border-radius: 2px !important;
+    opacity: 0.8;
+  }
+  .flag-strip div:nth-child(1) { background: #c60c30 !important; width: 40px !important; }
+  .flag-strip div:nth-child(2) { background: rgba(255,255,255,0.5) !important; width: 40px !important; }
+  .flag-strip div:nth-child(3) { background: #00833e !important; width: 40px !important; }
+
+  /* ══════ LANGUAGE SELECTOR ══════ */
+  .lang-btn {
+    background: rgba(200,164,78,0.08) !important;
+    border: 1px solid rgba(200,164,78,0.2) !important;
+    backdrop-filter: blur(8px) !important;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1) !important;
+  }
+  .lang-btn:hover {
+    background: rgba(200,164,78,0.15) !important;
+    border-color: rgba(200,164,78,0.4) !important;
+    transform: translateY(-1px);
+  }
+  .lang-btn.active {
+    background: rgba(200,164,78,0.2) !important;
+    border-color: var(--gold) !important;
+    box-shadow: 0 0 12px rgba(200,164,78,0.15) !important;
+  }
+
+  /* ══════ CARDS ══════ */
+  .card {
+    background: rgba(22,25,35,0.75) !important;
+    backdrop-filter: blur(20px) saturate(130%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(130%) !important;
+    border: 1px solid rgba(200,164,78,0.1) !important;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.3), inset 0 1px 0 rgba(200,164,78,0.05) !important;
+    transition: all 0.35s cubic-bezier(0.4,0,0.2,1) !important;
+  }
+  .card:hover {
+    border-color: rgba(200,164,78,0.25) !important;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(200,164,78,0.08), 0 0 0 1px rgba(200,164,78,0.05) !important;
+    transform: translateY(-2px) !important;
+  }
+
+  .card h2 {
+    color: var(--stone) !important;
+    font-weight: 600 !important;
+    font-size: 1.25rem !important;
+    letter-spacing: 0.3px;
+  }
+  .card h2 .icon {
+    border-radius: 12px !important;
+  }
+  .icon-blue   { background: rgba(26,74,110,0.25) !important; color: #5a9ac4 !important; }
+  .icon-green  { background: rgba(45,155,122,0.2) !important; color: #4dc9a8 !important; }
+  .icon-red    { background: rgba(139,26,58,0.25) !important; color: #d4587a !important; }
+  .icon-purple { background: rgba(120,80,180,0.2) !important; color: #a88bd4 !important; }
+  .icon-orange { background: rgba(200,164,78,0.2) !important; color: var(--gold) !important; }
+  .icon-teal   { background: rgba(26,138,125,0.2) !important; color: #4dc9b8 !important; }
+
+  /* ══════ SALARY DISPLAY ══════ */
+  .salary-display {
+    color: var(--gold) !important;
+    font-family: 'Cormorant Garamond', Georgia, serif !important;
+    font-size: 2.8rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.5px;
+  }
+  .salary-display span {
+    color: var(--text-light) !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 0.9rem !important;
+  }
+
+  .salary-input-group label {
+    color: var(--text-light) !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.78rem !important;
+    font-weight: 500 !important;
+  }
+
+  /* ══════ RANGE SLIDER ══════ */
+  input[type="range"] {
+    background: linear-gradient(90deg, var(--wine), var(--gold), var(--thermal)) !important;
+    height: 6px !important;
+    border-radius: 3px !important;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    border: 3px solid var(--gold) !important;
+    background: var(--midnight) !important;
+    box-shadow: 0 0 10px rgba(200,164,78,0.3) !important;
+    width: 22px !important;
+    height: 22px !important;
+  }
+  input[type="range"]::-moz-range-thumb {
+    border: 3px solid var(--gold) !important;
+    background: var(--midnight) !important;
+    box-shadow: 0 0 10px rgba(200,164,78,0.3) !important;
+  }
+
+  .range-labels {
+    color: var(--text-light) !important;
+    font-size: 0.75rem !important;
+  }
+
+  /* ══════ NUMBER INPUT ══════ */
+  .number-input {
+    background: rgba(13,15,20,0.6) !important;
+    border: 1.5px solid rgba(200,164,78,0.15) !important;
+    color: var(--stone) !important;
+    font-family: 'Outfit', sans-serif !important;
+    border-radius: 12px !important;
+  }
+  .number-input:focus {
+    border-color: var(--gold) !important;
+    box-shadow: 0 0 0 3px rgba(200,164,78,0.1) !important;
+    outline: none !important;
+  }
+
+  /* ══════ TAB BAR ══════ */
+  .tab-bar {
+    background: rgba(13,15,20,0.5) !important;
+    border: 1px solid rgba(200,164,78,0.08) !important;
+    border-radius: 12px !important;
+    padding: 4px !important;
+  }
+  .tab-btn {
+    color: var(--text-light) !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 0.82rem !important;
+    border-radius: 10px !important;
+    transition: all 0.3s !important;
+  }
+  .tab-btn.active {
+    background: rgba(200,164,78,0.15) !important;
+    color: var(--gold) !important;
+    box-shadow: 0 2px 8px rgba(200,164,78,0.1) !important;
+  }
+
+  /* ══════ WHAT-IF BAR ══════ */
+  .whatif-btn {
+    background: rgba(200,164,78,0.06) !important;
+    border: 1px solid rgba(200,164,78,0.12) !important;
+    color: var(--stone) !important;
+    font-family: 'Outfit', sans-serif !important;
+    backdrop-filter: blur(8px) !important;
+  }
+  .whatif-btn:hover {
+    background: rgba(200,164,78,0.15) !important;
+    border-color: rgba(200,164,78,0.3) !important;
+    box-shadow: 0 4px 16px rgba(200,164,78,0.1) !important;
+    color: var(--gold) !important;
+  }
+
+  /* ══════ TOGGLES ══════ */
+  .toggle input:checked + .slider {
+    background: var(--gold) !important;
+  }
+  .toggle .slider {
+    background: rgba(200,164,78,0.15) !important;
+  }
+
+  /* ══════ OPTION ROWS ══════ */
+  .option-row {
+    border-bottom-color: rgba(200,164,78,0.06) !important;
+  }
+  .option-label {
+    color: var(--stone) !important;
+  }
+  .option-sublabel {
+    color: var(--text-light) !important;
+  }
+
+  /* ══════ CHILDREN COUNTER ══════ */
+  .counter-btn {
+    background: rgba(13,15,20,0.5) !important;
+    border: 1.5px solid rgba(200,164,78,0.15) !important;
+    color: var(--stone) !important;
+    transition: all 0.25s !important;
+  }
+  .counter-btn:hover {
+    border-color: var(--gold) !important;
+    color: var(--gold) !important;
+    box-shadow: 0 0 8px rgba(200,164,78,0.15) !important;
+  }
+  .counter-value {
+    color: var(--gold) !important;
+    font-family: 'Cormorant Garamond', serif !important;
+  }
+
+  /* ══════ RESULT HERO ══════ */
+  .result-hero {
+    background: linear-gradient(145deg, #1a1520 0%, #2a1828 40%, #1e2535 100%) !important;
+    border: 1px solid rgba(200,164,78,0.2) !important;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(200,164,78,0.1) !important;
+    position: relative;
+    overflow: hidden;
+  }
+  .result-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(200,164,78,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .result-hero .net-label {
+    color: var(--text-light) !important;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+  }
+  .result-hero .net-amount {
+    font-family: 'Cormorant Garamond', Georgia, serif !important;
+    font-size: 3.2rem !important;
+    font-weight: 700 !important;
+    background: linear-gradient(135deg, #e8dcc8 0%, #c8a44e 50%, #f0d878 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+  }
+  .result-hero .net-sub {
+    color: var(--text-light) !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 0.85rem !important;
+  }
+
+  /* ══════ SUMMARY BOXES ══════ */
+  .summary-box {
+    background: rgba(22,25,35,0.6) !important;
+    border: 1px solid rgba(200,164,78,0.08) !important;
+    border-radius: 14px !important;
+    transition: border-color 0.3s;
+  }
+  .summary-box:hover {
+    border-color: rgba(200,164,78,0.2) !important;
+  }
+  .summary-box .label {
+    color: var(--text-light) !important;
+    font-family: 'Outfit', sans-serif !important;
+    letter-spacing: 0.8px !important;
+  }
+  .summary-box .value {
+    font-family: 'Cormorant Garamond', serif !important;
+    font-size: 1.5rem !important;
+  }
+  .summary-box.green .value  { color: var(--thermal) !important; }
+  .summary-box.blue .value   { color: #5a9ac4 !important; }
+  .summary-box.red .value    { color: var(--wine-light) !important; }
+  .summary-box.purple .value { color: #a88bd4 !important; }
+
+  /* ══════ DONUT CHART ══════ */
+  .chart-legend {
+    border-top: 1px solid rgba(200,164,78,0.08);
+    padding-top: 16px !important;
+  }
+  .legend-item {
+    color: var(--stone) !important;
+    font-family: 'Outfit', sans-serif !important;
+  }
+  .legend-value {
+    color: var(--stone) !important;
+    font-family: 'Cormorant Garamond', serif !important;
+    font-size: 1rem !important;
+  }
+
+  /* ══════ BREAKDOWN TABLE ══════ */
+  .breakdown-table tr {
+    border-bottom-color: rgba(200,164,78,0.06) !important;
+  }
+  .breakdown-table td {
+    color: var(--stone) !important;
+    font-family: 'Outfit', sans-serif !important;
+  }
+  .breakdown-table td:last-child {
+    font-family: 'Cormorant Garamond', serif !important;
+    font-size: 1rem !important;
+  }
+  .breakdown-table .subtotal {
+    background: rgba(200,164,78,0.05) !important;
+  }
+  .breakdown-table .benefit { color: var(--thermal) !important; }
+  .breakdown-table .deduction { color: var(--wine-light) !important; }
+
+  /* ══════ BAR CHARTS ══════ */
+  .bar-label {
+    color: var(--text-light) !important;
+    font-family: 'Outfit', sans-serif !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.78rem !important;
+  }
+  .bar-track {
+    background: rgba(13,15,20,0.5) !important;
+    border: 1px solid rgba(200,164,78,0.05);
+    border-radius: 8px !important;
+    height: 32px !important;
+  }
+  .bar-fill {
+    border-radius: 7px !important;
+  }
+  .bar-amount {
+    color: white !important;
+    font-weight: 600 !important;
+  }
+
+  /* ══════ FAMILY ALLOWANCE ══════ */
+  .allowance-card {
+    background: linear-gradient(135deg, rgba(45,155,122,0.15), rgba(26,138,125,0.1)) !important;
+    border: 1px solid rgba(45,155,122,0.2) !important;
+  }
+  .allowance-card h3 {
+    color: #4dc9a8 !important;
+    font-family: 'Outfit', sans-serif !important;
+  }
+  .allowance-amount {
+    color: var(--thermal) !important;
+    font-family: 'Cormorant Garamond', serif !important;
+  }
+  .allowance-amount span {
+    color: #4dc9a8 !important;
+    font-family: 'Outfit', sans-serif !important;
+  }
+
+  /* ══════ ANNUAL OVERVIEW ══════ */
+  #annualBarChart rect {
+    rx: 6;
+  }
+
+  /* ══════ CUSTOM SELECT ══════ */
+  .custom-select {
+    background: rgba(13,15,20,0.6) !important;
+    border-color: rgba(200,164,78,0.15) !important;
+    color: var(--stone) !important;
+  }
+  .custom-select:focus {
+    border-color: var(--gold) !important;
+    box-shadow: 0 0 0 3px rgba(200,164,78,0.1) !important;
+  }
+
+  /* ══════ FOOTER ══════ */
+  footer {
+    color: var(--text-light) !important;
+    border-top: 1px solid rgba(200,164,78,0.08);
+    position: relative;
+  }
+  footer::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  footer a {
+    color: var(--gold) !important;
+  }
+
+  /* ══════ HISTORY CARD ══════ */
+  .history-card {
+    background: rgba(22,25,35,0.75) !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(200,164,78,0.1) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: var(--shadow) !important;
+    padding: 28px !important;
+  }
+  .history-card h2 {
+    color: var(--stone) !important;
+    font-family: 'Cormorant Garamond', serif !important;
+  }
+  .save-btn {
+    background: rgba(200,164,78,0.12) !important;
+    border: 1px solid rgba(200,164,78,0.25) !important;
+    color: var(--gold) !important;
+    font-family: 'Outfit', sans-serif !important;
+  }
+  .save-btn:hover {
+    background: rgba(200,164,78,0.2) !important;
+    box-shadow: 0 4px 16px rgba(200,164,78,0.1) !important;
+  }
+  .history-search {
+    background: rgba(13,15,20,0.6) !important;
+    border: 1.5px solid rgba(200,164,78,0.1) !important;
+    color: var(--stone) !important;
+    font-family: 'Outfit', sans-serif !important;
+  }
+  .history-search:focus {
+    border-color: var(--gold) !important;
+  }
+  .history-empty {
+    color: var(--text-light) !important;
+  }
+
+  /* ══════ DISABLED STATE ══════ */
+  .disabled-option {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  /* ══════ ANIMATIONS ══════ */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card {
+    animation: cardReveal 0.6s ease-out both !important;
+  }
+  @keyframes cardReveal {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Staggered card animations */
+  .grid > div:nth-child(1) .card:nth-child(1) { animation-delay: 0.1s !important; }
+  .grid > div:nth-child(1) .card:nth-child(2) { animation-delay: 0.2s !important; }
+  .grid > div:nth-child(1) .card:nth-child(3) { animation-delay: 0.3s !important; }
+  .grid > div:nth-child(2) .result-hero { animation: cardReveal 0.6s ease-out 0.15s both; }
+  .grid > div:nth-child(2) > .summary-grid { animation: cardReveal 0.6s ease-out 0.25s both; }
+  .grid > div:nth-child(2) .card:nth-child(3) { animation-delay: 0.35s !important; }
+  .grid > div:nth-child(2) .card:nth-child(4) { animation-delay: 0.45s !important; }
+  .grid > div:nth-child(2) .card:nth-child(5) { animation-delay: 0.55s !important; }
+  .grid > div:nth-child(2) .card:nth-child(6) { animation-delay: 0.65s !important; }
+  .card.full-width:nth-child(3) { animation-delay: 0.5s !important; }
+  .card.full-width:nth-child(4) { animation-delay: 0.6s !important; }
+  .card.full-width:nth-child(5) { animation-delay: 0.7s !important; }
+
+  /* ══════ ORNAMENTAL DIVIDER (used between sections) ══════ */
+  .ornament-divider {
+    text-align: center;
+    color: var(--gold-dim);
+    font-size: 1.2rem;
+    letter-spacing: 8px;
+    padding: 16px 0;
+    user-select: none;
+  }
+
+  /* ══════ CHART BACKGROUNDS ══════ */
+  #netVsGrossChart, #taxRateChart {
+    border-radius: 12px;
+    border: 1px solid rgba(200,164,78,0.05);
+  }
+
+  /* ══════ SCROLLBAR ══════ */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--midnight); }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(200,164,78,0.2);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(200,164,78,0.35); }
+
+  /* ══════ RESPONSIVE REFINEMENTS ══════ */
+  @media (max-width: 900px) {
+    .hero h1 { font-size: 2rem !important; }
+    .salary-display { font-size: 2.2rem !important; }
+    .result-hero .net-amount { font-size: 2.6rem !important; }
+    .summary-grid { grid-template-columns: 1fr 1fr !important; }
+  }
+
+  /* Override chart subtitle colors */
+  .chart-subtitle, [style*="text-transform:uppercase"][style*="letter-spacing"] {
+    color: var(--text-light) !important;
+  }
+
+  /* Net vs Gross and Tax Rate chart container override */
+  div[style*="background:#0f1729"] {
+    background: rgba(10,12,20,0.9) !important;
+    border: 1px solid rgba(200,164,78,0.06) !important;
+  }
+
+  /* Select option styling */
+  select option {
+    background: #1a1d28;
+    color: var(--stone);
+  }
+</style>
+</head>
+<body data-page="hungary">
+
+<div class="hero">
+  <div class="lang-selector">
+    <button class="lang-btn active" data-lang="hu" title="Magyar">&#x1F1ED;&#x1F1FA;</button>
+    <button class="lang-btn" data-lang="de" title="Deutsch">&#x1F1E9;&#x1F1EA;</button>
+    <button class="lang-btn" data-lang="nl" title="Nederlands">&#x1F1F3;&#x1F1F1;</button>
+    <button class="lang-btn" data-lang="en" title="English">&#x1F1EC;&#x1F1E7;</button>
+  </div>
+  <h1 id="heroTitle">Bérkalkulátor 2026</h1>
+  <p id="heroSub" data-hu="Részletes nettó bér, adók és családi kedvezmények kalkulátora" data-en="Detailed net salary, taxes and family benefits calculator" data-de="Detaillierter Nettolohn-, Steuer- und Familienbeihilfen-Rechner" data-nl="Gedetailleerde nettoloon-, belasting- en gezinsbijslagen-calculator">Részletes nettó bér, adók és családi kedvezmények kalkulátora</p>
+  <div class="badge" id="heroBadge" data-hu="2026. január 1-től érvényes szabályok" data-en="Valid from January 1, 2026" data-de="Gültig ab 1. Januar 2026" data-nl="Geldig vanaf 1 januari 2026">2026. január 1-től érvényes szabályok</div>
+  <div class="flag-strip">
+    <div style="background:#c60c30"></div><div style="background:#ffffff"></div><div style="background:#00833e"></div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="grid">
+
+    <!-- LEFT COLUMN: Inputs -->
+    <div>
+      <!-- Gross Salary -->
+      <div class="card" style="margin-bottom:24px">
+        <h2><span class="icon icon-orange">💰</span> <span data-hu="Bruttó bér" data-en="Gross Salary" data-de="Bruttogehalt" data-nl="Brutoloon">Bruttó bér</span></h2>
+        <div class="salary-input-group">
+          <label data-hu="Havi bruttó bér (Ft)" data-en="Monthly gross salary (HUF)" data-de="Monatliches Bruttogehalt (Ft)" data-nl="Maandelijks brutoloon (Ft)">Havi bruttó bér (Ft)</label>
+          <div class="salary-display" id="salaryDisplay">500 000 <span>Ft/hó</span></div>
+          <input type="range" id="salarySlider" min="100000" max="5000000" step="10000" value="500000" aria-label="Monthly gross salary slider">
+          <div class="range-labels">
+            <span data-hu="100 000 Ft" data-en="100,000 HUF" data-de="100.000 Ft" data-nl="100.000 Ft">100 000 Ft</span>
+            <span data-hu="5 000 000 Ft" data-en="5,000,000 HUF" data-de="5.000.000 Ft" data-nl="5.000.000 Ft">5 000 000 Ft</span>
+          </div>
+
+    <div class="whatif-bar" id="whatifBar">
+      <button class="whatif-btn" data-whatif="raise10"><span class="emoji">📈</span>+10% Raise</button>
+      <button class="whatif-btn" data-whatif="raise20"><span class="emoji">🚀</span>+20% Raise</button>
+      <button class="whatif-btn" data-whatif="bonus1k"><span class="emoji">💎</span>+1K Bonus</button>
+      <button class="whatif-btn" data-whatif="bonus2k"><span class="emoji">🎯</span>+2K Bonus</button>
+      <button class="whatif-btn" data-whatif="min"><span class="emoji">📉</span>Min Wage</button>
+    </div>
+
+          <div style="margin-top:12px">
+            <input type="text" class="number-input" id="salaryInput" value="500 000" placeholder="Enter amount..." data-hu-placeholder="Írja be az összeget..." data-en-placeholder="Enter amount..." data-de-placeholder="Betrag eingeben..." data-nl-placeholder="Bedrag invoeren..." aria-label="Monthly gross salary input">
+          </div>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-btn active" data-mode="gross" data-hu="Bruttóból" data-en="From Gross" data-de="Vom Brutto" data-nl="Van bruto">Bruttóból</button>
+          <button class="tab-btn" data-mode="net" data-hu="Nettóból" data-en="From Net" data-de="Vom Netto" data-nl="Van netto">Nettóból</button>
+          <button class="tab-btn" data-mode="total" data-hu="Teljes költségből" data-en="From Total Cost" data-de="Von Gesamtkosten" data-nl="Van totale kosten">Teljes költségből</button>
+        </div>
+      </div>
+
+      <!-- Personal Options -->
+      <div class="card" style="margin-bottom:24px">
+        <h2><span class="icon icon-purple">👤</span> <span data-hu="Személyes adatok" data-en="Personal Details" data-de="Persönliche Daten" data-nl="Persoonlijke gegevens">Személyes adatok</span></h2>
+        <div class="option-row">
+          <div>
+            <div class="option-label" data-hu="25 év alatti fiatal" data-en="Under 25 years old" data-de="Unter 25 Jahre alt" data-nl="Jonger dan 25 jaar">25 év alatti fiatal</div>
+            <div class="option-sublabel" data-hu="SZJA mentesség max. 715 765 Ft/hó-ig" data-en="PIT exemption up to 715,765 HUF/month" data-de="ESt-Befreiung bis max. 715.765 Ft/Monat" data-nl="PIT-vrijstelling tot max. 715.765 Ft/maand">SZJA mentesség max. 715 765 Ft/hó-ig</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="under25" aria-label="Under 25 years old benefit"><span class="slider"></span></label>
+        </div>
+        <div class="option-row">
+          <div>
+            <div class="option-label" data-hu="Friss házas (első házasság)" data-en="Newlywed (first marriage)" data-de="Frisch verheiratet (erste Ehe)" data-nl="Pasgetrouwd (eerste huwelijk)">Friss házas (első házasság)</div>
+            <div class="option-sublabel" data-hu="33 335 Ft/hó adóalap-kedvezmény, max. 24 hónap" data-en="33,335 HUF/month tax base reduction, max 24 months" data-de="33.335 Ft/Monat Steuerbasisvergünstigung, max. 24 Monate" data-nl="33.335 Ft/maand belastingbasisvermindering, max. 24 maanden">33 335 Ft/hó adóalap-kedvezmény, max. 24 hónap</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="newlywed" aria-label="Newlywed benefit"><span class="slider"></span></label>
+        </div>
+        <div class="option-row">
+          <div>
+            <div class="option-label" data-hu="30 év alatti anya" data-en="Mother under 30" data-de="Mutter unter 30 Jahren" data-nl="Moeder onder 30 jaar">30 év alatti anya</div>
+            <div class="option-sublabel" data-hu="Teljes SZJA mentesség (korlát nélkül, 2026-tól)" data-en="Full PIT exemption (no limit, from 2026)" data-de="Volle ESt-Befreiung (ohne Limit, ab 2026)" data-nl="Volledige PIT-vrijstelling (zonder limiet, vanaf 2026)">Teljes SZJA mentesség (korlát nélkül, 2026-tól)</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="motherUnder30" aria-label="Mother under 30 years old benefit"><span class="slider"></span></label>
+        </div>
+        <div class="option-row">
+          <div>
+            <div class="option-label" data-hu="4+ gyermekes anya (SZJA mentes)" data-en="Mother with 4+ children (PIT exempt)" data-de="Mutter mit 4+ Kindern (ESt-befreit)" data-nl="Moeder met 4+ kinderen (PIT-vrijgesteld)">4+ gyermekes anya (SZJA mentes)</div>
+            <div class="option-sublabel" data-hu="Teljes SZJA mentesség, életkortól függetlenül" data-en="Full PIT exemption regardless of age" data-de="Volle ESt-Befreiung unabhängig vom Alter" data-nl="Volledige PIT-vrijstelling ongeacht leeftijd">Teljes SZJA mentesség, életkortól függetlenül</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="mother4plus" aria-label="Mother with 4 or more children benefit"><span class="slider"></span></label>
+        </div>
+      </div>
+
+      <!-- Family -->
+      <div class="card" style="margin-bottom:24px">
+        <h2><span class="icon icon-green">👨‍👩‍👧‍👦</span> <span data-hu="Családi kedvezmények" data-en="Family Benefits" data-de="Familienleistungen" data-nl="Gezinsvoordelen">Családi kedvezmények</span></h2>
+
+        <div style="margin-bottom:16px">
+          <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:10px;color:var(--text-light);text-transform:uppercase;letter-spacing:0.8px" data-hu="Eltartottak száma (gyermekek)" data-en="Number of dependents (children)" data-de="Anzahl der Unterhaltsberechtigten (Kinder)" data-nl="Aantal onderhoudsgerechtigden (kinderen)">Eltartottak száma (gyermekek)</label>
+          <div class="children-counter">
+            <button class="counter-btn" data-action="children" data-delta="-1" aria-label="Decrease number of children">−</button>
+            <span class="counter-value" id="childrenCount">0</span>
+            <button class="counter-btn" data-action="children" data-delta="1" aria-label="Increase number of children">+</button>
+          </div>
+        </div>
+
+        <div id="beneficiaryRow" class="option-row disabled-option">
+          <div>
+            <div class="option-label" data-hu="Kedvezményezett eltartottak száma" data-en="Number of beneficiary dependents" data-de="Anzahl der Begünstigten" data-nl="Aantal begunstigde onderhoudsgerechtigden">Kedvezményezett eltartottak száma</div>
+            <div class="option-sublabel" data-hu="Akik után a kedvezmény jár" data-en="Children qualifying for the benefit" data-de="Kinder mit Anspruch auf Vergünstigung" data-nl="Kinderen die recht hebben op het voordeel">Akik után a kedvezmény jár</div>
+          </div>
+          <div class="children-counter" style="margin-left:12px">
+            <button class="counter-btn" data-action="beneficiary" data-delta="-1" aria-label="Decrease number of beneficiary children">−</button>
+            <span class="counter-value" id="beneficiaryCount">0</span>
+            <button class="counter-btn" data-action="beneficiary" data-delta="1" aria-label="Increase number of beneficiary children">+</button>
+          </div>
+        </div>
+
+        <div class="option-row" id="singleParentRow" style="display:none">
+          <div>
+            <div class="option-label" data-hu="Egyedülálló szülő" data-en="Single parent" data-de="Alleinerziehend" data-nl="Alleenstaande ouder">Egyedülálló szülő</div>
+            <div class="option-sublabel" data-hu="Magasabb családi pótlék összeg" data-en="Higher family allowance amount" data-de="Höherer Familienbeihilfenbetrag" data-nl="Hoger gezinsbijslagbedrag">Magasabb családi pótlék összeg</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="singleParent" aria-label="Single parent status"><span class="slider"></span></label>
+        </div>
+
+        <div class="option-row" id="disabledChildRow" style="display:none">
+          <div>
+            <div class="option-label" data-hu="Tartósan beteg / fogyatékos gyermek" data-en="Chronically ill / disabled child" data-de="Chronisch krankes / behindertes Kind" data-nl="Chronisch ziek / gehandicapt kind">Tartósan beteg / fogyatékos gyermek</div>
+            <div class="option-sublabel" data-hu="Emelt családi pótlék + extra adóalap-kedvezmény" data-en="Increased allowance + extra tax base reduction" data-de="Erhöhte Familienbeihilfe + extra Steuerbasisvergünstigung" data-nl="Verhoogde gezinsbijslag + extra belastingbasisvermindering">Emelt családi pótlék + extra adóalap-kedvezmény</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="disabledChild" aria-label="Disabled child dependent"><span class="slider"></span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Results -->
+    <div>
+      <!-- Net salary hero -->
+      <div class="result-hero" id="resultHero">
+        <div class="net-label" id="netLabel" data-hu="Nettó havi bér" data-en="Monthly Net Salary" data-de="Monatliches Nettogehalt" data-nl="Maandelijks nettoloon">Nettó havi bér</div>
+        <div class="net-amount" id="netAmount">332 500 Ft</div>
+        <div class="net-sub" id="netSub">-</div>
+      </div>
+
+      <!-- Summary boxes -->
+      <div class="summary-grid" style="margin-bottom:24px">
+        <div class="summary-box green">
+          <div class="label" data-hu="Nettó bér" data-en="Net Salary" data-de="Nettolohn" data-nl="Nettoloon">Nettó bér</div>
+          <div class="value" id="sumNet">332 500</div>
+        </div>
+        <div class="summary-box red">
+          <div class="label" data-hu="Összes levonás" data-en="Total Deductions" data-de="Abzüge gesamt" data-nl="Totale inhoudingen">Összes levonás</div>
+          <div class="value" id="sumDeductions">167 500</div>
+        </div>
+        <div class="summary-box blue">
+          <div class="label" data-hu="Munkáltatói költség" data-en="Employer Cost" data-de="Arbeitgeberkosten" data-nl="Werkgeverskosten">Munkáltatói költség</div>
+          <div class="value" id="sumEmployer">565 000</div>
+        </div>
+        <div class="summary-box purple">
+          <div class="label" data-hu="Családi pótlék" data-en="Family Allowance" data-de="Familienbeihilfe" data-nl="Gezinsbijslag">Családi pótlék</div>
+          <div class="value" id="sumCsaladipotlek">0</div>
+        </div>
+      </div>
+
+      <!-- Donut chart -->
+      <div class="card" style="margin-bottom:24px">
+        <h2><span class="icon icon-teal">📊</span> <span data-hu="Béred összetétele" data-en="Salary Composition" data-de="Gehaltsstruktur" data-nl="Salarissamenstelling">Béred összetétele</span></h2>
+        <div class="chart-container">
+          <svg class="donut-chart" id="donutChart" viewBox="0 0 200 200" width="220" height="220"></svg>
+        </div>
+        <div class="chart-legend" id="chartLegend"></div>
+      </div>
+
+      <!-- Detailed breakdown -->
+      <div class="card" style="margin-bottom:24px">
+        <h2><span class="icon icon-red">📋</span> <span data-hu="Részletes bontás" data-en="Detailed Breakdown" data-de="Detaillierte Aufstellung" data-nl="Gedetailleerde berekening">Részletes bontás</span></h2>
+        <table class="breakdown-table" id="breakdownTable"></table>
+      </div>
+
+      <!-- Employer cost bar chart -->
+      <div class="card" style="margin-bottom:24px">
+        <h2><span class="icon icon-orange">🏢</span> <span data-hu="Munkáltatói terhek" data-en="Employer Costs" data-de="Arbeitgeberbeiträge" data-nl="Werkgeverslasten">Munkáltatói terhek</span></h2>
+        <div id="employerBars"></div>
+        <div style="margin-top:16px;padding-top:16px;border-top:2px solid rgba(200,164,78,0.1);display:flex;justify-content:space-between;font-weight:700;color:var(--stone)">
+          <span data-hu="Teljes munkáltatói költség" data-en="Total employer cost" data-de="Gesamte Arbeitgeberkosten" data-nl="Totale werkgeverskosten">Teljes munkáltatói költség</span>
+          <span id="totalEmployerCost" style="font-family:'Cormorant Garamond',serif;font-size:1.1rem">565 000 Ft</span>
+        </div>
+      </div>
+
+      <!-- Family allowance card -->
+      <div class="card" id="familyAllowanceCard" style="margin-bottom:24px;display:none">
+        <h2><span class="icon icon-green">👶</span> <span data-hu="Családi pótlék (állami)" data-en="Family Allowance (State)" data-de="Familienbeihilfe (staatlich)" data-nl="Gezinsbijslag (overheid)">Családi pótlék (állami)</span></h2>
+        <div class="allowance-card">
+          <h3 data-hu="Havi családi pótlék összege" data-en="Monthly family allowance amount" data-de="Monatliche Familienbeihilfe" data-nl="Maandelijkse gezinsbijslag">Havi családi pótlék összege</h3>
+          <div class="allowance-amount" id="allowanceAmount">0 <span>Ft/hó</span></div>
+        </div>
+        <div style="margin-top:12px;font-size:0.85rem;color:var(--text-light)" id="allowanceDetail"></div>
+      </div>
+    </div>
+
+    <!-- Net Take-Home vs Gross chart -->
+    <div class="card full-width" style="margin-bottom:0">
+      <h2><span class="icon icon-green">📈</span> <span data-hu="Nettó bevétel a bruttó függvényében" data-en="Net Take-Home vs. Gross Salary" data-de="Nettoeinkommen vs. Bruttogehalt" data-nl="Nettosalaris vs. Brutosalaris">Nettó bevétel a bruttó függvényében</span></h2>
+      <div class="chart-subtitle" data-hu="Havi összegek Ft-ban · 2026-os szabályok" data-en="Monthly amounts in HUF · 2026 rules" data-de="Monatliche Beträge in Ft · 2026" data-nl="Maandbedragen in Ft · 2026" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-light);margin:-12px 0 12px">Havi összegek Ft-ban · 2026-os szabályok</div>
+      <div id="netVsGrossLegend" style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;font-size:0.82rem"></div>
+      <div style="position:relative;width:100%;overflow:hidden;border-radius:12px;background:rgba(10,12,20,0.9);border:1px solid rgba(200,164,78,0.06)">
+        <canvas id="netVsGrossChart" style="width:100%;height:340px;display:block"></canvas>
+      </div>
+    </div>
+
+    <!-- Effective Tax Rate chart -->
+    <div class="card full-width" style="margin-bottom:0">
+      <h2><span class="icon icon-red">📉</span> <span data-hu="Effektív adókulcs" data-en="Effective Tax Rate" data-de="Effektive Abgabenquote" data-nl="Effectieve belastingdruk">Effektív adókulcs</span></h2>
+      <div class="chart-subtitle" data-hu="Összes levonás a bruttó %-ában · kedvezményeket tartalmazza" data-en="Total deductions as % of gross · includes benefit offset" data-de="Gesamtabzüge in % des Bruttolohns · inkl. Vergünstigungen" data-nl="Totale afdracht als % van brutosalaris · inclusief voordelen" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-light);margin:-12px 0 12px">Összes levonás a bruttó %-ában · kedvezményeket tartalmazza</div>
+      <div id="taxRateLegend" style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;font-size:0.82rem"></div>
+      <div style="position:relative;width:100%;overflow:hidden;border-radius:12px;background:rgba(10,12,20,0.9);border:1px solid rgba(200,164,78,0.06)">
+        <canvas id="taxRateChart" style="width:100%;height:300px;display:block"></canvas>
+      </div>
+    </div>
+
+    <!-- Full width annual overview -->
+    <div class="card full-width">
+      <h2><span class="icon icon-blue">📅</span> <span data-hu="Éves áttekintés" data-en="Annual Overview" data-de="Jahresübersicht" data-nl="Jaaroverzicht">Éves áttekintés</span></h2>
+      <div class="summary-grid" style="grid-template-columns: repeat(4, 1fr)">
+        <div class="summary-box green">
+          <div class="label" data-hu="Éves nettó" data-en="Annual Net" data-de="Jahres-Netto" data-nl="Jaarnetto">Éves nettó</div>
+          <div class="value" id="annualNet">3 990 000</div>
+        </div>
+        <div class="summary-box red">
+          <div class="label" data-hu="Éves SZJA" data-en="Annual PIT" data-de="Jahres-ESt" data-nl="Jaarlijkse PIT">Éves SZJA</div>
+          <div class="value" id="annualSzja">900 000</div>
+        </div>
+        <div class="summary-box blue">
+          <div class="label" data-hu="Éves TB" data-en="Annual SS" data-de="Jahres-SV" data-nl="Jaarlijkse SV">Éves TB</div>
+          <div class="value" id="annualTb">1 110 000</div>
+        </div>
+        <div class="summary-box purple">
+          <div class="label" data-hu="Éves munkáltatói ktg." data-en="Annual Employer Cost" data-de="Jahres-AG-Kosten" data-nl="Jaarlijkse werkgeverskosten">Éves munkáltatói ktg.</div>
+          <div class="value" id="annualEmployer">6 780 000</div>
+        </div>
+      </div>
+      <div style="margin-top:16px">
+        <svg id="annualBarChart" viewBox="0 0 800 60" width="100%" height="60"></svg>
+        <div id="annualBarLegend" style="display:flex;gap:20px;justify-content:center;margin-top:8px;flex-wrap:wrap"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+  <!-- ══════ SAVE & HISTORY ══════ -->
+  <div class="history-card full-width" id="historyCard">
+    <h2><span class="icon icon-green" style="background:rgba(45,155,122,0.2);color:#4dc9a8">💾</span> Recent Calculations</h2>
+    <button class="save-btn" id="saveCalcBtn" onclick="saveCalculation()">
+      <span>💾</span> Save Calculation
+    </button>
+    <div class="history-search-wrap">
+      <input type="text" class="history-search" id="historySearch" placeholder="Search saved calculations..." oninput="renderHistory()">
+    </div>
+    <div class="history-list" id="historyList">
+      <div class="history-empty">No saved calculations yet. Use the button above to save one.</div>
+    </div>
+  </div>
+
+<footer>
+  <p data-hu="Magyar Bérkalkulátor 2026 — Tájékoztató jellegű, nem minősül adótanácsadásnak." data-en="Hungarian Salary Calculator 2026 — For informational purposes only, not tax advice." data-de="Ungarischer Gehaltsrechner 2026 — Nur zur Information, keine Steuerberatung." data-nl="Hongaarse salariscalculator 2026 — Alleen ter informatie, geen belastingadvies.">Magyar Bérkalkulátor 2026 — Tájékoztató jellegű, nem minősül adótanácsadásnak.</p>
+  <p style="margin-top:4px" data-hu="Minimálbér: 322 800 Ft | Garantált bérminimum: 373 200 Ft" data-en="Minimum wage: 322,800 HUF | Guaranteed minimum wage: 373,200 HUF" data-de="Mindestlohn: 322.800 Ft | Garantierter Mindestlohn: 373.200 Ft" data-nl="Minimumloon: 322.800 Ft | Gegarandeerd minimumloon: 373.200 Ft">Minimálbér: 322 800 Ft | Garantált bérminimum: 373 200 Ft</p>
+</footer>
+
+<script>
+// ====== CONSTANTS ======
+const SZJA_RATE = 0.15;
+const TB_RATE = 0.185;
+const TB_PENSION = 0.10;
+const TB_HEALTH = 0.085;
+const SZOCHO_RATE = 0.13;
+const UNDER25_LIMIT = 715765;
+const NEWLYWED_BASE = 33335;
+const DISABLED_EXTRA_BASE = 66670;
+
+// Family tax base reduction per dependent per month
+const FAMILY_BASE_REDUCTION = {
+  1: 133340,
+  2: 266660,
+  3: 440000 // per dependent for 3+
+};
+
+// Családi pótlék (monthly, per child)
+const CSALADI_POTLEK = {
+  twoParent: { 1: 12200, 2: 13300, 3: 16000 },
+  singleParent: { 1: 13700, 2: 14800, 3: 17000 },
+  disabled: 23300
+};
+
+// ====== STATE ======
+let lang = 'hu';
+let calcMode = 'gross';
+let children = 0;
+let beneficiaryChildren = 0;
+
+// ====== FORMAT ======
+function fmt(n) {
+  return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
+// ====== LANG ======
+const TITLE_MAP = {
+  hu: 'Magyar Bérkalkulátor 2026 | Hungarian Salary Calculator',
+  en: 'Hungarian Salary Calculator 2026 | Magyar Bérkalkulátor',
+  de: 'Ungarischer Gehaltsrechner 2026 | Magyar Bérkalkulátor',
+  nl: 'Hongaarse salariscalculator 2026 | Magyar Bérkalkulátor'
+};
+const META_DESC_MAP = {
+  hu: 'Magyar bérkalkulátor 2026 — Nettó bér, adók és családi kedvezmények részletes számítása.',
+  en: 'Hungarian Salary Calculator 2026 — Detailed net salary, taxes and family benefits calculation.',
+  de: 'Ungarischer Gehaltsrechner 2026 — Detaillierte Nettolohn-, Steuer- und Familienleistungsberechnung.',
+  nl: 'Hongaarse salariscalculator 2026 — Gedetailleerde berekening van nettoloon, belastingen en gezinsvoordelen.'
+};
+
+function setLang(newLang, btnEl) {
+  if (lang === newLang) return;
+  lang = newLang;
+  document.documentElement.lang = lang;
+
+  document.title = TITLE_MAP[lang] || TITLE_MAP.en;
+  document.getElementById('metaDesc').setAttribute('content', META_DESC_MAP[lang] || META_DESC_MAP.en);
+
+  // Update button active states
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  if (btnEl) btnEl.classList.add('active');
+
+  // Update all elements with data-hu/data-en/data-de attributes
+  document.querySelectorAll('[data-hu]').forEach(el => {
+    const newText = el.getAttribute('data-' + lang) || el.getAttribute('data-en');
+    if (newText) {
+      el.textContent = newText;
+    }
+  });
+
+  // Update placeholder text
+  document.querySelectorAll('[data-hu-placeholder]').forEach(el => {
+    const placeKey = 'data-' + lang + '-placeholder';
+    const newText = el.getAttribute(placeKey) || el.getAttribute('data-en-placeholder');
+    if (newText) {
+      el.placeholder = newText;
+    }
+  });
+
+  // Force recalculation to update all dynamic content with correct language
+  calculate();
+}
+
+// ====== SALARY INPUT ======
+function updateSalaryDisplay(v) {
+  const isHu = lang === 'hu';
+  const suffix = isHu ? 'Ft/hó' : 'HUF/month';
+  document.getElementById('salaryDisplay').innerHTML = fmt(v) + ' <span>' + suffix + '</span>';
+}
+
+function updateFromSlider() {
+  const v = parseInt(document.getElementById('salarySlider').value);
+  document.getElementById('salaryInput').value = fmt(v);
+  updateSalaryDisplay(v);
+  calculate();
+}
+
+function updateFromInput() {
+  const raw = document.getElementById('salaryInput').value.replace(/\s/g, '');
+  const v = parseInt(raw) || 0;
+  const clamped = Math.min(Math.max(v, 100000), 10000000);
+  document.getElementById('salarySlider').value = Math.min(clamped, 5000000);
+  updateSalaryDisplay(v);
+  calculate();
+}
+
+// ====== CALC MODE ======
+function setCalcMode(mode, btn) {
+  calcMode = mode;
+  document.querySelectorAll('.tab-bar .tab-btn[data-mode]').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  calculate();
+}
+
+// ====== CHILDREN ======
+function changeChildren(delta) {
+  children = Math.max(0, Math.min(10, children + delta));
+  document.getElementById('childrenCount').textContent = children;
+
+  // Auto-set beneficiary = children
+  beneficiaryChildren = Math.min(beneficiaryChildren, children);
+  if (delta > 0 && beneficiaryChildren < children) beneficiaryChildren = children;
+  document.getElementById('beneficiaryCount').textContent = beneficiaryChildren;
+
+  const row = document.getElementById('beneficiaryRow');
+  row.classList.toggle('disabled-option', children === 0);
+  document.getElementById('singleParentRow').style.display = children > 0 ? 'flex' : 'none';
+  document.getElementById('disabledChildRow').style.display = children > 0 ? 'flex' : 'none';
+  calculate();
+}
+
+function changeBeneficiary(delta) {
+  if (children === 0) return;
+  beneficiaryChildren = Math.max(0, Math.min(children, beneficiaryChildren + delta));
+  document.getElementById('beneficiaryCount').textContent = beneficiaryChildren;
+  calculate();
+}
+
+// ====== CORE CALCULATION ======
+function calculate() {
+  const rawVal = document.getElementById('salaryInput').value.replace(/\s/g, '');
+  let inputAmount = parseInt(rawVal) || 0;
+
+  let gross;
+  if (calcMode === 'gross') {
+    gross = inputAmount;
+  } else if (calcMode === 'net') {
+    // Reverse calculate: net = gross - szja_actual - tb_actual
+    gross = reverseFromNet(inputAmount);
+  } else {
+    // From total employer cost using binary search
+    let lo = 0, hi = inputAmount;
+    for (let i = 0; i < 60; i++) {
+      const mid = (lo + hi) / 2;
+      const r = computeBreakdown(mid);
+      if (r.totalEmployerCost < inputAmount) lo = mid;
+      else hi = mid;
+    }
+    gross = Math.round((lo + hi) / 2);
+  }
+
+  const result = computeBreakdown(gross);
+  renderResults(result, gross);
+}
+
+function reverseFromNet(targetNet) {
+  let lo = 0, hi = targetNet * 3;
+  for (let i = 0; i < 60; i++) {
+    const mid = (lo + hi) / 2;
+    const r = computeBreakdown(mid);
+    if (r.netSalary < targetNet) lo = mid;
+    else hi = mid;
+  }
+  return Math.round((lo + hi) / 2);
+}
+
+function computeBreakdown(gross) {
+  const isUnder25 = document.getElementById('under25').checked;
+  const isNewlywed = document.getElementById('newlywed').checked;
+  const isMotherUnder30 = document.getElementById('motherUnder30').checked;
+  const isMother4plus = document.getElementById('mother4plus').checked;
+  const isSingleParent = document.getElementById('singleParent').checked;
+  const isDisabledChild = document.getElementById('disabledChild').checked;
+
+  // === SZJA calculation ===
+  let szjaBase = gross;
+  let szjaReductions = {};
+
+  // Under-25 exemption
+  let under25Benefit = 0;
+  if (isUnder25) {
+    under25Benefit = Math.min(gross, UNDER25_LIMIT);
+    szjaBase -= under25Benefit;
+    szjaReductions.under25 = under25Benefit;
+  }
+
+  // Mother under 30 - full exemption, no limit from 2026
+  let motherUnder30Benefit = 0;
+  if (isMotherUnder30 && children > 0) {
+    motherUnder30Benefit = szjaBase; // Full remaining base
+    szjaBase = 0;
+    szjaReductions.motherUnder30 = motherUnder30Benefit;
+  }
+
+  // Mother 4+ children - full exemption
+  let mother4plusBenefit = 0;
+  if (isMother4plus && !isMotherUnder30) {
+    mother4plusBenefit = szjaBase;
+    szjaBase = 0;
+    szjaReductions.mother4plus = mother4plusBenefit;
+  }
+
+  // Newlywed allowance
+  let newlywedBenefit = 0;
+  if (isNewlywed) {
+    newlywedBenefit = Math.min(NEWLYWED_BASE, szjaBase);
+    szjaBase -= newlywedBenefit;
+    szjaReductions.newlywed = newlywedBenefit;
+  }
+
+  // Family tax base reduction
+  let familyBaseReduction = 0;
+  let familyTaxBenefitTotal = 0;
+  if (children > 0 && beneficiaryChildren > 0) {
+    const rateKey = Math.min(children, 3);
+    const perDependent = FAMILY_BASE_REDUCTION[rateKey];
+    familyBaseReduction = perDependent * beneficiaryChildren;
+
+    // Extra for disabled
+    if (isDisabledChild) {
+      familyBaseReduction += DISABLED_EXTRA_BASE * beneficiaryChildren;
+    }
+  }
+
+  // Family benefit first reduces SZJA base
+  let familyBaseUsedOnSzja = Math.min(familyBaseReduction, szjaBase);
+  szjaBase -= familyBaseUsedOnSzja;
+
+  let szja = Math.max(0, szjaBase * SZJA_RATE);
+
+  // Remaining family benefit reduces TB
+  let familyBaseRemaining = familyBaseReduction - familyBaseUsedOnSzja;
+  let familyTbReduction = 0;
+  if (familyBaseRemaining > 0) {
+    // 15% of remaining base reduces TB
+    familyTbReduction = familyBaseRemaining * SZJA_RATE;
+  }
+
+  familyTaxBenefitTotal = familyBaseUsedOnSzja * SZJA_RATE + familyTbReduction;
+
+  // === TB (Social Security) ===
+  let tbGross = gross * TB_RATE;
+  let tbActual = Math.max(0, tbGross - familyTbReduction);
+  let tbPension = gross * TB_PENSION;
+  let tbHealth = gross * TB_HEALTH;
+
+  // Adjust pension/health proportionally if family TB reduction applies
+  if (familyTbReduction > 0) {
+    const tbReductionRatio = tbActual / tbGross;
+    tbPension = tbPension * tbReductionRatio;
+    tbHealth = tbActual - tbPension;
+  }
+
+  // === NET ===
+  let totalDeductions = szja + tbActual;
+  let netSalary = gross - totalDeductions;
+
+  // === EMPLOYER COSTS ===
+  let szocho = gross * SZOCHO_RATE;
+  let totalEmployerCost = gross + szocho;
+
+  // === CSALÁDI PÓTLÉK ===
+  let csaladipotlek = 0;
+  let csaladipotlekDetail = '';
+  if (children > 0) {
+    const parentType = isSingleParent ? 'singleParent' : 'twoParent';
+    if (isDisabledChild) {
+      csaladipotlek = CSALADI_POTLEK.disabled * children;
+      csaladipotlekDetail = `${children} × ${fmt(CSALADI_POTLEK.disabled)} Ft`;
+    } else {
+      const key = Math.min(children, 3);
+      const perChild = CSALADI_POTLEK[parentType][key];
+      csaladipotlek = perChild * children;
+      csaladipotlekDetail = `${children} × ${fmt(perChild)} Ft`;
+    }
+  }
+
+  return {
+    gross,
+    szja,
+    szjaBase: Math.max(0, szjaBase),
+    szjaReductions,
+    tbActual,
+    tbPension,
+    tbHealth,
+    tbGross: tbGross,
+    familyBaseReduction,
+    familyBaseUsedOnSzja,
+    familyTbReduction,
+    familyTaxBenefitTotal,
+    under25Benefit,
+    newlywedBenefit: isNewlywed ? newlywedBenefit : 0,
+    totalDeductions,
+    netSalary,
+    szocho,
+    totalEmployerCost,
+    csaladipotlek,
+    csaladipotlekDetail,
+    motherExempt: isMotherUnder30 || isMother4plus
+  };
+}
+
+// ====== RENDER ======
+function renderResults(r, gross) {
+  const isHu = lang === 'hu';
+  const currency = isHu ? 'Ft' : 'HUF';
+
+  // Update salary display currency
+  const rawVal2 = document.getElementById('salaryInput').value.replace(/\s/g, '');
+  updateSalaryDisplay(parseInt(rawVal2) || 0);
+
+  // Net amount display
+  animateOdometer(document.getElementById('netAmount'), Math.round(r.netSalary), '', ' ' + currency);
+  const pct = gross > 0 ? Math.round(r.netSalary / gross * 100) : 0;
+  document.getElementById('netSub').textContent = isHu
+    ? `A bruttó bér ${pct}%-a | Bruttó: ${fmt(gross)} Ft`
+    : `${pct}% of gross salary | Gross: ${fmt(gross)} HUF`;
+
+  // Summary boxes
+  document.getElementById('sumNet').textContent = fmt(r.netSalary);
+  document.getElementById('sumDeductions').textContent = fmt(r.totalDeductions);
+  document.getElementById('sumEmployer').textContent = fmt(r.totalEmployerCost);
+  document.getElementById('sumCsaladipotlek').textContent = fmt(r.csaladipotlek);
+
+  // Total employer
+  document.getElementById('totalEmployerCost').textContent = fmt(r.totalEmployerCost) + ' ' + currency;
+
+  // Annual (values only, currency added in display)
+  document.getElementById('annualNet').textContent = fmt(r.netSalary * 12);
+  document.getElementById('annualSzja').textContent = fmt(r.szja * 12);
+  document.getElementById('annualTb').textContent = fmt(r.tbActual * 12);
+  document.getElementById('annualEmployer').textContent = fmt(r.totalEmployerCost * 12);
+
+  // Breakdown table
+  renderBreakdown(r, gross);
+
+  // Donut
+  renderDonut(r, gross);
+
+  // Employer bars
+  renderEmployerBars(r, gross);
+
+  // Annual bar
+  renderAnnualBar(r);
+
+  // Curve charts
+  renderCurveCharts(gross);
+
+  // Family allowance card
+  const faCard = document.getElementById('familyAllowanceCard');
+  if (children > 0) {
+    faCard.style.display = 'block';
+    const currencyShort = isHu ? 'Ft' : 'HUF';
+    const currencyLong = isHu ? 'Ft/hó' : 'HUF/month';
+    document.getElementById('allowanceAmount').innerHTML = fmt(r.csaladipotlek) + ' <span>' + currencyLong + '</span>';
+    document.getElementById('allowanceDetail').textContent = isHu
+      ? `Számítás: ${r.csaladipotlekDetail} | Éves összeg: ${fmt(r.csaladipotlek * 12)} Ft`
+      : `Calculation: ${r.csaladipotlekDetail} | Annual: ${fmt(r.csaladipotlek * 12)} HUF`;
+  } else {
+    faCard.style.display = 'none';
+  }
+}
+
+function renderBreakdown(r, gross) {
+  const isHu = lang === 'hu';
+  const t = document.getElementById('breakdownTable');
+  let rows = '';
+  const currency = isHu ? 'Ft' : 'HUF';
+
+  const row = (label, amount, cls = '') =>
+    `<tr class="${cls}"><td class="row-header">${label}</td><td>${(cls.includes('benefit') ? '+' : cls.includes('deduction') ? '−' : '') + ' ' + fmt(Math.abs(amount))} ${currency}</td></tr>`;
+
+  rows += row(isHu ? '💰 Bruttó bér' : '💰 Gross Salary', gross, 'subtotal');
+  rows += '<tr><td colspan="2" style="padding:4px;font-size:0.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px">' + (isHu ? 'Munkavállalói levonások' : 'Employee Deductions') + '</td></tr>';
+
+  // SZJA
+  let szjaLabel = isHu ? 'SZJA (személyi jövedelemadó) 15%' : 'PIT (personal income tax) 15%';
+  rows += row(szjaLabel, r.szja, 'deduction');
+
+  // Show benefits
+  if (r.szjaReductions.under25) {
+    rows += row(isHu ? '↳ 25 év alatti kedvezmény' : '↳ Under-25 benefit', Math.round(r.szjaReductions.under25 * SZJA_RATE), 'benefit');
+  }
+  if (r.szjaReductions.motherUnder30) {
+    rows += row(isHu ? '↳ 30 év alatti anya kedvezménye' : '↳ Mother under-30 benefit', Math.round(r.szjaReductions.motherUnder30 * SZJA_RATE), 'benefit');
+  }
+  if (r.szjaReductions.mother4plus) {
+    rows += row(isHu ? '↳ 4+ gyermekes anya kedvezménye' : '↳ Mother 4+ children benefit', Math.round(r.szjaReductions.mother4plus * SZJA_RATE), 'benefit');
+  }
+  if (r.newlywedBenefit > 0) {
+    rows += row(isHu ? '↳ Első házasok kedvezménye' : '↳ Newlywed benefit', Math.round(r.newlywedBenefit * SZJA_RATE), 'benefit');
+  }
+  if (r.familyBaseUsedOnSzja > 0) {
+    rows += row(isHu ? '↳ Családi adókedvezmény (SZJA)' : '↳ Family tax benefit (PIT)', Math.round(r.familyBaseUsedOnSzja * SZJA_RATE), 'benefit');
+  }
+
+  // TB
+  const tbEffectiveRate = gross > 0 ? (r.tbActual / gross * 100).toFixed(2) : '18.50';
+  const tbPensionRate = gross > 0 ? (r.tbPension / gross * 100).toFixed(2) : '10.00';
+  const tbHealthRate = gross > 0 ? (r.tbHealth / gross * 100).toFixed(2) : '8.50';
+  rows += row(isHu ? `TB járulék ${tbEffectiveRate}%` : `Social Security ${tbEffectiveRate}%`, r.tbActual, 'deduction');
+  rows += row(isHu ? `↳ Nyugdíjjárulék ${tbPensionRate}%` : `↳ Pension ${tbPensionRate}%`, r.tbPension, '');
+  rows += row(isHu ? `↳ Egészségbiztosítás ${tbHealthRate}%` : `↳ Health insurance ${tbHealthRate}%`, r.tbHealth, '');
+
+  if (r.familyTbReduction > 0) {
+    rows += row(isHu ? '↳ Családi kedv. TB csökkentés' : '↳ Family benefit TB reduction', r.familyTbReduction, 'benefit');
+  }
+
+  rows += row(isHu ? '📌 Összes levonás' : '📌 Total Deductions', r.totalDeductions, 'subtotal deduction');
+  rows += row(isHu ? '✅ Nettó bér' : '✅ Net Salary', r.netSalary, 'subtotal');
+
+  if (r.csaladipotlek > 0) {
+    rows += '<tr><td colspan="2" style="padding:4px;font-size:0.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;padding-top:12px">' + (isHu ? 'Állami juttatás' : 'State Benefit') + '</td></tr>';
+    rows += row(isHu ? '👶 Családi pótlék' : '👶 Family Allowance', r.csaladipotlek, 'benefit');
+    rows += row(isHu ? '💚 Nettó + családi pótlék' : '💚 Net + Family Allowance', r.netSalary + r.csaladipotlek, 'subtotal');
+  }
+
+  t.innerHTML = rows;
+}
+
+function renderDonut(r, gross) {
+  const svg = document.getElementById('donutChart');
+  const legend = document.getElementById('chartLegend');
+  const isHu = lang === 'hu';
+  const currency = isHu ? 'Ft' : 'HUF';
+
+  const total = gross > 0 ? gross : 1;
+  const segments = [
+    { label: isHu ? 'Nettó bér' : 'Net Salary', value: r.netSalary, color: '#2d9b7a' },
+    { label: 'SZJA', value: r.szja, color: '#8b1a3a' },
+    { label: isHu ? 'Nyugdíjjárulék' : 'Pension', value: r.tbPension, color: '#1a4a6e' },
+    { label: isHu ? 'Egészségbiztosítás' : 'Health Ins.', value: r.tbHealth, color: '#7a5ab4' },
+  ];
+
+  const cx = 100, cy = 100, r1 = 85, r2 = 55;
+  let startAngle = -Math.PI / 2;
+  let paths = '';
+
+  segments.forEach(seg => {
+    if (seg.value <= 0) return;
+    const angle = (seg.value / total) * Math.PI * 2;
+    const endAngle = startAngle + angle;
+    const largeArc = angle > Math.PI ? 1 : 0;
+
+    const x1o = cx + r1 * Math.cos(startAngle);
+    const y1o = cy + r1 * Math.sin(startAngle);
+    const x2o = cx + r1 * Math.cos(endAngle);
+    const y2o = cy + r1 * Math.sin(endAngle);
+    const x1i = cx + r2 * Math.cos(endAngle);
+    const y1i = cy + r2 * Math.sin(endAngle);
+    const x2i = cx + r2 * Math.cos(startAngle);
+    const y2i = cy + r2 * Math.sin(startAngle);
+
+    paths += `<path d="M${x1o},${y1o} A${r1},${r1} 0 ${largeArc} 1 ${x2o},${y2o} L${x1i},${y1i} A${r2},${r2} 0 ${largeArc} 0 ${x2i},${y2i} Z" fill="${seg.color}" opacity="0.85">
+      <title>${seg.label}: ${fmt(seg.value)} ${currency}</title>
+    </path>`;
+    startAngle = endAngle;
+  });
+
+  // Center text
+  const netPct = gross > 0 ? Math.round(r.netSalary / gross * 100) : 0;
+  paths += `<text x="${cx}" y="${cy - 6}" text-anchor="middle" font-size="22" font-weight="800" fill="#c8a44e" font-family="Cormorant Garamond, serif">${netPct}%</text>`;
+  paths += `<text x="${cx}" y="${cy + 14}" text-anchor="middle" font-size="9" fill="#8a8070" font-family="Outfit, sans-serif">${isHu ? 'nettó arány' : 'net ratio'}</text>`;
+
+  svg.innerHTML = paths;
+
+  // Legend
+  let legendHtml = '';
+  segments.forEach(seg => {
+    const pct = gross > 0 ? Math.round(seg.value / gross * 100) : 0;
+    legendHtml += `<div class="legend-item">
+      <div class="legend-color" style="background:${seg.color}"></div>
+      <span>${seg.label} (${pct}%)</span>
+      <span class="legend-value">${fmt(seg.value)} ${currency}</span>
+    </div>`;
+  });
+  legend.innerHTML = legendHtml;
+}
+
+function renderEmployerBars(r, gross) {
+  const container = document.getElementById('employerBars');
+  const isHu = lang === 'hu';
+  const currency = isHu ? 'Ft' : 'HUF';
+  const max = r.totalEmployerCost;
+
+  const items = [
+    { label: isHu ? 'Bruttó bér' : 'Gross Salary', value: gross, color: '#1a4a6e' },
+    { label: isHu ? 'Szociális hozzájárulási adó (Szocho) 13%' : 'Social Contribution Tax (Szocho) 13%', value: r.szocho, color: '#c8a44e' },
+  ];
+
+  let html = '';
+  items.forEach(item => {
+    const w = max > 0 ? (item.value / max * 100) : 0;
+    html += `<div class="bar-group">
+      <div class="bar-label">${item.label}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${w}%;background:${item.color}">${fmt(item.value)} ${currency}</div>
+      </div>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function renderAnnualBar(r) {
+  const svg = document.getElementById('annualBarChart');
+  const legendDiv = document.getElementById('annualBarLegend');
+  const isHu = lang === 'hu';
+  const currency = isHu ? 'Ft' : 'HUF';
+
+  const total = r.totalEmployerCost * 12;
+  if (total === 0) { svg.innerHTML = ''; legendDiv.innerHTML = ''; return; }
+
+  const segments = [
+    { label: isHu ? 'Nettó' : 'Net', value: r.netSalary * 12, color: '#2d9b7a' },
+    { label: 'SZJA', value: r.szja * 12, color: '#8b1a3a' },
+    { label: isHu ? 'TB járulék' : 'Social Security', value: r.tbActual * 12, color: '#1a4a6e' },
+    { label: 'Szocho', value: r.szocho * 12, color: '#c8a44e' },
+  ];
+
+  let x = 0;
+  let pathsStr = '';
+  segments.forEach(seg => {
+    const w = (seg.value / total) * 800;
+    if (w > 0) {
+      pathsStr += `<rect x="${x}" y="0" width="${w}" height="50" rx="4" fill="${seg.color}" opacity="0.85"><title>${seg.label}: ${fmt(seg.value)} ${currency}</title></rect>`;
+      if (w > 60) {
+        pathsStr += `<text x="${x + w/2}" y="30" text-anchor="middle" fill="white" font-size="11" font-weight="600" font-family="Outfit, sans-serif">${fmt(seg.value)}</text>`;
+      }
+    }
+    x += w;
+  });
+  svg.innerHTML = pathsStr;
+
+  let legendHtml = '';
+  segments.forEach(seg => {
+    legendHtml += `<div style="display:flex;align-items:center;gap:6px;font-size:0.82rem">
+      <div style="width:12px;height:12px;border-radius:3px;background:${seg.color}"></div>
+      <span style="color:var(--text-light)">${seg.label}: ${fmt(seg.value)} ${currency}</span>
+    </div>`;
+  });
+  legendDiv.innerHTML = legendHtml;
+}
+
+// ====== CURVE CHARTS ======
+function renderCurveCharts(currentGross) {
+  renderNetVsGrossChart(currentGross);
+  renderTaxRateChart(currentGross);
+}
+
+function renderNetVsGrossChart(currentGross) {
+  const canvas = document.getElementById('netVsGrossChart');
+  const ctx = canvas.getContext('2d');
+  const isHu = lang === 'hu';
+  const currency = isHu ? 'Ft' : 'HUF';
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width = canvas.offsetWidth * dpr;
+  canvas.height = canvas.offsetHeight * dpr;
+  ctx.scale(dpr, dpr);
+  const W = canvas.offsetWidth;
+  const H = canvas.offsetHeight;
+
+  const pad = { top: 20, right: 24, bottom: 50, left: 70 };
+  const plotW = W - pad.left - pad.right;
+  const plotH = H - pad.top - pad.bottom;
+
+  const minGross = 100000;
+  const maxGross = 3000000;
+  const steps = 120;
+
+  // Compute data points
+  const dataWith = [], dataWithout = [], dataGross = [];
+  for (let i = 0; i <= steps; i++) {
+    const g = minGross + (maxGross - minGross) * (i / steps);
+    const withBenefits = computeBreakdownForGross(g, true);
+    const withoutBenefits = computeBreakdownForGross(g, false);
+    dataWith.push({ x: g, y: withBenefits.netSalary + withBenefits.csaladipotlek });
+    dataWithout.push({ x: g, y: withoutBenefits.netSalary });
+    dataGross.push({ x: g, y: g });
+  }
+
+  const maxY = maxGross;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(200,164,78,0.06)';
+  ctx.lineWidth = 1;
+  const yTicks = [0, 500000, 1000000, 1500000, 2000000, 2500000, 3000000];
+  yTicks.forEach(v => {
+    const y = pad.top + plotH - (v / maxY) * plotH;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + plotW, y); ctx.stroke();
+  });
+
+  const xTicks = [322800, 671000, 1000000, 1400000, 1700000, 2100000, 2400000, 2800000];
+  xTicks.forEach(v => {
+    const x = pad.left + ((v - minGross) / (maxGross - minGross)) * plotW;
+    if (x >= pad.left && x <= pad.left + plotW) {
+      ctx.beginPath(); ctx.moveTo(x, pad.top); ctx.lineTo(x, pad.top + plotH); ctx.stroke();
+    }
+  });
+
+  // Y axis labels
+  ctx.fillStyle = 'rgba(232,220,200,0.4)';
+  ctx.font = '11px Outfit, system-ui, sans-serif';
+  ctx.textAlign = 'right';
+  yTicks.forEach(v => {
+    const y = pad.top + plotH - (v / maxY) * plotH;
+    ctx.fillText(fmtShort(v), pad.left - 8, y + 4);
+  });
+
+  // X axis labels
+  ctx.textAlign = 'center';
+  xTicks.forEach(v => {
+    const x = pad.left + ((v - minGross) / (maxGross - minGross)) * plotW;
+    if (x >= pad.left && x <= pad.left + plotW) {
+      ctx.fillText(fmtShort(v), x, pad.top + plotH + 20);
+    }
+  });
+
+  // Axis titles
+  ctx.fillStyle = 'rgba(232,220,200,0.3)';
+  ctx.font = '10px Outfit, system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(isHu ? 'BRUTTÓ BÉR (Ft)' : 'GROSS SALARY (HUF)', pad.left + plotW / 2, H - 6);
+
+  ctx.save();
+  ctx.translate(14, pad.top + plotH / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText(isHu ? 'NETTÓ BEVÉTEL (Ft)' : 'NET INCOME (HUF)', 0, 0);
+  ctx.restore();
+
+  // Draw lines
+  function drawLine(data, color, lineWidth, dashed) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineWidth;
+    ctx.setLineDash(dashed ? [6, 4] : []);
+    ctx.beginPath();
+    data.forEach((p, i) => {
+      const x = pad.left + ((p.x - minGross) / (maxGross - minGross)) * plotW;
+      const y = pad.top + plotH - (Math.min(p.y, maxY) / maxY) * plotH;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Fill area between with and without benefits
+  if (children > 0) {
+    ctx.fillStyle = 'rgba(45, 155, 122, 0.12)';
+    ctx.beginPath();
+    dataWith.forEach((p, i) => {
+      const x = pad.left + ((p.x - minGross) / (maxGross - minGross)) * plotW;
+      const y = pad.top + plotH - (Math.min(p.y, maxY) / maxY) * plotH;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    for (let i = dataWithout.length - 1; i >= 0; i--) {
+      const p = dataWithout[i];
+      const x = pad.left + ((p.x - minGross) / (maxGross - minGross)) * plotW;
+      const y = pad.top + plotH - (Math.min(p.y, maxY) / maxY) * plotH;
+      ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  drawLine(dataGross, 'rgba(200, 164, 78, 0.35)', 1.5, true);
+  drawLine(dataWithout, 'rgba(90, 154, 196, 0.7)', 2, false);
+  drawLine(dataWith, '#2d9b7a', 2.5, false);
+
+  // Current salary marker
+  if (currentGross >= minGross && currentGross <= maxGross) {
+    const markerCx = pad.left + ((currentGross - minGross) / (maxGross - minGross)) * plotW;
+    const curResult = computeBreakdownForGross(currentGross, true);
+    const curY = curResult.netSalary + curResult.csaladipotlek;
+    const markerCy = pad.top + plotH - (Math.min(curY, maxY) / maxY) * plotH;
+
+    // Vertical dashed line
+    ctx.strokeStyle = 'rgba(45, 155, 122, 0.3)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(markerCx, pad.top); ctx.lineTo(markerCx, pad.top + plotH); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Dot
+    ctx.beginPath();
+    ctx.arc(markerCx, markerCy, 6, 0, Math.PI * 2);
+    ctx.fillStyle = '#2d9b7a';
+    ctx.fill();
+    ctx.strokeStyle = '#e8dcc8';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Label
+    ctx.fillStyle = '#e8dcc8';
+    ctx.font = 'bold 11px Outfit, system-ui, sans-serif';
+    ctx.textAlign = markerCx > W / 2 ? 'right' : 'left';
+    const labelX = markerCx > W / 2 ? markerCx - 12 : markerCx + 12;
+    ctx.fillText(fmt(Math.round(curY)) + ' ' + currency, labelX, markerCy - 12);
+  }
+
+  // Legend
+  const legendDiv = document.getElementById('netVsGrossLegend');
+  const legendItems = [
+    { color: '#2d9b7a', label: isHu ? 'Nettó bevétel (kedvezményekkel)' : 'Net income (with benefits)', dash: false },
+    { color: 'rgba(200, 164, 78, 0.6)', label: isHu ? 'Bruttó (referencia)' : 'Gross (reference)', dash: true },
+    { color: 'rgba(90, 154, 196, 0.9)', label: isHu ? 'Nettó kedvezmények nélkül' : 'Net without child benefits', dash: false },
+  ];
+  legendDiv.innerHTML = legendItems.map(l =>
+    `<div style="display:flex;align-items:center;gap:6px">
+      <div style="width:20px;height:3px;background:${l.color};border-radius:2px;${l.dash ? 'border-top:2px dashed ' + l.color + ';background:transparent;height:0' : ''}"></div>
+      <span style="color:var(--text-light)">${l.label}</span>
+    </div>`
+  ).join('');
+}
+
+function renderTaxRateChart(currentGross) {
+  const canvas = document.getElementById('taxRateChart');
+  const ctx = canvas.getContext('2d');
+  const isHu = lang === 'hu';
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width = canvas.offsetWidth * dpr;
+  canvas.height = canvas.offsetHeight * dpr;
+  ctx.scale(dpr, dpr);
+  const W = canvas.offsetWidth;
+  const H = canvas.offsetHeight;
+
+  const pad = { top: 20, right: 24, bottom: 50, left: 55 };
+  const plotW = W - pad.left - pad.right;
+  const plotH = H - pad.top - pad.bottom;
+
+  const minGross = 100000;
+  const maxGross = 3000000;
+  const steps = 120;
+  const maxPct = 40;
+
+  // Compute data
+  const dataWith = [], dataWithout = [], dataMarginal = [];
+  for (let i = 0; i <= steps; i++) {
+    const g = minGross + (maxGross - minGross) * (i / steps);
+    const rWith = computeBreakdownForGross(g, true);
+    const rWithout = computeBreakdownForGross(g, false);
+    dataWith.push({ x: g, y: g > 0 ? (rWith.totalDeductions / g) * 100 : 0 });
+    dataWithout.push({ x: g, y: g > 0 ? (rWithout.totalDeductions / g) * 100 : 0 });
+
+    // Marginal rate: what % of an extra 1000 Ft goes to taxes/deductions
+    const delta = 1000;
+    const rPlus = computeBreakdownForGross(g + delta, true);
+    const marg = (rPlus.totalDeductions - rWith.totalDeductions) / delta * 100;
+    dataMarginal.push({ x: g, y: Math.min(maxPct, Math.max(0, marg)) });
+  }
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(200,164,78,0.06)';
+  ctx.lineWidth = 1;
+  const yTicks = [0, 5, 10, 15, 20, 25, 30, 35, 40];
+  yTicks.forEach(v => {
+    const y = pad.top + plotH - (v / maxPct) * plotH;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + plotW, y); ctx.stroke();
+  });
+
+  const xTicks = [322800, 671000, 1000000, 1400000, 1700000, 2100000, 2400000, 2800000];
+  xTicks.forEach(v => {
+    const x = pad.left + ((v - minGross) / (maxGross - minGross)) * plotW;
+    if (x >= pad.left && x <= pad.left + plotW) {
+      ctx.beginPath(); ctx.moveTo(x, pad.top); ctx.lineTo(x, pad.top + plotH); ctx.stroke();
+    }
+  });
+
+  // Y labels
+  ctx.fillStyle = 'rgba(232,220,200,0.4)';
+  ctx.font = '11px Outfit, system-ui, sans-serif';
+  ctx.textAlign = 'right';
+  yTicks.forEach(v => {
+    const y = pad.top + plotH - (v / maxPct) * plotH;
+    ctx.fillText(v + '%', pad.left - 8, y + 4);
+  });
+
+  // X labels
+  ctx.textAlign = 'center';
+  xTicks.forEach(v => {
+    const x = pad.left + ((v - minGross) / (maxGross - minGross)) * plotW;
+    if (x >= pad.left && x <= pad.left + plotW) {
+      ctx.fillText(fmtShort(v), x, pad.top + plotH + 20);
+    }
+  });
+
+  // Axis title
+  ctx.fillStyle = 'rgba(232,220,200,0.3)';
+  ctx.font = '10px Outfit, system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(isHu ? 'BRUTTÓ BÉR (Ft)' : 'GROSS SALARY (HUF)', pad.left + plotW / 2, H - 6);
+
+  // Fill area between curves
+  if (children > 0) {
+    ctx.fillStyle = 'rgba(200, 164, 78, 0.08)';
+    ctx.beginPath();
+    dataWithout.forEach((p, i) => {
+      const x = pad.left + ((p.x - minGross) / (maxGross - minGross)) * plotW;
+      const y = pad.top + plotH - (Math.min(p.y, maxPct) / maxPct) * plotH;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    for (let i = dataWith.length - 1; i >= 0; i--) {
+      const p = dataWith[i];
+      const x = pad.left + ((p.x - minGross) / (maxGross - minGross)) * plotW;
+      const y = pad.top + plotH - (Math.min(p.y, maxPct) / maxPct) * plotH;
+      ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // Draw lines
+  function drawLine(data, color, lineWidth) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineWidth;
+    ctx.beginPath();
+    data.forEach((p, i) => {
+      const x = pad.left + ((p.x - minGross) / (maxGross - minGross)) * plotW;
+      const y = pad.top + plotH - (Math.min(p.y, maxPct) / maxPct) * plotH;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+  }
+
+  drawLine(dataWithout, 'rgba(200, 164, 78, 0.5)', 2);
+  drawLine(dataWith, '#c8a44e', 2.5);
+  drawLine(dataMarginal, '#a83050', 1.8);
+
+  // Current salary marker
+  if (currentGross >= minGross && currentGross <= maxGross) {
+    const markerCx = pad.left + ((currentGross - minGross) / (maxGross - minGross)) * plotW;
+    const curResult = computeBreakdownForGross(currentGross, true);
+    const curPct = currentGross > 0 ? (curResult.totalDeductions / currentGross) * 100 : 0;
+    const markerCy = pad.top + plotH - (Math.min(curPct, maxPct) / maxPct) * plotH;
+
+    ctx.strokeStyle = 'rgba(200, 164, 78, 0.3)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(markerCx, pad.top); ctx.lineTo(markerCx, pad.top + plotH); ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.beginPath();
+    ctx.arc(markerCx, markerCy, 6, 0, Math.PI * 2);
+    ctx.fillStyle = '#c8a44e';
+    ctx.fill();
+    ctx.strokeStyle = '#e8dcc8';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.fillStyle = '#e8dcc8';
+    ctx.font = 'bold 11px Outfit, system-ui, sans-serif';
+    ctx.textAlign = markerCx > W / 2 ? 'right' : 'left';
+    const labelX = markerCx > W / 2 ? markerCx - 12 : markerCx + 12;
+    ctx.fillText(curPct.toFixed(1) + '%', labelX, markerCy - 12);
+  }
+
+  // Legend
+  const legendDiv = document.getElementById('taxRateLegend');
+  const legendItems = [
+    { color: '#c8a44e', label: isHu ? 'Effektív adókulcs (kedvezményekkel)' : 'Effective tax rate (with benefits)' },
+    { color: 'rgba(200, 164, 78, 0.6)', label: isHu ? 'Effektív adókulcs alap' : 'Base effective tax rate' },
+    { color: '#a83050', label: isHu ? 'Marginális adókulcs' : 'Marginal tax rate' },
+  ];
+  legendDiv.innerHTML = legendItems.map(l =>
+    `<div style="display:flex;align-items:center;gap:6px">
+      <div style="width:20px;height:3px;background:${l.color};border-radius:2px"></div>
+      <span style="color:var(--text-light)">${l.label}</span>
+    </div>`
+  ).join('');
+}
+
+// Compute breakdown for a given gross, optionally with or without current benefit settings
+function computeBreakdownForGross(gross, withBenefits) {
+  if (!withBenefits) {
+    // No benefits at all
+    const szja = gross * SZJA_RATE;
+    const tb = gross * TB_RATE;
+    return { netSalary: gross - szja - tb, totalDeductions: szja + tb, csaladipotlek: 0 };
+  }
+
+  // Use current toggle settings but with the given gross
+  const isUnder25 = document.getElementById('under25').checked;
+  const isNewlywed = document.getElementById('newlywed').checked;
+  const isMotherUnder30 = document.getElementById('motherUnder30').checked;
+  const isMother4plus = document.getElementById('mother4plus').checked;
+  const isSingleParent = document.getElementById('singleParent').checked;
+  const isDisabledChild = document.getElementById('disabledChild').checked;
+
+  let szjaBase = gross;
+
+  if (isUnder25) {
+    szjaBase -= Math.min(gross, UNDER25_LIMIT);
+  }
+  if (isMotherUnder30 && children > 0) {
+    szjaBase = 0;
+  }
+  if (isMother4plus && !isMotherUnder30) {
+    szjaBase = 0;
+  }
+  if (isNewlywed) {
+    szjaBase = Math.max(0, szjaBase - NEWLYWED_BASE);
+  }
+
+  let familyBaseReduction = 0;
+  if (children > 0 && beneficiaryChildren > 0) {
+    const rateKey = Math.min(children, 3);
+    familyBaseReduction = FAMILY_BASE_REDUCTION[rateKey] * beneficiaryChildren;
+    if (isDisabledChild) familyBaseReduction += DISABLED_EXTRA_BASE * beneficiaryChildren;
+  }
+
+  const familyUsedOnSzja = Math.min(familyBaseReduction, szjaBase);
+  szjaBase -= familyUsedOnSzja;
+
+  const szja = Math.max(0, szjaBase * SZJA_RATE);
+
+  const familyRemaining = familyBaseReduction - familyUsedOnSzja;
+  const familyTbReduction = familyRemaining > 0 ? familyRemaining * SZJA_RATE : 0;
+
+  const tbGross = gross * TB_RATE;
+  const tbActual = Math.max(0, tbGross - familyTbReduction);
+
+  const totalDeductions = szja + tbActual;
+  const netSalary = gross - totalDeductions;
+
+  let csaladipotlek = 0;
+  if (children > 0) {
+    const parentType = isSingleParent ? 'singleParent' : 'twoParent';
+    if (isDisabledChild) {
+      csaladipotlek = CSALADI_POTLEK.disabled * children;
+    } else {
+      csaladipotlek = CSALADI_POTLEK[parentType][Math.min(children, 3)] * children;
+    }
+  }
+
+  return { netSalary, totalDeductions, csaladipotlek };
+}
+
+function fmtShort(n) {
+  if (n >= 1000000) return (n / 1000000).toFixed(1).replace('.0', '') + 'M';
+  if (n >= 1000) return Math.round(n / 1000) + 'K';
+  return n.toString();
+}
+
+// ====== EVENT LISTENERS ======
+// Language buttons
+document.querySelectorAll('.lang-btn[data-lang]').forEach(btn => {
+  btn.addEventListener('click', () => setLang(btn.dataset.lang, btn));
+});
+
+// Salary controls
+document.getElementById('salarySlider').addEventListener('input', updateFromSlider);
+document.getElementById('salaryInput').addEventListener('input', updateFromInput);
+
+// Calc mode tabs
+document.querySelectorAll('.tab-btn[data-mode]').forEach(btn => {
+  btn.addEventListener('click', () => setCalcMode(btn.dataset.mode, btn));
+});
+
+// All toggle checkboxes
+['under25', 'newlywed', 'motherUnder30', 'mother4plus', 'singleParent', 'disabledChild'].forEach(id => {
+  document.getElementById(id).addEventListener('change', calculate);
+});
+
+// Counter buttons
+document.querySelectorAll('.counter-btn[data-action]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const delta = parseInt(btn.dataset.delta);
+    if (btn.dataset.action === 'children') changeChildren(delta);
+    else if (btn.dataset.action === 'beneficiary') changeBeneficiary(delta);
+  });
+});
+
+// ====== RESPONSIVE CANVAS (ResizeObserver) ======
+const canvasObserver = new ResizeObserver(() => {
+  const rawVal = document.getElementById('salaryInput').value.replace(/\s/g, '');
+  const currentGross = parseInt(rawVal) || 0;
+  renderCurveCharts(currentGross);
+});
+canvasObserver.observe(document.getElementById('netVsGrossChart'));
+canvasObserver.observe(document.getElementById('taxRateChart'));
+
+// ====== INIT ======
+document.getElementById('salaryInput').placeholder = 'Írja be az összeget...';
+calculate();
+</script>
+
+<script src="../nav.js"></script>
+<script src="../shared.js"></script>
+</body>
+</html>

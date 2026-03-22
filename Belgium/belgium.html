@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<!--
+  ╔══════════════════════════════════════════════════════════════════════════════╗
+  ║              ExpatCalc — Belgium Salary Calculator 2026                     ║
+  ║                                                                            ║
+  ║  Tax year: 2026 (Assessment Year 2027)                                      ║
+  ║  Languages: English, Nederlands, Français                                   ║
+  ║  Includes: RSZ, Bedrijfsvoorheffing, expat regime, child benefits           ║
+  ║  Last updated: 2026-03-20                                                  ║
+  ╚══════════════════════════════════════════════════════════════════════════════╝
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Belgium Salary Calculator 2026 — Calculate your Belgian net salary including RSZ, Bedrijfsvoorheffing, child benefits (Groeipakket, FAMIWAL, Famiris) and expat regime.">
+<title>Belgium Salary Calculator 2026 | ExpatCalc</title>
+
+<!-- [DO NOT MODIFY: shared-css] -->
+<link rel="stylesheet" href="../shared.css">
+
+<style>
+  :root {
+    --red: #ED2939;
+    --gold: #FAE042;
+    --blue: #000000;
+    --primary: #1a1a2e;
+    --primary-light: #ED2939;
+    --accent: #FAE042;
+    --bg: #f5f5f7;
+    --card: #ffffff;
+    --text: #1a1a2e;
+    --text-light: #6b7280;
+    --border: #e5e7eb;
+    --shadow: 0 4px 24px rgba(0,0,0,0.07);
+    --radius: 16px;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #000000 0%, #333333 50%, #555555 100%);
+    color: white; padding: 48px 24px 36px; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -60%; left: -30%; width: 160%; height: 220%;
+    background: radial-gradient(ellipse, rgba(250,224,66,0.1) 0%, transparent 60%);
+    animation: pulse 10s ease-in-out infinite;
+  }
+
+  .flag-strip { display: flex; justify-content: center; gap: 0; margin-top: 16px; position: relative; }
+  .flag-strip div { width: 60px; height: 6px; border-radius: 3px; }
+
+  .badge { display:inline-block; background:rgba(250,224,66,0.25); padding:4px 16px; border-radius:20px; font-size:0.85rem; margin-top:12px; position:relative; backdrop-filter:blur(4px); border:1px solid rgba(250,224,66,0.5); }
+
+  .salary-display { font-size:2.4rem; font-weight:800; color:var(--red); margin:4px 0 12px; letter-spacing:-1px; }
+
+  input[type="range"] { -webkit-appearance:none; width:100%; height:8px; border-radius:4px; background:linear-gradient(90deg,#000000,#FAE042,#ED2939); outline:none; margin:8px 0; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:24px; height:24px; border-radius:50%; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.2); cursor:pointer; border:3px solid var(--red); }
+  input[type="range"]::-moz-range-thumb { width:24px; height:24px; border-radius:50%; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.2); cursor:pointer; border:3px solid var(--red); }
+
+  .number-input:focus { outline:none; border-color:var(--red); }
+  .toggle input:checked + .slider { background:var(--red); }
+  .custom-select:focus { outline:none; border-color:var(--red); }
+
+  .result-hero {
+    background: linear-gradient(135deg, #000000, #ED2939);
+    color:white; border-radius:var(--radius); padding:32px; text-align:center; margin-bottom:24px; box-shadow:var(--shadow);
+  }
+
+  .collapsible-header {
+    cursor: pointer; font-weight: 600; padding: 12px 0; display: flex; align-items: center; gap: 8px;
+    color: var(--red); user-select: none;
+  }
+  .collapsible-header::before { content: '▶'; display: inline-block; width: 16px; transition: transform 0.2s; }
+  .collapsible-header.expanded::before { transform: rotate(90deg); }
+  .collapsible-content { display: none; padding-left: 0; }
+  .collapsible-content.expanded { display: block; }
+
+  .info-tip {
+    display: inline-block; position: relative; cursor: help; border-bottom: 1px dotted var(--red); padding: 0 2px;
+  }
+  .info-tip::after {
+    content: attr(data-tooltip); position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%);
+    background: var(--red); color: white; padding: 6px 8px; border-radius: 4px; font-size: 0.75rem;
+    white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 1000;
+  }
+  .info-tip:hover::after { opacity: 1; }
+
+  footer a { color:var(--red); text-decoration:none; }
+
+  .sources-section { margin-top:16px; }
+  .sources-toggle { cursor:pointer; font-weight:600; font-size:0.9rem; color:var(--red); background:none; border:none; font-family:inherit; padding:8px 0; }
+  .sources-toggle:hover { text-decoration:underline; }
+  .sources-list { display:none; font-size:0.82rem; color:var(--text-light); line-height:1.8; padding:8px 0; }
+  .sources-list.show { display:block; }
+  .sources-list a { color:var(--red); text-decoration:none; }
+  .sources-list a:hover { text-decoration:underline; }
+
+  .age-group-row { display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f0f0f0; }
+  .age-group-row:last-child { border-bottom:none; }
+  .age-group-label { font-size:0.9rem; font-weight:500; flex:1; }
+  .age-group-sub { font-size:0.76rem; color:var(--text-light); }
+
+  .cb-amount { font-size:1.8rem; font-weight:800; color:#059669; }
+  .cb-row { display:flex; justify-content:space-between; font-size:0.88rem; padding:5px 0; border-bottom:1px solid #f0f0f0; }
+  .cb-row:last-child { border-bottom:none; }
+
+  .inline-inputs { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .inline-inputs input, .inline-inputs select { flex: 0 0 auto; }
+</style>
+</head>
+
+<body data-page="belgium">
+
+<div class="hero">
+  <div class="lang-selector">
+    <button class="lang-btn active" data-lang="en" title="English">🇬🇧</button>
+    <button class="lang-btn" data-lang="nl" title="Nederlands">🇳🇱</button>
+    <button class="lang-btn" data-lang="fr" title="Français">🇫🇷</button>
+  </div>
+
+  <h1 id="heroTitle">Belgium Salary Calculator 2026</h1>
+  <p id="heroSub"
+     data-en="Gross-to-net with RSZ, Bedrijfsvoorheffing, expat regime &amp; child benefits"
+     data-nl="Bruto-netto met RSZ, Bedrijfsvoorheffing, expatregime &amp; kinderbijslag"
+     data-fr="Brut-net avec RSZ, Bedrijfsvoorheffing, régime expatrié &amp; allocations familiales"
+     >Gross-to-net with RSZ, Bedrijfsvoorheffing, expat regime &amp; child benefits</p>
+  <div class="badge"
+       data-en="Tax year 2026 · Assessment Year 2027 · Valid from January 1, 2026"
+       data-nl="Belastingjaar 2026 · Aanslagjaar 2027 · Geldig vanaf 1 januari 2026"
+       data-fr="Année fiscale 2026 · Année d'imposition 2027 · Valide à partir du 1er janvier 2026"
+       >Tax year 2026 · Assessment Year 2027 · Valid from January 1, 2026</div>
+
+  <div class="flag-strip">
+    <div style="background:#000000"></div><div style="background:#FAE042"></div><div style="background:#ED2939"></div>
+  </div>
+</div>
+
+
+<div class="container">
+<div class="grid">
+
+  <!-- ═══ LEFT COLUMN: INPUTS ═══ -->
+  <div>
+
+    <!-- Gross Salary Card -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-blue">💰</span> <span data-en="Gross Salary" data-nl="Bruto Salaris" data-fr="Salaire Brut">Gross Salary</span></h2>
+      <div class="salary-input-group">
+        <label data-en="Monthly gross salary (€)" data-nl="Maandelijks bruto salaris (€)" data-fr="Salaire brut mensuel (€)">Monthly gross salary (€)</label>
+        <div class="salary-display" id="salaryDisplay">4 000 <span>€/month</span></div>
+
+        <input type="range" id="salarySlider" min="500" max="15000" step="50" value="4000" aria-label="Monthly gross salary slider">
+        <div class="range-labels">
+          <span>500 €</span><span>15 000 €</span>
+        </div>
+
+        <div class="whatif-bar" id="whatifBar">
+          <button class="whatif-btn" data-whatif="raise10"><span class="emoji">📈</span>+10%</button>
+          <button class="whatif-btn" data-whatif="raise20"><span class="emoji">🚀</span>+20%</button>
+          <button class="whatif-btn" data-whatif="bonus1k"><span class="emoji">💎</span>+1K</button>
+          <button class="whatif-btn" data-whatif="bonus2k"><span class="emoji">🎯</span>+2K</button>
+          <button class="whatif-btn" data-whatif="min"><span class="emoji">📉</span>Min</button>
+        </div>
+
+        <div style="margin-top:12px">
+          <input type="text" class="number-input" id="salaryInput" value="4 000" aria-label="Monthly gross salary input" placeholder="Enter amount...">
+        </div>
+      </div>
+
+      <div class="tab-bar">
+        <button class="tab-btn active" data-mode="gross" data-en="From Gross" data-nl="Vanuit Bruto" data-fr="À partir du Brut">From Gross</button>
+        <button class="tab-btn" data-mode="total" data-en="From Employer Cost" data-nl="Vanuit Werkgeverskosten" data-fr="À partir du Coût de l'Employeur">From Employer Cost</button>
+      </div>
+    </div>
+
+    <!-- Employment & Tax Status Card -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-purple">📋</span> <span data-en="Employment &amp; Tax Status" data-nl="Werkgeving &amp; Belastingstatus" data-fr="Emploi &amp; Statut Fiscal">Employment &amp; Tax Status</span></h2>
+
+      <div class="option-row">
+        <label class="option-label" data-en="Employment Type" data-nl="Type Werkgeving" data-fr="Type d'Emploi">Employment Type</label>
+        <select class="custom-select" id="employmentType" style="width:100%">
+          <option value="employee" data-en="Employee (Salariée)" data-nl="Werknemer (Salariaat)" data-fr="Salarié">Employee (Salariée)</option>
+          <option value="selfemployed" data-en="Self-employed (Info only)" data-nl="Zelfstandige (Informatie)" data-fr="Travailleur Indépendant (Info)">Self-employed (Info only)</option>
+        </select>
+      </div>
+
+      <div class="option-row">
+        <label class="option-label" data-en="Marital Status" data-nl="Burgerlijke Staat" data-fr="Situation Matrimoniale">Marital Status</label>
+        <select class="custom-select" id="maritalStatus" style="width:100%" onchange="updateMaritalFields()">
+          <option value="single" data-en="Single" data-nl="Alleenstaand" data-fr="Célibataire">Single</option>
+          <option value="married" data-en="Married/Cohabiting" data-nl="Getrouwd/Samenwonend" data-fr="Marié/Cohabitant">Married/Cohabiting</option>
+          <option value="single-parent" data-en="Single Parent" data-nl="Alleenstaande Ouder" data-fr="Parent Célibataire">Single Parent</option>
+        </select>
+      </div>
+
+      <div class="option-row" id="spouseIncomeRow" style="display:none">
+        <label class="option-label" data-en="Spouse Income" data-nl="Inkomsten Partner" data-fr="Revenu du Conjoint">Spouse Income</label>
+        <select class="custom-select" id="spouseIncome" style="width:100%">
+          <option value="none" data-en="No income" data-nl="Geen inkomsten" data-fr="Pas de revenu">No income</option>
+          <option value="low" data-en="Low (&lt;€4,100/year)" data-nl="Laag (&lt;€4.100/jaar)" data-fr="Bas (&lt;€4.100/an)">Low (&lt;€4,100/year)</option>
+          <option value="normal" data-en="Normal income" data-nl="Normaal inkomsten" data-fr="Revenu normal">Normal income</option>
+        </select>
+      </div>
+
+      <div class="option-row">
+        <label class="option-label" data-en="Commune Tax Rate" data-nl="Gemeentebelastingtarief" data-fr="Taux d'Impôt Communal">Commune Tax Rate (%)</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="number" id="communeTaxRate" class="number-input" value="7" min="0" max="9.9" step="0.1" style="width:80px" onchange="calculate()">
+          <span style="font-size:0.85rem;color:var(--text-light)">default 7%</span>
+        </div>
+      </div>
+
+      <div class="option-row">
+        <div>
+          <div class="option-label" data-en="Disabled Taxpayer" data-nl="Gehandicapte Belastingplichtige" data-fr="Contribuable Handicapé">Disabled Taxpayer</div>
+          <div class="option-sublabel" data-en="+€1,980 tax-free allowance" data-nl="+€1.980 belastingvrije som" data-fr="+€1.980 d'allocation exonérée">+€1,980 tax-free allowance</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="disabledToggle" onchange="calculate()"><span class="slider"></span></label>
+      </div>
+    </div>
+
+    <!-- Special Regimes Card (Collapsible) -->
+    <div class="card" style="margin-bottom:24px">
+      <div class="collapsible-header" onclick="toggleCollapsible(this)">
+        <span data-en="Special Regimes (Advanced)" data-nl="Bijzondere Regelingen (Geavanceerd)" data-fr="Régimes Spéciaux (Avancé)">Special Regimes (Advanced)</span>
+      </div>
+      <div class="collapsible-content">
+        <div class="option-row" style="margin-top:16px">
+          <label class="option-label" data-en="Special Regime" data-nl="Bijzondere Regeling" data-fr="Régime Spécial">Special Regime</label>
+          <select class="custom-select" id="specialRegime" style="width:100%" onchange="updateRegimeInfo()">
+            <option value="none" data-en="None" data-nl="Geen" data-fr="Aucun">None</option>
+            <option value="expat" data-en="Expat Regime (BBSI)" data-nl="Expatregeling (BBSI)" data-fr="Régime Expatrié (BBSI)">Expat Regime (BBSI)</option>
+            <option value="researcher" data-en="Researcher" data-nl="Onderzoeker" data-fr="Chercheur">Researcher</option>
+          </select>
+        </div>
+
+        <div id="regimeInfo" style="display:none;margin-top:12px;padding:12px;background:rgba(237,41,57,0.05);border-radius:8px;font-size:0.85rem">
+          <div id="regimeInfoText"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Benefits & Perks Card -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-gold">🎁</span> <span data-en="Benefits &amp; Perks" data-nl="Voordelen &amp; Extraatjes" data-fr="Avantages &amp; Suppléments">Benefits &amp; Perks</span></h2>
+
+      <div class="option-row">
+        <div>
+          <div class="option-label" data-en="Meal Vouchers" data-nl="Maaltijdcheques" data-fr="Chèques-Repas">Meal Vouchers</div>
+          <div class="option-sublabel" data-en="€8.91 employer contribution, up to 20/month" data-nl="€8,91 werkgebewijs, tot 20/maand" data-fr="€8,91 contribution patronale, jusqu'à 20/mois">€8.91 employer contribution</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="mealVouchersToggle" onchange="calculate()"><span class="slider"></span></label>
+      </div>
+
+      <div id="mealVouchersSettings" style="display:none;margin-left:16px;padding:12px;background:#f9f9f9;border-radius:8px;font-size:0.85rem">
+        <div style="margin-bottom:8px">
+          <label data-en="Employer Contribution (€)" data-nl="Werkgebewijs (€)" data-fr="Contribution Patronale (€)">Employer Contribution (€)</label>
+          <input type="number" id="mealVoucherRate" class="number-input" value="8.91" min="0" max="10" step="0.01" onchange="calculate()" style="width:80px">
+        </div>
+        <div>
+          <label data-en="Vouchers per Month" data-nl="Coupons per Maand" data-fr="Chèques par Mois">Vouchers per Month</label>
+          <input type="number" id="mealVouchersPerMonth" class="number-input" value="20" min="0" max="30" step="1" onchange="calculate()" style="width:80px">
+        </div>
+      </div>
+
+      <div class="option-row">
+        <div>
+          <div class="option-label" data-en="Eco Vouchers" data-nl="Ecocheques" data-fr="Éco-chèques">Eco Vouchers</div>
+          <div class="option-sublabel" data-en="€250/year, tax-free" data-nl="€250/jaar, belastingvrij" data-fr="€250/an, exonéré d'impôt">€250/year, tax-free</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="ecoVouchersToggle" onchange="calculate()"><span class="slider"></span></label>
+      </div>
+
+      <div class="option-row">
+        <div>
+          <div class="option-label" data-en="Company Car" data-nl="Bedrijfsauto" data-fr="Voiture de Société">Company Car (BIK)</div>
+          <div class="option-sublabel" data-en="Benefit in Kind value added to taxable income" data-nl="Voordeel in Natura, toegevoegd aan belastbare inkomsten" data-fr="Avantage en Natuur, ajouté au revenu imposable">Benefit in Kind value added to taxable income</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="companyCarToggle" onchange="calculate()"><span class="slider"></span></label>
+      </div>
+
+      <div id="companyCarSettings" style="display:none;margin-left:16px;padding:12px;background:#f9f9f9;border-radius:8px;font-size:0.85rem">
+        <div style="margin-bottom:8px">
+          <label data-en="CO2 Emissions (g/km)" data-nl="CO2-Emissies (g/km)" data-fr="Émissions de CO2 (g/km)">CO2 Emissions (g/km)</label>
+          <input type="number" id="carCO2" class="number-input" value="120" min="0" max="300" step="1" onchange="calculate()" style="width:80px">
+        </div>
+        <div style="margin-bottom:8px">
+          <label data-en="Fuel Type" data-nl="Brandstoftype" data-fr="Type de Carburant">Fuel Type</label>
+          <select class="custom-select" id="fuelType" style="width:100%" onchange="calculate()">
+            <option value="petrol" data-en="Petrol" data-nl="Benzine" data-fr="Essence">Petrol</option>
+            <option value="diesel" data-en="Diesel" data-nl="Diesel" data-fr="Diesel">Diesel</option>
+            <option value="electric" data-en="Electric" data-nl="Elektrisch" data-fr="Électrique">Electric</option>
+          </select>
+        </div>
+        <div style="margin-bottom:8px">
+          <label data-en="Catalogue Value (€)" data-nl="Cataloguswaarde (€)" data-fr="Valeur Catalogue (€)">Catalogue Value (€)</label>
+          <input type="number" id="catalogueValue" class="number-input" value="35000" min="0" max="200000" step="100" onchange="calculate()" style="width:100px">
+        </div>
+        <div>
+          <label data-en="Vehicle Age" data-nl="Voertuigleeftijd" data-fr="Âge du Véhicule">Vehicle Age</label>
+          <select class="custom-select" id="carAge" style="width:100%" onchange="calculate()">
+            <option value="0" data-en="0–12 months (100%)" data-nl="0–12 maanden (100%)" data-fr="0–12 mois (100%)">0–12 months (100%)</option>
+            <option value="1" data-en="13–24 months (94%)" data-nl="13–24 maanden (94%)" data-fr="13–24 mois (94%)">13–24 months (94%)</option>
+            <option value="2" data-en="25–36 months (88%)" data-nl="25–36 maanden (88%)" data-fr="25–36 mois (88%)">25–36 months (88%)</option>
+            <option value="3" data-en="37–48 months (82%)" data-nl="37–48 maanden (82%)" data-fr="37–48 mois (82%)">37–48 months (82%)</option>
+            <option value="4" data-en="49–60 months (76%)" data-nl="49–60 maanden (76%)" data-fr="49–60 mois (76%)">49–60 months (76%)</option>
+            <option value="5" data-en="61+ months (70%)" data-nl="61+ maanden (70%)" data-fr="61+ mois (70%)">61+ months (70%)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="option-row">
+        <div>
+          <div class="option-label" data-en="Group Insurance" data-nl="Groepsverzekering" data-fr="Assurance Groupe">Group Insurance</div>
+          <div class="option-sublabel" data-en="Employee contribution deducted from net" data-nl="Werknemerbijdrage afgetrokken van netto" data-fr="Cotisation salariale déduite du net">Employee contribution deducted from net</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="groupInsToggle" onchange="calculate()"><span class="slider"></span></label>
+      </div>
+
+      <div id="groupInsSettings" style="display:none;margin-left:16px;padding:12px;background:#f9f9f9;border-radius:8px;font-size:0.85rem">
+        <div>
+          <label data-en="Monthly Contribution (€)" data-nl="Maandelijkse Bijdrage (€)" data-fr="Cotisation Mensuelle (€)">Monthly Contribution (€)</label>
+          <input type="number" id="groupInsAmount" class="number-input" value="50" min="0" max="500" step="1" onchange="calculate()" style="width:100px">
+        </div>
+      </div>
+
+      <div class="option-row">
+        <div>
+          <div class="option-label" data-en="Hospitalization Insurance" data-nl="Hospitalisatieverzekering" data-fr="Assurance Hospitalisation">Hospitalization Insurance</div>
+          <div class="option-sublabel" data-en="Employee contribution deducted from net" data-nl="Werknemerbijdrage afgetrokken van netto" data-fr="Cotisation salariale déduite du net">Employee contribution deducted from net</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="hospiToggle" onchange="calculate()"><span class="slider"></span></label>
+      </div>
+
+      <div id="hospiSettings" style="display:none;margin-left:16px;padding:12px;background:#f9f9f9;border-radius:8px;font-size:0.85rem">
+        <div>
+          <label data-en="Monthly Contribution (€)" data-nl="Maandelijkse Bijdrage (€)" data-fr="Cotisation Mensuelle (€)">Monthly Contribution (€)</label>
+          <input type="number" id="hospiAmount" class="number-input" value="15" min="0" max="200" step="1" onchange="calculate()" style="width:100px">
+        </div>
+      </div>
+
+      <div class="option-row">
+        <div>
+          <div class="option-label" data-en="Commuting" data-nl="Woon-werkverkeer" data-fr="Trajet Domicile-Travail">Commuting</div>
+          <div class="option-sublabel" data-en="Reimbursement or allowance, tax-free" data-nl="Vergoeding of toelage, belastingvrij" data-fr="Remboursement ou allocation, exonéré d'impôt">Reimbursement or allowance, tax-free</div>
+        </div>
+      </div>
+
+      <div style="margin-left:16px;padding:12px;background:#f9f9f9;border-radius:8px;font-size:0.85rem">
+        <div style="margin-bottom:8px">
+          <label data-en="Commute Type" data-nl="Type Vervoer" data-fr="Type de Transport">Commute Type</label>
+          <select class="custom-select" id="commuteType" style="width:100%" onchange="updateCommuteFields();calculate()">
+            <option value="none" data-en="None" data-nl="Geen" data-fr="Aucun">None</option>
+            <option value="public-transport" data-en="Public Transport (Train/Bus)" data-nl="Openbaar Vervoer (Trein/Bus)" data-fr="Transport Public (Train/Bus)">Public Transport (Train/Bus)</option>
+            <option value="own-car" data-en="Own Car" data-nl="Eigen Auto" data-fr="Voiture Personnelle">Own Car</option>
+            <option value="bicycle" data-en="Bicycle" data-nl="Fiets" data-fr="Bicyclette">Bicycle</option>
+          </select>
+        </div>
+        <div id="commuteDistanceRow" style="display:none">
+          <label data-en="One-way Distance (km)" data-nl="Enkele afstand (km)" data-fr="Distance Simple (km)">One-way Distance (km)</label>
+          <input type="number" id="commuteDistance" class="number-input" value="20" min="0" max="200" step="1" onchange="calculate()" style="width:80px">
+        </div>
+      </div>
+    </div>
+
+    <!-- Children & Family Card -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-green">👨‍👩‍👧‍👦</span> <span data-en="Children &amp; Family" data-nl="Kinderen &amp; Familie" data-fr="Enfants &amp; Famille">Children &amp; Family</span></h2>
+
+      <div class="option-row" style="margin-bottom:12px">
+        <label class="option-label" data-en="Region (for child benefits)" data-nl="Regio (voor kinderbijslag)" data-fr="Région (pour allocations familiales)">Region (for child benefits)</label>
+        <select class="custom-select" id="childBenefitRegion" style="width:100%" onchange="calculate()">
+          <option value="flanders" data-en="Flanders (Groeipakket)" data-nl="Vlaanderen (Groeipakket)" data-fr="Flandre (Groeipakket)">Flanders (Groeipakket)</option>
+          <option value="wallonia" data-en="Wallonia (FAMIWAL)" data-nl="Wallonië (FAMIWAL)" data-fr="Wallonie (FAMIWAL)">Wallonia (FAMIWAL)</option>
+          <option value="brussels" data-en="Brussels (Famiris)" data-nl="Brussel (Famiris)" data-fr="Bruxelles (Famiris)">Brussels (Famiris)</option>
+        </select>
+      </div>
+
+      <div style="padding:12px;background:#f9f9f9;border-radius:8px;margin-bottom:12px">
+        <div style="font-size:0.85rem;font-weight:600;margin-bottom:12px">
+          <span data-en="Number of Children: " data-nl="Aantal Kinderen: " data-fr="Nombre d'Enfants: ">Number of Children: </span><span id="totalChildrenDisplay">0</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;justify-content:center">
+          <button class="counter-btn" onclick="changeChildren(-1)" aria-label="Decrease">−</button>
+          <input type="number" id="numChildren" class="number-input" value="0" min="0" max="10" step="1" onchange="updateChildrenDisplay();calculate()" style="width:60px;text-align:center">
+          <button class="counter-btn" onclick="changeChildren(1)" aria-label="Increase">+</button>
+        </div>
+      </div>
+
+      <div id="childAgeGroupsContainer" style="display:none;padding:12px;background:#f9f9f9;border-radius:8px;font-size:0.85rem">
+        <div style="font-weight:600;margin-bottom:12px;font-size:0.9rem" data-en="Breakdown by Age Group (for benefit calculation):" data-nl="Verdeling op Leeftijdsgroep (voor bijslagberekening):" data-fr="Ventilation par Groupe d'Âge (pour le calcul des allocations):">Breakdown by Age Group (for benefit calculation):</div>
+
+        <div class="age-group-row">
+          <label class="age-group-label" data-en="0–5 years" data-nl="0–5 jaar" data-fr="0–5 ans">0–5 years</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="counter-btn" onclick="changeAgeGroup('0-5',-1)">−</button>
+            <input type="number" id="childrenAgeGroup0" class="number-input" value="0" min="0" max="10" style="width:50px;text-align:center" onchange="calculate()">
+            <button class="counter-btn" onclick="changeAgeGroup('0-5',1)">+</button>
+          </div>
+        </div>
+
+        <div class="age-group-row">
+          <label class="age-group-label" data-en="6–11 years" data-nl="6–11 jaar" data-fr="6–11 ans">6–11 years</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="counter-btn" onclick="changeAgeGroup('6-11',-1)">−</button>
+            <input type="number" id="childrenAgeGroup1" class="number-input" value="0" min="0" max="10" style="width:50px;text-align:center" onchange="calculate()">
+            <button class="counter-btn" onclick="changeAgeGroup('6-11',1)">+</button>
+          </div>
+        </div>
+
+        <div class="age-group-row">
+          <label class="age-group-label" data-en="12–17 years" data-nl="12–17 jaar" data-fr="12–17 ans">12–17 years</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="counter-btn" onclick="changeAgeGroup('12-17',-1)">−</button>
+            <input type="number" id="childrenAgeGroup2" class="number-input" value="0" min="0" max="10" style="width:50px;text-align:center" onchange="calculate()">
+            <button class="counter-btn" onclick="changeAgeGroup('12-17',1)">+</button>
+          </div>
+        </div>
+
+        <div class="age-group-row">
+          <label class="age-group-label" data-en="18–24 years" data-nl="18–24 jaar" data-fr="18–24 ans">18–24 years</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="counter-btn" onclick="changeAgeGroup('18-24',-1)">−</button>
+            <input type="number" id="childrenAgeGroup3" class="number-input" value="0" min="0" max="10" style="width:50px;text-align:center" onchange="calculate()">
+            <button class="counter-btn" onclick="changeAgeGroup('18-24',1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- END LEFT COLUMN -->
+
+
+  <!-- ═══ RIGHT COLUMN: RESULTS ═══ -->
+  <div>
+
+    <!-- Result Hero -->
+    <div class="result-hero">
+      <div class="net-label" data-en="Monthly Net Salary" data-nl="Maandelijks Netto Salaris" data-fr="Salaire Net Mensuel">Monthly Net Salary</div>
+      <div class="net-amount" id="netAmount">0 €</div>
+      <div class="net-sub" id="netSub">-</div>
+    </div>
+
+    <!-- Summary Boxes -->
+    <div class="summary-grid" style="margin-bottom:24px">
+      <div class="summary-box green">
+        <div class="label" data-en="Net Salary" data-nl="Netto Salaris" data-fr="Salaire Net">Net Salary</div>
+        <div class="value" id="sumNet">0</div>
+      </div>
+      <div class="summary-box red">
+        <div class="label" data-en="Total Deductions" data-nl="Totale Inhoudingen" data-fr="Déductions Totales">Total Deductions</div>
+        <div class="value" id="sumDeductions">0</div>
+      </div>
+      <div class="summary-box blue">
+        <div class="label" data-en="Employer Cost" data-nl="Werkgeverskosten" data-fr="Coût de l'Employeur">Employer Cost</div>
+        <div class="value" id="sumEmployer">0</div>
+      </div>
+      <div class="summary-box purple">
+        <div class="label" data-en="Child Benefits" data-nl="Kinderbijslag" data-fr="Allocations Familiales">Child Benefits</div>
+        <div class="value" id="sumBenefit" style="color:#059669">0</div>
+      </div>
+    </div>
+
+    <!-- Donut Chart -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-teal">📊</span> <span data-en="Salary Composition" data-nl="Salarissamenstelling" data-fr="Composition du Salaire">Salary Composition</span></h2>
+      <div class="chart-container">
+        <svg class="donut-chart" id="donutChart" viewBox="0 0 200 200" width="220" height="220"></svg>
+      </div>
+      <div class="chart-legend" id="chartLegend"></div>
+    </div>
+
+    <!-- Breakdown Table -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-red">📋</span> <span data-en="Detailed Breakdown" data-nl="Gedetailleerd Overzicht" data-fr="Ventilation Détaillée">Detailed Breakdown</span></h2>
+      <table class="breakdown-table" id="breakdownTable"></table>
+    </div>
+
+    <!-- Employer Contributions -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-orange">🏢</span> <span data-en="Employer Contributions" data-nl="Werkgeversbijdragen" data-fr="Cotisations Patronales">Employer Contributions</span></h2>
+      <div id="employerBars"></div>
+      <div style="margin-top:16px;padding-top:16px;border-top:2px solid var(--border);display:flex;justify-content:space-between;font-weight:700">
+        <span data-en="Total Employer Cost" data-nl="Totale Werkgeverskosten" data-fr="Coût Patronal Total">Total Employer Cost</span>
+        <span id="totalEmployerCost">0 €</span>
+      </div>
+    </div>
+
+    <!-- Child Benefit Card (shown when children > 0) -->
+    <div class="card" id="childBenefitCard" style="margin-bottom:24px;display:none">
+      <h2><span class="icon icon-gold">👶</span> <span data-en="Child Benefits by Region" data-nl="Kinderbijslag per Regio" data-fr="Allocations Familiales par Région">Child Benefits by Region</span></h2>
+      <div style="text-align:center;padding:12px 0 8px">
+        <div class="cb-amount" id="cbMonthly">0 €</div>
+        <div style="font-size:0.82rem;color:var(--text-light);margin-top:4px" id="cbSub">per month</div>
+      </div>
+      <div id="cbBreakdown" style="margin-top:12px"></div>
+      <div style="margin-top:12px;font-size:0.78rem;color:var(--text-light)"
+           data-en="Varies by region and child age. Shown for reference only."
+           data-nl="Varieert per regio en kinderleeftijd. Ter referentie weergegeven."
+           data-fr="Varie selon la région et l'âge de l'enfant. Affiché à titre informatif.">Varies by region and child age. Shown for reference only.</div>
+    </div>
+
+  </div>
+  <!-- END RIGHT COLUMN -->
+
+
+  <!-- ═══ FULL-WIDTH CHARTS ═══ -->
+
+  <div class="card full-width" style="margin-bottom:0">
+    <h2><span class="icon icon-green">📈</span> <span data-en="Net Take-Home vs. Gross Salary" data-nl="Netto vs. Bruto Salaris" data-fr="Salaire Net vs. Salaire Brut">Net Take-Home vs. Gross Salary</span></h2>
+    <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-light);margin:-12px 0 12px"
+         data-en="Monthly amounts in EUR · 2026" data-nl="Maandbedragen in EUR · 2026" data-fr="Montants mensuels en EUR · 2026">Monthly amounts in EUR · 2026</div>
+    <div id="netVsGrossLegend" style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;font-size:0.82rem"></div>
+    <div style="position:relative;width:100%;overflow:hidden;border-radius:12px;background:#0f1729">
+      <canvas id="netVsGrossChart" style="width:100%;height:340px;display:block"></canvas>
+    </div>
+  </div>
+
+  <div class="card full-width" style="margin-bottom:0">
+    <h2><span class="icon icon-red">📉</span> <span data-en="Effective Tax Rate" data-nl="Effectief Belastingtarief" data-fr="Taux d'Imposition Effectif">Effective Tax Rate</span></h2>
+    <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-light);margin:-12px 0 12px"
+         data-en="Total deductions as % of gross salary" data-nl="Totale inhoudingen als % van bruto salaris" data-fr="Déductions totales en % du salaire brut">Total deductions as % of gross salary</div>
+    <div id="taxRateLegend" style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;font-size:0.82rem"></div>
+    <div style="position:relative;width:100%;overflow:hidden;border-radius:12px;background:#0f1729">
+      <canvas id="taxRateChart" style="width:100%;height:300px;display:block"></canvas>
+    </div>
+  </div>
+
+  <!-- Annual Overview -->
+  <div class="card full-width">
+    <h2><span class="icon icon-blue">📅</span> <span data-en="Annual Overview" data-nl="Jaaroverzicht" data-fr="Aperçu Annuel">Annual Overview</span></h2>
+    <div class="summary-grid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="summary-box green"><div class="label" data-en="Annual Net" data-nl="Jaarlijks Netto" data-fr="Net Annuel">Annual Net</div><div class="value" id="annualNet">0</div></div>
+      <div class="summary-box red"><div class="label" data-en="Annual Taxes" data-nl="Jaarlijkse Belastingen" data-fr="Impôts Annuels">Annual Taxes</div><div class="value" id="annualTax">0</div></div>
+      <div class="summary-box blue"><div class="label" data-en="Annual Premiums" data-nl="Jaarlijkse Premies" data-fr="Cotisations Annuelles">Annual Premiums</div><div class="value" id="annualSS">0</div></div>
+      <div class="summary-box purple"><div class="label" data-en="Annual Employer Cost" data-nl="Jaarlijkse Werkgeverskosten" data-fr="Coût Patronal Annuel">Annual Employer Cost</div><div class="value" id="annualEmployer">0</div></div>
+    </div>
+    <div style="margin-top:16px">
+      <svg id="annualBarChart" viewBox="0 0 800 60" width="100%" height="60"></svg>
+      <div id="annualBarLegend" style="display:flex;gap:20px;justify-content:center;margin-top:8px;flex-wrap:wrap"></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+
+<!-- History Section -->
+<div class="history-card full-width" id="historyCard">
+  <h2><span class="icon icon-green" style="background:#d1fae5;color:#059669">💾</span> <span data-en="Recent Calculations" data-nl="Recente Berekeningen" data-fr="Calculs Récents">Recent Calculations</span></h2>
+  <button class="save-btn" id="saveCalcBtn" onclick="saveCalculation()">
+    <span>💾</span> <span data-en="Save Calculation" data-nl="Berekening Opslaan" data-fr="Enregistrer le Calcul">Save Calculation</span>
+  </button>
+  <div class="history-search-wrap">
+    <input type="text" class="history-search" id="historySearch" placeholder="Search saved calculations..." oninput="renderHistory()">
+  </div>
+  <div class="history-list" id="historyList">
+    <div class="history-empty" data-en="No saved calculations yet. Use the button above to save one." data-nl="Nog geen berekeningen opgeslagen. Gebruik de knop hierboven om er één op te slaan." data-fr="Aucun calcul enregistré pour le moment. Utilisez le bouton ci-dessus pour en enregistrer un.">No saved calculations yet. Use the button above to save one.</div>
+  </div>
+</div>
+
+
+<!-- Footer -->
+<footer>
+  <p data-en="Calculation based on 2026 Belgian tax rules. For guidance only. Consult a tax advisor for your specific situation."
+     data-nl="Berekening op basis van Belgische belastingregels 2026. Alleen ter indicatie. Raadpleeg een belastingadviseur voor uw specifieke situatie."
+     data-fr="Calcul basé sur les règles fiscales belges 2026. À titre informatif uniquement. Consultez un conseiller fiscal pour votre situation spécifique."
+     >Calculation based on 2026 Belgian tax rules. For guidance only. Consult a tax advisor for your specific situation.</p>
+  <p style="margin-top:4px"
+     data-en="Minimum wage Belgium 2026: €1,748/month · Indexation coefficient 2026: 1.6291"
+     data-nl="Minimumloon België 2026: €1.748/maand · Indexatiecoëfficiënt 2026: 1,6291"
+     data-fr="Salaire minimum Belgique 2026: €1.748/mois · Coefficient d'indexation 2026: 1,6291"
+     >Minimum wage Belgium 2026: €1,748/month · Indexation coefficient 2026: 1.6291</p>
+
+  <div class="sources-section">
+    <button class="sources-toggle" onclick="this.nextElementSibling.classList.toggle('show')">📚 <span data-en="Sources" data-nl="Bronnen" data-fr="Sources">Sources</span> ▾</button>
+    <div class="sources-list">
+      <a href="https://financien.belgium.be/nl/ondernemingen/personeel_en_loon/bedrijfsvoorheffing/berekening" target="_blank">FOD Financiën — Bedrijfsvoorheffing Berekening</a><br>
+      <a href="https://www.groeipakket.be/en/amounts" target="_blank">Groeipakket — Amounts (Flanders)</a><br>
+      <a href="https://www.kidslife.be/en/allocations-familiales/bareme-wallonie" target="_blank">KidsLife — Wallonia Child Benefits</a><br>
+      <a href="https://famiris.brussels/en/faq/payments-amounts-of-child-benefits/child-benefit-rates/" target="_blank">Famiris — Brussels Child Benefit Rates</a><br>
+      <a href="https://www.securex.be/nl/lex4you/werkgever/nieuws/nieuwe-regels-bedrijfsvoorheffing-voor-2026" target="_blank">Securex — Bedrijfsvoorheffing 2026</a><br>
+      <a href="https://fin.belgium.be/en/private-individuals/tax-return/income/tax-rates" target="_blank">FPS Finance — Tax Rates 2026</a>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     CALCULATOR SCRIPT — Belgium 2026
+     ═══════════════════════════════════════════════════════════════════ -->
+<script>
+// ====== CONSTANTS — BELGIUM 2026 ======
+// Sources: FOD Financiën, Securex, ACLVB, Groeipakket, Famiris, FAMIWAL
+
+// --- Tax brackets (Bedrijfsvoorheffing) ---
+const BRACKET_1_CEILING = 1393.33;
+const BRACKET_2_CEILING = 2459.17;
+const BRACKET_3_CEILING = 4255.83;
+const BRACKET_1_RATE = 0.25;
+const BRACKET_2_RATE = 0.40;
+const BRACKET_3_RATE = 0.45;
+const BRACKET_4_RATE = 0.50;
+
+// --- RSZ rates ---
+const RSZ_EMPLOYEE_RATE = 0.1307;
+const RSZ_EMPLOYER_RATE = 0.27;
+
+// --- Withholding tax reduction for dependent children (monthly) ---
+const CHILD_TAX_REDUCTIONS_MONTHLY = [0, 45, 123, 326, 567, 831, 1095, 1377, 1659];
+
+// --- Tax-free allowance (annual base) ---
+const TAX_FREE_ALLOWANCE_BASE = 11180;
+
+// --- Child allowance increases (cumulative annual) ---
+const CHILD_TAX_ALLOWANCES = [0, 2030, 5230, 11720, 18920];
+
+// --- Work bonus (werkbonus) phase-out ---
+// Fixed maximum amount, phases out linearly between two thresholds
+const WERKBONUS_MAX = 235.42;               // maximum monthly reduction (2025 indexed value)
+const WERKBONUS_THRESHOLD_LOW = 2080.42;     // full bonus below this
+const WERKBONUS_THRESHOLD_HIGH = 3199.16;    // zero bonus above this
+
+// --- Company car depreciation coefficients ---
+const CAR_AGE_COEFFICIENTS = [1.00, 0.94, 0.88, 0.82, 0.76, 0.70];
+
+// --- Meal vouchers ---
+const MEAL_VOUCHER_EMPLOYEE_RATE = 1.09;  // minimum employee contribution
+const MEAL_VOUCHER_MAX = 10.00;
+
+// --- Expat regime ---
+const EXPAT_TAXFREE_PCT = 0.35;
+const EXPAT_RSXEMPT_PCT = 0.30;
+const EXPAT_MIN_SALARY = 70000; // annual
+
+// --- Commuting rates ---
+const COMMUTE_OWN_CAR_RATE = 0.4326;  // per km, 2026 Q1
+const COMMUTE_BICYCLE_RATE = 0.35;    // per km
+
+// --- Child benefits (monthly amounts in EUR) ---
+// Flanders Groeipakket (Sep 2025+)
+const FLANDERS_BASE = 184.62;
+const FLANDERS_SCHOOL_BONUS_ANNUAL = [23.07, 40.38, 57.68, 69.22];
+const FLANDERS_SOCIAL_SUPPLEMENT = [[73.68, 37.31], [108.29, 85.22]];  // [threshold1, threshold2]
+
+// Wallonia FAMIWAL (born 2020+)
+const WALLONIA_BASE = 196.57;
+
+// Brussels Famiris (from 1 March 2026, +2%)
+const BRUSSELS_BASE_YOUNG = [190.23, 202.91, 202.91, 215.59];  // age 0-11, 12-17, 18-24 (no ed), 18-24 (higher ed)
+
+// --- Slider bounds ---
+const SALARY_MIN = 500;
+const SALARY_MAX = 15000;
+
+// ====== STATE ======
+let lang = 'en';
+let calcMode = 'gross';
+let numChildren = 0;
+let childrenAgeGroups = [0, 0, 0, 0];  // 0-5, 6-11, 12-17, 18-24
+
+// ====== FORMAT ======
+function fmt(n) { return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+function fmtShort(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1).replace('.0','') + 'M';
+  if (n >= 1000) return Math.round(n/1000) + 'K';
+  return n.toString();
+}
+
+// ====== TRANSLATION ======
+function t(en, nl, fr) {
+  if (lang === 'nl' && nl) return nl;
+  if (lang === 'fr' && fr) return fr;
+  return en;
+}
+
+function setLang(newLang, btnEl) {
+  if (lang === newLang) return;
+  lang = newLang;
+  document.documentElement.lang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+  document.querySelectorAll('[data-en]').forEach(el => {
+    const txt = el.getAttribute('data-' + lang) || el.getAttribute('data-en');
+    if (txt) el.textContent = txt;
+  });
+  calculate();
+}
+
+// ====== INPUT HANDLERS ======
+function updateSalaryDisplay(v) {
+  document.getElementById('salaryDisplay').innerHTML = fmt(v) + ' <span>€/' + t('month','maand','mois') + '</span>';
+}
+
+function updateFromSlider() {
+  const v = parseInt(document.getElementById('salarySlider').value);
+  document.getElementById('salaryInput').value = fmt(v);
+  updateSalaryDisplay(v);
+  calculate();
+}
+
+function updateFromInput() {
+  const raw = document.getElementById('salaryInput').value.replace(/\s/g,'');
+  const v = parseInt(raw) || 0;
+  document.getElementById('salarySlider').value = Math.min(Math.max(v, SALARY_MIN), SALARY_MAX);
+  updateSalaryDisplay(v);
+  calculate();
+}
+
+function setCalcMode(mode, btn) {
+  calcMode = mode;
+  document.querySelectorAll('.tab-bar .tab-btn[data-mode]').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  calculate();
+}
+
+function toggleCollapsible(header) {
+  header.classList.toggle('expanded');
+  header.nextElementSibling.classList.toggle('expanded');
+}
+
+function updateMaritalFields() {
+  const status = document.getElementById('maritalStatus').value;
+  document.getElementById('spouseIncomeRow').style.display = status === 'married' ? 'flex' : 'none';
+  calculate();
+}
+
+function updateRegimeInfo() {
+  const regime = document.getElementById('specialRegime').value;
+  const infoDiv = document.getElementById('regimeInfo');
+  if (regime === 'none') {
+    infoDiv.style.display = 'none';
+  } else if (regime === 'expat') {
+    infoDiv.style.display = 'block';
+    document.getElementById('regimeInfoText').innerHTML = t(
+      `<strong>Expat Regime (BBSI)</strong><br>
+       35% of gross salary is tax-exempt.<br>
+       First 30% is RSZ-exempt; additional 5% is RSZ-taxable but income-tax-exempt.<br>
+       Minimum annual salary: €70,000.<br>
+       ⚠️ Unverified: Exact duration (5–8 years) and conditions should be confirmed with tax advisor.`,
+      `<strong>Expatregeling (BBSI)</strong><br>
+       35% van bruto salaris is belastingvrij.<br>
+       Eerste 30% is RSZ-vrij; aanvullende 5% is RSZ-belast maar inkomstenbelastingvrij.<br>
+       Minimaal jaarlijks salaris: €70.000.<br>
+       ⚠️ Niet geverifieerd: Exacte duur (5–8 jaar) en voorwaarden moeten worden bevestigd met belastingadviseur.`,
+      `<strong>Régime Expatrié (BBSI)</strong><br>
+       35% du salaire brut est exonéré d'impôt.<br>
+       Les premiers 30% sont exonérés de cotisations sociales ; 5% supplémentaires sont assujettis aux cotisations mais exonérés d'impôt sur le revenu.<br>
+       Salaire annuel minimum: €70.000.<br>
+       ⚠️ Non vérifié: La durée exacte (5–8 ans) et les conditions doivent être confirmées avec un conseiller fiscal.`
+    );
+  } else if (regime === 'researcher') {
+    infoDiv.style.display = 'block';
+    document.getElementById('regimeInfoText').innerHTML = t(
+      `<strong>Researcher Regime</strong><br>
+       Employer benefit: exemption from withholding tax forwarding for qualifying researchers.<br>
+       This primarily affects employer cost, not employee net pay.<br>
+       Eligibility: PhD or MSc in STEM fields.`,
+      `<strong>Onderzoekersregeling</strong><br>
+       Werkgevervoordeel: vrijstelling van bedrijfsvoorheffingaangifte voor kwalificerende onderzoekers.<br>
+       Dit beïnvloedt primair de werkgeverskosten, niet de netto-inkomsten van de werkgever.<br>
+       Geschiktheid: PhD of MSc in STEM-velden.`,
+      `<strong>Régime de Chercheur</strong><br>
+       Avantage employeur: exonération du versement de l'impôt professionnel pour les chercheurs qualifiés.<br>
+       Cela affecte principalement les coûts patronaux, pas le salaire net de l'employé.<br>
+       Admissibilité: PhD ou MSc dans les domaines STEM.`
+    );
+  }
+  calculate();
+}
+
+function updateCommuteFields() {
+  const type = document.getElementById('commuteType').value;
+  document.getElementById('commuteDistanceRow').style.display = type !== 'none' && type !== 'public-transport' ? 'block' : 'none';
+  calculate();
+}
+
+function changeChildren(delta) {
+  const elem = document.getElementById('numChildren');
+  const current = parseInt(elem.value) || 0;
+  const newVal = Math.max(0, Math.min(10, current + delta));
+  elem.value = newVal;
+  updateChildrenDisplay();
+  calculate();
+}
+
+function updateChildrenDisplay() {
+  const n = parseInt(document.getElementById('numChildren').value) || 0;
+  numChildren = n;
+  document.getElementById('totalChildrenDisplay').textContent = n;
+  document.getElementById('childAgeGroupsContainer').style.display = n > 0 ? 'block' : 'none';
+  document.getElementById('childBenefitCard').style.display = n > 0 ? 'block' : 'none';
+
+  // Reset age groups if needed
+  if (n === 0) {
+    childrenAgeGroups = [0, 0, 0, 0];
+  }
+  document.getElementById('childrenAgeGroup0').value = childrenAgeGroups[0];
+  document.getElementById('childrenAgeGroup1').value = childrenAgeGroups[1];
+  document.getElementById('childrenAgeGroup2').value = childrenAgeGroups[2];
+  document.getElementById('childrenAgeGroup3').value = childrenAgeGroups[3];
+}
+
+function changeAgeGroup(group, delta) {
+  const groupIndex = {'0-5': 0, '6-11': 1, '12-17': 2, '18-24': 3}[group];
+  if (groupIndex === undefined) return;
+  childrenAgeGroups[groupIndex] = Math.max(0, Math.min(10, childrenAgeGroups[groupIndex] + delta));
+  document.getElementById('childrenAgeGroup' + groupIndex).value = childrenAgeGroups[groupIndex];
+  calculate();
+}
+
+// ====== TOGGLE SETTINGS ======
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('mealVouchersToggle').addEventListener('change', () => {
+    document.getElementById('mealVouchersSettings').style.display =
+      document.getElementById('mealVouchersToggle').checked ? 'block' : 'none';
+    calculate();
+  });
+  document.getElementById('companyCarToggle').addEventListener('change', () => {
+    document.getElementById('companyCarSettings').style.display =
+      document.getElementById('companyCarToggle').checked ? 'block' : 'none';
+    calculate();
+  });
+  document.getElementById('groupInsToggle').addEventListener('change', () => {
+    document.getElementById('groupInsSettings').style.display =
+      document.getElementById('groupInsToggle').checked ? 'block' : 'none';
+    calculate();
+  });
+  document.getElementById('hospiToggle').addEventListener('change', () => {
+    document.getElementById('hospiSettings').style.display =
+      document.getElementById('hospiToggle').checked ? 'block' : 'none';
+    calculate();
+  });
+});
+
+// ====== CORE CALCULATION ======
+function computeBreakdown(monthlyGross) {
+  const specialRegime = document.getElementById('specialRegime').value;
+  const communeTaxRate = parseFloat(document.getElementById('communeTaxRate').value) || 7;
+  const maritalStatus = document.getElementById('maritalStatus').value;
+  const spouseIncome = document.getElementById('spouseIncome').value;
+  const isDisabled = document.getElementById('disabledToggle').checked;
+
+  // 1. RSZ employee contribution
+  let rszBase = monthlyGross;
+  let expatAllowanceIncome = 0;
+
+  if (specialRegime === 'expat') {
+    expatAllowanceIncome = monthlyGross * EXPAT_TAXFREE_PCT;
+    rszBase = monthlyGross * (1 - EXPAT_RSXEMPT_PCT);  // only 30% is RSZ-exempt
+  }
+
+  const rszContribution = rszBase * RSZ_EMPLOYEE_RATE;
+
+  // 2. Work bonus (werkbonus) — fixed amount reduction on RSZ for low-wage workers
+  let werkbonus = 0;
+  if (monthlyGross <= WERKBONUS_THRESHOLD_LOW) {
+    werkbonus = Math.min(WERKBONUS_MAX, rszContribution);  // full bonus, but never more than actual RSZ
+  } else if (monthlyGross < WERKBONUS_THRESHOLD_HIGH) {
+    const phaseOut = (WERKBONUS_THRESHOLD_HIGH - monthlyGross) / (WERKBONUS_THRESHOLD_HIGH - WERKBONUS_THRESHOLD_LOW);
+    werkbonus = Math.min(WERKBONUS_MAX * phaseOut, rszContribution);
+  }
+  const netRsz = rszContribution - werkbonus;
+
+  // 3. Taxable base (after RSZ deduction)
+  let taxableBase = monthlyGross - rszContribution;  // RSZ before werkbonus
+
+  // 4. Professional expenses deduction (30% flat rate, capped)
+  const annualBase = taxableBase * 12;
+  const flatExpenses = Math.min(annualBase * 0.30, 5930);
+  const monthlyExpenses = flatExpenses / 12;
+
+  // 5. Taxable income after expenses
+  let taxableIncome = taxableBase - monthlyExpenses;
+
+  // Apply expat deduction to taxable income
+  if (specialRegime === 'expat') {
+    taxableIncome = taxableIncome - (expatAllowanceIncome - (monthlyGross * EXPAT_RSXEMPT_PCT));
+  }
+
+  // 6. Tax brackets (prorated monthly from annual amounts)
+  const brackets = [
+    { limit: BRACKET_1_CEILING, rate: BRACKET_1_RATE },
+    { limit: BRACKET_2_CEILING, rate: BRACKET_2_RATE },
+    { limit: BRACKET_3_CEILING, rate: BRACKET_3_RATE },
+    { limit: Infinity, rate: BRACKET_4_RATE }
+  ];
+
+  let baseTax = 0;
+  let remaining = Math.max(0, taxableIncome);
+  let prevLimit = 0;
+
+  for (const b of brackets) {
+    const taxableInBracket = Math.min(remaining, b.limit - prevLimit);
+    if (taxableInBracket <= 0) break;
+    baseTax += taxableInBracket * b.rate;
+    remaining -= taxableInBracket;
+    prevLimit = b.limit;
+  }
+
+  // 7. Tax-free allowance
+  let taxFreeAllowance = TAX_FREE_ALLOWANCE_BASE / 12;
+
+  // Add child tax allowances
+  const totalChildren = childrenAgeGroups.reduce((a, b) => a + b, 0);
+  if (totalChildren > 0) {
+    if (totalChildren <= 4) {
+      taxFreeAllowance += CHILD_TAX_ALLOWANCES[totalChildren] / 12;
+    } else {
+      taxFreeAllowance += CHILD_TAX_ALLOWANCES[4] / 12 + (totalChildren - 4) * (7200 / 12);
+    }
+  }
+
+  // Single parent supplement
+  if (maritalStatus === 'single-parent') {
+    taxFreeAllowance += 1980 / 12;
+  }
+
+  // Disabled supplement
+  if (isDisabled) {
+    taxFreeAllowance += 1980 / 12;
+  }
+
+  const taxFreeReduction = taxFreeAllowance * BRACKET_1_RATE;  // reduced at 25%
+
+  // 8. Marital quotient
+  let maritalReduction = 0;
+  if (maritalStatus === 'married' && spouseIncome !== 'normal') {
+    const attribution = Math.min(taxableIncome * 0.30 * 12, 13460) / 12;  // monthly equivalent
+    maritalReduction = attribution * BRACKET_1_RATE;  // reduced at 25%
+  }
+
+  // 9. Withholding tax reductions for dependent children
+  let childTaxReduction = 0;
+  if (totalChildren > 0 && totalChildren <= CHILD_TAX_REDUCTIONS_MONTHLY.length - 1) {
+    childTaxReduction = CHILD_TAX_REDUCTIONS_MONTHLY[totalChildren] / 12;
+  } else if (totalChildren > CHILD_TAX_REDUCTIONS_MONTHLY.length - 1) {
+    const base = CHILD_TAX_REDUCTIONS_MONTHLY[CHILD_TAX_REDUCTIONS_MONTHLY.length - 1];
+    const extra = (totalChildren - (CHILD_TAX_REDUCTIONS_MONTHLY.length - 1)) * 268;
+    childTaxReduction = (base + extra) / 12;
+  }
+
+  // 10. Net withholding tax
+  let withholdingTax = Math.max(0, baseTax - taxFreeReduction - maritalReduction - childTaxReduction);
+
+  // 11. Municipal surcharge
+  const communeTax = withholdingTax * (communeTaxRate / 100);
+  const totalWithholding = withholdingTax + communeTax;
+
+  // 12. Benefits calculations
+
+  // Meal vouchers
+  let mealVoucherEmployeeContribution = 0;
+  let mealVoucherBenefit = 0;
+  if (document.getElementById('mealVouchersToggle').checked) {
+    const rate = parseFloat(document.getElementById('mealVoucherRate').value) || 8.91;
+    const perMonth = parseInt(document.getElementById('mealVouchersPerMonth').value) || 20;
+    mealVoucherEmployeeContribution = MEAL_VOUCHER_EMPLOYEE_RATE * perMonth;
+    mealVoucherBenefit = rate * perMonth;
+  }
+
+  // Eco vouchers
+  const ecoVoucherBenefit = document.getElementById('ecoVouchersToggle').checked ? (250 / 12) : 0;
+
+  // Company car BIK
+  let companyCarBIK = 0;
+  if (document.getElementById('companyCarToggle').checked) {
+    const carCO2 = parseInt(document.getElementById('carCO2').value) || 120;
+    const fuelType = document.getElementById('fuelType').value;
+    const catalogueValue = parseInt(document.getElementById('catalogueValue').value) || 35000;
+    const carAge = parseInt(document.getElementById('carAge').value) || 0;
+
+    // CO2 percentage
+    let co2Ref = fuelType === 'diesel' ? 58 : 70;
+    let co2Pct;
+    if (fuelType === 'electric') {
+      co2Pct = 0.04;
+    } else {
+      co2Pct = 0.055 + (carCO2 - co2Ref) * 0.001;
+      co2Pct = Math.max(0.04, Math.min(0.18, co2Pct));
+    }
+
+    const ageCoef = CAR_AGE_COEFFICIENTS[carAge] || 0.70;
+    companyCarBIK = Math.max(1690, catalogueValue * ageCoef * (6/7) * co2Pct) / 12;
+
+    // BIK is added to taxable income and taxed
+    // Recalculate tax with BIK included
+    const bikTaxableIncome = taxableIncome + companyCarBIK;
+    let bikBaseTax = 0;
+    let bikRemaining = Math.max(0, bikTaxableIncome);
+    let bikPrevLimit = 0;
+    for (const b of brackets) {
+      const taxableInBracket = Math.min(bikRemaining, b.limit - bikPrevLimit);
+      if (taxableInBracket <= 0) break;
+      bikBaseTax += taxableInBracket * b.rate;
+      bikRemaining -= taxableInBracket;
+      bikPrevLimit = b.limit;
+    }
+    // Additional tax from BIK
+    const bikAdditionalTax = Math.max(0, bikBaseTax - taxFreeReduction - maritalReduction - childTaxReduction);
+    withholdingTax = bikAdditionalTax;
+  }
+
+  // Group insurance
+  let groupInsContrib = 0;
+  if (document.getElementById('groupInsToggle').checked) {
+    groupInsContrib = parseFloat(document.getElementById('groupInsAmount').value) || 50;
+  }
+
+  // Hospitalization insurance
+  let hospiContrib = 0;
+  if (document.getElementById('hospiToggle').checked) {
+    hospiContrib = parseFloat(document.getElementById('hospiAmount').value) || 15;
+  }
+
+  // Commuting
+  let commutingBenefit = 0;
+  const commuteType = document.getElementById('commuteType').value;
+  if (commuteType !== 'none') {
+    const commuteDistance = parseInt(document.getElementById('commuteDistance').value) || 0;
+    if (commuteType === 'public-transport') {
+      commutingBenefit = 0;  // Tax-free, not added to net (handled separately)
+    } else if (commuteType === 'own-car') {
+      // €0.4326/km, 2 × 20 working days/month
+      commutingBenefit = commuteDistance * 2 * 20 * COMMUTE_OWN_CAR_RATE / 12;
+    } else if (commuteType === 'bicycle') {
+      // €0.35/km max 40 km round trip, 20 working days/month
+      commutingBenefit = Math.min(commuteDistance, 20) * 2 * 20 * COMMUTE_BICYCLE_RATE / 12;
+    }
+  }
+
+  // 13. Net salary
+  const totalDeductions = netRsz + (withholdingTax + communeTax);
+  let netSalary = monthlyGross - totalDeductions - mealVoucherEmployeeContribution - groupInsContrib - hospiContrib;
+  netSalary += commutingBenefit;
+
+  // 14. Employer costs
+  const erRsz = monthlyGross * RSZ_EMPLOYER_RATE;
+  const totalEmployerCost = monthlyGross + erRsz;
+
+  // 15. Child benefits
+  const childBenefitMonthly = calculateChildBenefit();
+
+  // 16. Holiday pay (annual, not monthly)
+  const doubleHolidayPayAnnual = monthlyGross * 0.92;
+
+  return {
+    gross: monthlyGross,
+    taxableIncome,
+    expatAllowance: expatAllowanceIncome,
+    rszContribution: rszContribution,
+    werkbonus: werkbonus,
+    netRsz: netRsz,
+    baseTax: baseTax,
+    taxFreeAllowance: taxFreeAllowance,
+    taxFreeReduction: taxFreeReduction,
+    maritalReduction: maritalReduction,
+    childTaxReduction: childTaxReduction,
+    withholdingTax: withholdingTax,
+    communeTax: communeTax,
+    totalWithholding: withholdingTax + communeTax,
+
+    mealVoucherEmployeeContribution: mealVoucherEmployeeContribution,
+    mealVoucherBenefit: mealVoucherBenefit,
+    ecoVoucherBenefit: ecoVoucherBenefit,
+    companyCarBIK: companyCarBIK,
+    groupInsContrib: groupInsContrib,
+    hospiContrib: hospiContrib,
+    commutingBenefit: commutingBenefit,
+
+    totalDeductions: totalDeductions,
+    netSalary: netSalary,
+    netAnnual: netSalary * 12,
+
+    totalErSS: erRsz,
+    totalEmployerCost: totalEmployerCost,
+
+    kindergeld: childBenefitMonthly,
+    childBenefitMonthly: childBenefitMonthly,
+    childBenefitAnnual: childBenefitMonthly * 12,
+
+    effectiveRate: monthlyGross > 0 ? (totalDeductions / monthlyGross * 100) : 0,
+
+    effMonthlyGross: monthlyGross,
+    effMonthlyNet: netSalary,
+    effMonthlyDeductions: totalDeductions,
+    effEmployerCost: totalEmployerCost,
+
+    annualGross: monthlyGross * 12,
+    annualTax: withholdingTax * 12,
+    annualPremiums: netRsz * 12,
+  };
+}
+
+function calculateChildBenefit() {
+  const region = document.getElementById('childBenefitRegion').value;
+  const totalChildren = childrenAgeGroups.reduce((a, b) => a + b, 0);
+
+  if (totalChildren === 0) return 0;
+
+  if (region === 'flanders') {
+    // Groeipakket: €184.62/child flat + supplements (simplified)
+    let benefit = totalChildren * FLANDERS_BASE;
+    // Add school bonus (simplified, annual)
+    let schoolBonus = 0;
+    if (childrenAgeGroups[0] > 0) schoolBonus += childrenAgeGroups[0] * FLANDERS_SCHOOL_BONUS_ANNUAL[0];
+    if (childrenAgeGroups[1] > 0) schoolBonus += childrenAgeGroups[1] * FLANDERS_SCHOOL_BONUS_ANNUAL[1];
+    if (childrenAgeGroups[2] > 0) schoolBonus += childrenAgeGroups[2] * FLANDERS_SCHOOL_BONUS_ANNUAL[2];
+    if (childrenAgeGroups[3] > 0) schoolBonus += childrenAgeGroups[3] * FLANDERS_SCHOOL_BONUS_ANNUAL[3];
+    benefit += schoolBonus / 12;
+    return benefit;
+  } else if (region === 'wallonia') {
+    // FAMIWAL: €196.57/child base (for children born 2020+)
+    return totalChildren * WALLONIA_BASE;
+  } else if (region === 'brussels') {
+    // Famiris: varies by age
+    let benefit = 0;
+    benefit += childrenAgeGroups[0] * BRUSSELS_BASE_YOUNG[0];  // 0-11
+    benefit += childrenAgeGroups[1] * BRUSSELS_BASE_YOUNG[1];  // 12-17
+    benefit += (childrenAgeGroups[2] + childrenAgeGroups[3]) * BRUSSELS_BASE_YOUNG[2];  // 18-24 (simplified)
+    return benefit;
+  }
+  return 0;
+}
+
+// Required by shared.js
+function computeForGross(g) {
+  const r = computeBreakdown(g);
+  return { net: r.netSalary + r.kindergeld, deductions: r.totalDeductions, kindergeld: r.kindergeld };
+}
+
+// ====== MAIN CALCULATE ======
+function calculate() {
+  const rawVal = document.getElementById('salaryInput').value.replace(/\s/g,'');
+  let input = parseInt(rawVal) || 0;
+  let monthlyGross;
+
+  if (calcMode === 'gross') {
+    monthlyGross = input;
+  } else {
+    let lo = 0, hi = input;
+    for (let i = 0; i < 60; i++) {
+      const mid = (lo + hi) / 2;
+      if (computeBreakdown(mid).totalEmployerCost < input) lo = mid; else hi = mid;
+    }
+    monthlyGross = Math.round((lo + hi) / 2);
+  }
+
+  const result = computeBreakdown(monthlyGross);
+  renderResults(result, monthlyGross);
+}
+
+// ====== RENDER RESULTS ======
+function renderResults(r, gross) {
+  updateSalaryDisplay(parseInt(document.getElementById('salaryInput').value.replace(/\s/g,'')) || 0);
+
+  // Net hero
+  const displayNet = r.netSalary + r.kindergeld;
+  animateOdometer(document.getElementById('netAmount'), Math.round(displayNet), '', ' €');
+  const pct = gross > 0 ? Math.round(r.netSalary / gross * 100) : 0;
+  document.getElementById('netSub').innerHTML =
+    pct + '% ' + t('of gross','van bruto','du brut') + ' | ' + t('eff. rate','eff. tarief','taux eff.') + ': ' + r.effectiveRate.toFixed(1) + '%';
+
+  // Summary boxes
+  document.getElementById('sumNet').textContent = fmt(Math.round(r.netSalary));
+  document.getElementById('sumDeductions').textContent = fmt(Math.round(r.totalDeductions));
+  document.getElementById('sumEmployer').textContent = fmt(Math.round(r.totalEmployerCost));
+  document.getElementById('sumBenefit').textContent = r.kindergeld > 0 ? '+' + fmt(Math.round(r.kindergeld)) : '—';
+  document.getElementById('totalEmployerCost').textContent = fmt(Math.round(r.totalEmployerCost)) + ' €';
+
+  // Annual overview
+  document.getElementById('annualNet').textContent = fmt(Math.round(r.netAnnual));
+  document.getElementById('annualTax').textContent = fmt(Math.round(r.annualTax));
+  document.getElementById('annualSS').textContent = fmt(Math.round(r.annualPremiums));
+  document.getElementById('annualEmployer').textContent = fmt(Math.round(r.totalEmployerCost * 12));
+
+  // Child benefit card
+  renderChildBenefit(r);
+
+  renderBreakdown(r, gross);
+  renderDonut(r, gross);
+  renderEmployerBars(r, gross);
+  renderAnnualBar(r);
+  renderCurveCharts(gross);
+}
+
+// ====== CHILD BENEFIT CARD ======
+function renderChildBenefit(r) {
+  const card = document.getElementById('childBenefitCard');
+  const totalChildren = childrenAgeGroups.reduce((a, b) => a + b, 0);
+  if (totalChildren === 0) { card.style.display = 'none'; return; }
+
+  card.style.display = 'block';
+  document.getElementById('cbMonthly').textContent = fmt(Math.round(r.childBenefitMonthly)) + ' €';
+  document.getElementById('cbSub').textContent =
+    t(`per month · €${fmt(Math.round(r.childBenefitAnnual))}/year`,
+      `per maand · €${fmt(Math.round(r.childBenefitAnnual))}/jaar`,
+      `par mois · €${fmt(Math.round(r.childBenefitAnnual))}/an`);
+
+  let rows = '';
+  const region = document.getElementById('childBenefitRegion').value;
+
+  if (childrenAgeGroups[0] > 0) {
+    const rate = region === 'flanders' ? FLANDERS_BASE : region === 'wallonia' ? WALLONIA_BASE : BRUSSELS_BASE_YOUNG[0];
+    rows += `<div class="cb-row"><span>👶 ${childrenAgeGroups[0]} × ${t('age 0–5','0–5 jaar','âge 0–5')} (€${fmt(Math.round(rate))}/mo)</span><span style="font-weight:700;color:#059669">+${fmt(Math.round(childrenAgeGroups[0] * rate))} €</span></div>`;
+  }
+  if (childrenAgeGroups[1] > 0) {
+    const rate = region === 'flanders' ? FLANDERS_BASE : region === 'wallonia' ? WALLONIA_BASE : BRUSSELS_BASE_YOUNG[1];
+    rows += `<div class="cb-row"><span>🧒 ${childrenAgeGroups[1]} × ${t('age 6–11','6–11 jaar','âge 6–11')} (€${fmt(Math.round(rate))}/mo)</span><span style="font-weight:700;color:#059669">+${fmt(Math.round(childrenAgeGroups[1] * rate))} €</span></div>`;
+  }
+  if (childrenAgeGroups[2] > 0) {
+    const rate = region === 'flanders' ? FLANDERS_BASE : region === 'wallonia' ? WALLONIA_BASE : BRUSSELS_BASE_YOUNG[2];
+    rows += `<div class="cb-row"><span>🧑 ${childrenAgeGroups[2]} × ${t('age 12–17','12–17 jaar','âge 12–17')} (€${fmt(Math.round(rate))}/mo)</span><span style="font-weight:700;color:#059669">+${fmt(Math.round(childrenAgeGroups[2] * rate))} €</span></div>`;
+  }
+  if (childrenAgeGroups[3] > 0) {
+    const rate = region === 'brussels' ? BRUSSELS_BASE_YOUNG[3] : BRUSSELS_BASE_YOUNG[2];
+    rows += `<div class="cb-row"><span>👨 ${childrenAgeGroups[3]} × ${t('age 18–24','18–24 jaar','âge 18–24')} (€${fmt(Math.round(rate))}/mo)</span><span style="font-weight:700;color:#059669">+${fmt(Math.round(childrenAgeGroups[3] * rate))} €</span></div>`;
+  }
+
+  document.getElementById('cbBreakdown').innerHTML = rows;
+}
+
+// ====== BREAKDOWN TABLE ======
+function renderBreakdown(r, gross) {
+  const tbl = document.getElementById('breakdownTable');
+  const row = (label, amount, cls = '') => {
+    const prefix = cls.includes('benefit') ? '+' : cls.includes('deduction') ? '−' : '';
+    return `<tr class="${cls}"><td class="row-header">${label}</td><td>${prefix} ${fmt(Math.round(Math.abs(amount)))} €</td></tr>`;
+  };
+  const hdr = (txt) => `<tr><td colspan="2" style="padding:4px 0;font-size:0.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px">${txt}</td></tr>`;
+
+  let rows = '';
+  rows += row('💰 ' + t('Gross Monthly Salary','Bruto Maandsalaris','Salaire Brut Mensuel'), gross, 'subtotal');
+
+  if (r.expatAllowance > 0) {
+    rows += hdr(t('Expat Regime','Expatregeling','Régime Expatrié'));
+    rows += row('🌍 ' + t('35% Tax-Free Allowance','35% Belastingvrije vergoeding','Allocation de 35% Exonérée'), r.expatAllowance, 'benefit');
+    rows += row('📊 ' + t('Taxable Portion (65%)','Belastbaar gedeelte (65%)','Portion Imposable (65%)'), (gross - r.expatAllowance), 'subtotal');
+  }
+
+  rows += hdr(t('Social Security (RSZ/ONSS)','Sociale Zekerheid (RSZ/ONSS)','Sécurité Sociale (RSZ/ONSS)'));
+  rows += row('🏛️ ' + t('RSZ Contribution (13.07%)','RSZ Bijdrage (13,07%)','Cotisation RSZ (13,07%)'), r.rszContribution, 'deduction');
+  if (r.werkbonus > 0) {
+    rows += row('💚 ' + t('Work Bonus','Werkbonus','Bonus à l\'Emploi'), r.werkbonus, 'benefit');
+  }
+  rows += row('📌 ' + t('Net RSZ','Netto RSZ','RSZ Net'), r.netRsz, 'subtotal deduction');
+
+  rows += hdr(t('Withholding Tax (Bedrijfsvoorheffing)','Inhoudingsbelasting (Bedrijfsvoorheffing)','Impôt Retenu (Bedrijfsvoorheffing)'));
+  rows += row('📋 ' + t('Tax on Taxable Income','Belasting op Belastbaar Inkomen','Impôt sur Revenu Imposable'), r.baseTax, 'deduction');
+  rows += row('🎯 ' + t('Tax-Free Allowance Reduction','Belastingvrije Som Vermindering','Réduction Allocation Exonérée'), r.taxFreeReduction, 'benefit');
+  if (r.maritalReduction > 0) {
+    rows += row('👥 ' + t('Marital Quotient','Huwelijksquotiënt','Quotient Conjugal'), r.maritalReduction, 'benefit');
+  }
+  if (r.childTaxReduction > 0) {
+    rows += row('👶 ' + t('Child Tax Reduction','Kinderbelastingkorting','Réduction Fiscale Enfant'), r.childTaxReduction, 'benefit');
+  }
+  rows += row('📌 ' + t('Withholding Tax (before municipal)','Bedrijfsvoorheffing (voor gemeente)','Impôt Retenu (avant commune)'), r.withholdingTax, 'subtotal deduction');
+
+  if (r.communeTax > 0) {
+    rows += row('🏘️ ' + t('Municipal Surcharge','Gemeentebelasting','Surtaxe Communale'), r.communeTax, 'deduction');
+  }
+
+  rows += row('📌 ' + t('Total Withholding Tax','Totale Bedrijfsvoorheffing','Retenue Fiscale Totale'), r.totalWithholding, 'subtotal deduction');
+
+  if (r.mealVoucherEmployeeContribution > 0) {
+    rows += hdr(t('Benefits & Deductions','Voordelen & Inhoudingen','Avantages & Déductions'));
+    rows += row('🍽️ ' + t('Meal Voucher Employee Contribution','Maaltijdcheque Werknemerbijdrage','Cotisation Salariée Chèques-Repas'), r.mealVoucherEmployeeContribution, 'deduction');
+  }
+  if (r.groupInsContrib > 0) {
+    rows += row('🏥 ' + t('Group Insurance Contribution','Groepsverzekering Bijdrage','Cotisation Assurance Groupe'), r.groupInsContrib, 'deduction');
+  }
+  if (r.hospiContrib > 0) {
+    rows += row('🏥 ' + t('Hospitalization Insurance','Hospitalisatieverzekering','Assurance Hospitalisation'), r.hospiContrib, 'deduction');
+  }
+
+  rows += row('✅ ' + t('Net Monthly Salary','Netto Maandsalaris','Salaire Net Mensuel'), r.netSalary, 'subtotal');
+
+  if (r.childBenefitMonthly > 0) {
+    rows += hdr(t('Government Benefits','Overheidsuitkeringen','Allocations Gouvernementales'));
+    rows += row('👶 ' + t('Child Benefits','Kinderbijslag','Allocations Familiales'), r.childBenefitMonthly, 'benefit');
+    rows += row('💚 ' + t('Net + Child Benefits','Netto + Kinderbijslag','Net + Allocations'), r.netSalary + r.childBenefitMonthly, 'subtotal');
+  }
+
+  tbl.innerHTML = rows;
+}
+
+// ====== DONUT CHART ======
+function renderDonut(r, gross) {
+  const svg = document.getElementById('donutChart');
+  const legend = document.getElementById('chartLegend');
+  const total = Math.max(gross, 1);
+
+  const segments = [
+    { label: t('Net Salary','Netto Salaris','Salaire Net'), value: Math.max(0, r.netSalary), color: '#059669' },
+    { label: t('RSZ/Premiums','RSZ/Premies','RSZ/Cotisations'), value: Math.max(0, r.netRsz), color: '#003DA5' },
+    { label: t('Withholding Tax','Bedrijfsvoorheffing','Impôt Retenu'), value: Math.max(0, r.totalWithholding), color: '#ED2939' },
+  ];
+
+  const cx=100, cy=100, R1=85, R2=55;
+  let startAngle = -Math.PI/2, paths = '';
+  segments.forEach(seg => {
+    if (seg.value <= 0) return;
+    const angle = (seg.value / total) * Math.PI * 2;
+    const endAngle = startAngle + angle;
+    const la = angle > Math.PI ? 1 : 0;
+    const x1o=cx+R1*Math.cos(startAngle), y1o=cy+R1*Math.sin(startAngle);
+    const x2o=cx+R1*Math.cos(endAngle), y2o=cy+R1*Math.sin(endAngle);
+    const x1i=cx+R2*Math.cos(endAngle), y1i=cy+R2*Math.sin(endAngle);
+    const x2i=cx+R2*Math.cos(startAngle), y2i=cy+R2*Math.sin(startAngle);
+    paths += `<path d="M${x1o},${y1o} A${R1},${R1} 0 ${la} 1 ${x2o},${y2o} L${x1i},${y1i} A${R2},${R2} 0 ${la} 0 ${x2i},${y2i} Z" fill="${seg.color}" opacity="0.85"><title>${seg.label}: ${fmt(Math.round(seg.value))} €</title></path>`;
+    startAngle = endAngle;
+  });
+  const netPct = gross > 0 ? Math.round(Math.max(0, r.netSalary) / gross * 100) : 0;
+  paths += `<text x="${cx}" y="${cy-6}" text-anchor="middle" font-size="22" font-weight="800" fill="#1a1a2e">${netPct}%</text>`;
+  paths += `<text x="${cx}" y="${cy+14}" text-anchor="middle" font-size="9" fill="#6b7280">${t('net ratio','netto ratio','ratio net')}</text>`;
+  svg.innerHTML = paths;
+
+  let lh = '';
+  segments.forEach(seg => {
+    if (seg.value <= 0) return;
+    const p = gross > 0 ? Math.round(seg.value / gross * 100) : 0;
+    lh += `<div class="legend-item"><div class="legend-color" style="background:${seg.color}"></div><span>${seg.label} (${p}%)</span><span class="legend-value">${fmt(Math.round(seg.value))} €</span></div>`;
+  });
+  legend.innerHTML = lh;
+}
+
+// ====== EMPLOYER BARS ======
+function renderEmployerBars(r, gross) {
+  const c = document.getElementById('employerBars');
+  const max = r.totalEmployerCost;
+  const items = [
+    { label: t('Gross Salary','Bruto Salaris','Salaire Brut'), value: gross, color: '#000000' },
+    { label: t('RSZ Employer (27%)','Werkgever RSZ (27%)','RSZ Employeur (27%)'), value: r.totalErSS, color: '#ED2939' },
+  ];
+  let html = '';
+  items.forEach(item => {
+    if (item.value <= 0) return;
+    const w = max > 0 ? (item.value / max * 100) : 0;
+    html += `<div class="bar-group"><div class="bar-label">${item.label}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.max(w,8)}%;background:${item.color}">${fmt(Math.round(item.value))} €</div></div></div>`;
+  });
+  c.innerHTML = html;
+}
+
+// ====== ANNUAL BAR ======
+function renderAnnualBar(r) {
+  const svg = document.getElementById('annualBarChart');
+  const legendDiv = document.getElementById('annualBarLegend');
+  const total = r.totalEmployerCost * 12;
+  if (total === 0) { svg.innerHTML = ''; legendDiv.innerHTML = ''; return; }
+
+  const segments = [
+    { label: t('Net','Netto','Net'), value: Math.round(r.netAnnual), color: '#059669' },
+    { label: t('RSZ/Premiums','RSZ/Premies','RSZ/Cotisations'), value: Math.round(r.annualPremiums), color: '#003DA5' },
+    { label: t('Taxes','Belastingen','Impôts'), value: Math.round(r.annualTax), color: '#ED2939' },
+    { label: t('Employer SS','Werkgever SS','Cotisations Employeur'), value: Math.round(r.totalErSS * 12), color: '#8b5cf6' },
+  ];
+  let x = 0, paths = '';
+  segments.forEach(seg => {
+    const w = (seg.value / total) * 800;
+    if (w > 0) {
+      paths += `<rect x="${x}" y="0" width="${w}" height="50" rx="4" fill="${seg.color}" opacity="0.85"><title>${seg.label}: ${fmt(seg.value)} €</title></rect>`;
+      if (w > 60) paths += `<text x="${x+w/2}" y="30" text-anchor="middle" fill="white" font-size="11" font-weight="600">${fmt(seg.value)}</text>`;
+    }
+    x += w;
+  });
+  svg.innerHTML = paths;
+  legendDiv.innerHTML = segments.map(s =>
+    `<div style="display:flex;align-items:center;gap:6px;font-size:0.82rem"><div style="width:12px;height:12px;border-radius:3px;background:${s.color}"></div>${s.label}: ${fmt(s.value)} €</div>`
+  ).join('');
+}
+
+// ====== CURVE CHARTS ======
+function renderCurveCharts(cg) { renderNetVsGrossChart(cg); renderTaxRateChart(cg); }
+
+function renderNetVsGrossChart(currentGross) {
+  const canvas = document.getElementById('netVsGrossChart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = canvas.offsetWidth * dpr;
+  canvas.height = canvas.offsetHeight * dpr;
+  ctx.scale(dpr, dpr);
+  const W = canvas.offsetWidth, H = canvas.offsetHeight;
+  const pad = { top:20, right:24, bottom:50, left:70 };
+  const plotW = W-pad.left-pad.right, plotH = H-pad.top-pad.bottom;
+  const minG=SALARY_MIN, maxG=12000, steps=100, maxY=maxG;
+
+  const dataNet=[], dataGross=[];
+  for (let i=0; i<=steps; i++) {
+    const g = minG + (maxG-minG)*(i/steps);
+    const w = computeForGross(g);
+    dataNet.push({x:g, y:w.net});
+    dataGross.push({x:g, y:g});
+  }
+
+  ctx.clearRect(0,0,W,H);
+  const yTicks=[0,2000,4000,6000,8000,10000,12000];
+  const xTicks=[1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,11000];
+  ctx.strokeStyle='rgba(255,255,255,0.07)'; ctx.lineWidth=1;
+  yTicks.forEach(v => { const y=pad.top+plotH-(v/maxY)*plotH; ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(pad.left+plotW,y); ctx.stroke(); });
+  xTicks.forEach(v => { const x=pad.left+((v-minG)/(maxG-minG))*plotW; if(x>=pad.left&&x<=pad.left+plotW){ctx.beginPath();ctx.moveTo(x,pad.top);ctx.lineTo(x,pad.top+plotH);ctx.stroke();} });
+
+  ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='11px system-ui'; ctx.textAlign='right';
+  yTicks.forEach(v => { const y=pad.top+plotH-(v/maxY)*plotH; ctx.fillText(fmtShort(v)+'€',pad.left-8,y+4); });
+  ctx.textAlign='center';
+  xTicks.forEach(v => { const x=pad.left+((v-minG)/(maxG-minG))*plotW; if(x>=pad.left&&x<=pad.left+plotW) ctx.fillText(fmtShort(v)+'€',x,pad.top+plotH+20); });
+  ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='10px system-ui';
+  ctx.fillText(t('GROSS SALARY (€)','BRUTO SALARIS (€)','SALAIRE BRUT (€)'),pad.left+plotW/2,H-6);
+  ctx.save(); ctx.translate(14,pad.top+plotH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText(t('NET INCOME (€)','NETTO INKOMEN (€)','REVENU NET (€)'),0,0); ctx.restore();
+
+  const drawLine = (data,color,lw,dashed) => {
+    ctx.strokeStyle=color; ctx.lineWidth=lw; ctx.setLineDash(dashed?[6,4]:[]);
+    ctx.beginPath();
+    data.forEach((p,i) => { const x=pad.left+((p.x-minG)/(maxG-minG))*plotW; const y=pad.top+plotH-(Math.min(p.y,maxY)/maxY)*plotH; i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+    ctx.stroke(); ctx.setLineDash([]);
+  };
+  drawLine(dataGross,'rgba(196,181,107,0.6)',1.5,true);
+  drawLine(dataNet,'#2ecc71',2.5,false);
+
+  if (currentGross>=minG && currentGross<=maxG) {
+    const cx2=pad.left+((currentGross-minG)/(maxG-minG))*plotW;
+    const curR=computeForGross(currentGross);
+    const cy2=pad.top+plotH-(Math.min(curR.net,maxY)/maxY)*plotH;
+    ctx.strokeStyle='rgba(46,204,113,0.4)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(cx2,pad.top); ctx.lineTo(cx2,pad.top+plotH); ctx.stroke(); ctx.setLineDash([]);
+    ctx.beginPath(); ctx.arc(cx2,cy2,6,0,Math.PI*2); ctx.fillStyle='#2ecc71'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.font='bold 11px system-ui'; ctx.textAlign=cx2>W/2?'right':'left';
+    ctx.fillText(fmt(Math.round(curR.net))+' €',cx2>W/2?cx2-12:cx2+12,cy2-12);
+  }
+
+  document.getElementById('netVsGrossLegend').innerHTML = [
+    {color:'#2ecc71', label:t('Net take-home','Netto salaris','Salaire net'), dash:false},
+    {color:'rgba(196,181,107,0.8)', label:t('Gross (reference)','Bruto (referentie)','Brut (référence)'), dash:true},
+  ].map(l=>`<div style="display:flex;align-items:center;gap:6px"><div style="width:20px;height:3px;background:${l.color};border-radius:2px;${l.dash?'border-top:2px dashed '+l.color+';background:transparent;height:0':''}"></div><span style="color:var(--text-light)">${l.label}</span></div>`).join('');
+}
+
+function renderTaxRateChart(currentGross) {
+  const canvas = document.getElementById('taxRateChart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = canvas.offsetWidth * dpr;
+  canvas.height = canvas.offsetHeight * dpr;
+  ctx.scale(dpr, dpr);
+  const W=canvas.offsetWidth, H=canvas.offsetHeight;
+  const pad={top:20,right:24,bottom:50,left:55};
+  const plotW=W-pad.left-pad.right, plotH=H-pad.top-pad.bottom;
+  const minG=SALARY_MIN, maxG=12000, steps=100, maxPct=80;
+
+  const dataEff=[], dataMarg=[];
+  for (let i=0; i<=steps; i++) {
+    const g=minG+(maxG-minG)*(i/steps);
+    const w=computeForGross(g);
+    dataEff.push({x:g, y:g>0?(w.deductions/g)*100:0});
+    const wP=computeForGross(g+100);
+    dataMarg.push({x:g, y:Math.max(0,((wP.deductions-w.deductions)/100)*100)});
+  }
+
+  ctx.clearRect(0,0,W,H);
+  const yTicks=[0,10,20,30,40,50,60,70,80];
+  const xTicks=[1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,11000];
+  ctx.strokeStyle='rgba(255,255,255,0.07)'; ctx.lineWidth=1;
+  yTicks.forEach(v=>{const y=pad.top+plotH-(v/maxPct)*plotH;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(pad.left+plotW,y);ctx.stroke();});
+  xTicks.forEach(v=>{const x=pad.left+((v-minG)/(maxG-minG))*plotW;if(x>=pad.left&&x<=pad.left+plotW){ctx.beginPath();ctx.moveTo(x,pad.top);ctx.lineTo(x,pad.top+plotH);ctx.stroke();}});
+
+  ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='11px system-ui'; ctx.textAlign='right';
+  yTicks.forEach(v=>{const y=pad.top+plotH-(v/maxPct)*plotH;ctx.fillText(v+'%',pad.left-8,y+4);});
+  ctx.textAlign='center';
+  xTicks.forEach(v=>{const x=pad.left+((v-minG)/(maxG-minG))*plotW;if(x>=pad.left&&x<=pad.left+plotW)ctx.fillText(fmtShort(v)+'€',x,pad.top+plotH+20);});
+  ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='10px system-ui';
+  ctx.fillText(t('GROSS SALARY (€)','BRUTO SALARIS (€)','SALAIRE BRUT (€)'),pad.left+plotW/2,H-6);
+
+  const drawLine=(data,color,lw)=>{ctx.strokeStyle=color;ctx.lineWidth=lw;ctx.beginPath();data.forEach((p,i)=>{const x=pad.left+((p.x-minG)/(maxG-minG))*plotW;const y=pad.top+plotH-(Math.min(p.y,maxPct)/maxPct)*plotH;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();};
+  drawLine(dataEff, '#f1c40f',2.5);
+  drawLine(dataMarg,'#E87722',1.8);
+
+  if (currentGross>=minG && currentGross<=maxG) {
+    const cx2=pad.left+((currentGross-minG)/(maxG-minG))*plotW;
+    const curR=computeForGross(currentGross);
+    const cy2=pad.top+plotH-(Math.min(curR.deductions/currentGross*100,maxPct)/maxPct)*plotH;
+    ctx.strokeStyle='rgba(241,196,15,0.4)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(cx2,pad.top); ctx.lineTo(cx2,pad.top+plotH); ctx.stroke(); ctx.setLineDash([]);
+    ctx.beginPath(); ctx.arc(cx2,cy2,6,0,Math.PI*2); ctx.fillStyle='#f1c40f'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.font='bold 11px system-ui'; ctx.textAlign=cx2>W/2?'right':'left';
+    ctx.fillText(Math.round(curR.deductions/currentGross*100)+'%',cx2>W/2?cx2-12:cx2+12,cy2-12);
+  }
+
+  document.getElementById('taxRateLegend').innerHTML = [
+    {color:'#f1c40f', label:t('Effective rate','Effectief tarief','Taux effectif')},
+    {color:'#E87722', label:t('Marginal rate','Marginaal tarief','Taux marginal')},
+  ].map(l=>`<div style="display:flex;align-items:center;gap:6px;font-size:0.82rem"><div style="width:12px;height:3px;background:${l.color};border-radius:2px"></div>${l.label}</div>`).join('');
+}
+
+// ====== HISTORY ======
+function saveCalculation() {
+  const rawVal = document.getElementById('salaryInput').value.replace(/\s/g,'');
+  const salary = parseInt(rawVal) || 0;
+  const date = new Date().toLocaleString(lang === 'nl' ? 'nl-NL' : lang === 'fr' ? 'fr-FR' : 'en-US');
+  const calc = { salary, date };
+  let history = JSON.parse(localStorage.getItem('belgiumHistory') || '[]');
+  history.unshift(calc);
+  if (history.length > 50) history.pop();
+  localStorage.setItem('belgiumHistory', JSON.stringify(history));
+  renderHistory();
+}
+
+function renderHistory() {
+  const search = (document.getElementById('historySearch').value || '').toLowerCase();
+  const history = JSON.parse(localStorage.getItem('belgiumHistory') || '[]');
+  const filtered = history.filter(h => h.date.toLowerCase().includes(search) || h.salary.toString().includes(search));
+  const list = document.getElementById('historyList');
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="history-empty">${t('No results.','Geen resultaten.','Aucun résultat.')}</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map((h, i) =>
+    `<div class="history-item" onclick="document.getElementById('salaryInput').value='${fmt(h.salary)}';updateFromInput()" style="cursor:pointer;padding:12px;border-radius:8px;background:#f9f9f9;margin-bottom:8px;border-left:4px solid var(--red)">
+      <div style="font-weight:600">€${fmt(h.salary)}</div>
+      <div style="font-size:0.8rem;color:var(--text-light)">${h.date}</div>
+    </div>`
+  ).join('');
+}
+
+// ====== EVENT LISTENERS ======
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('salarySlider').addEventListener('input', updateFromSlider);
+  document.getElementById('salaryInput').addEventListener('input', updateFromInput);
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', function() { setLang(this.dataset.lang, this); });
+  });
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() { setCalcMode(this.dataset.mode, this); });
+  });
+  document.querySelectorAll('.whatif-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const mode = this.dataset.whatif;
+      const current = parseInt(document.getElementById('salaryInput').value.replace(/\s/g,'')) || 4000;
+      let newVal = current;
+      if (mode === 'raise10') newVal = Math.round(current * 1.10);
+      else if (mode === 'raise20') newVal = Math.round(current * 1.20);
+      else if (mode === 'bonus1k') newVal = current + 1000;
+      else if (mode === 'bonus2k') newVal = current + 2000;
+      else if (mode === 'min') newVal = SALARY_MIN;
+      document.getElementById('salarySlider').value = Math.min(Math.max(newVal, SALARY_MIN), SALARY_MAX);
+      updateFromSlider();
+    });
+  });
+  document.querySelectorAll('.counter-btn[data-action]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const action = this.dataset.action;
+      const delta = parseInt(this.dataset.delta);
+      changeAgeGroup(action, delta);
+    });
+  });
+
+  updateChildrenDisplay();
+  updateMaritalFields();
+  updateRegimeInfo();
+  updateCommuteFields();
+  renderHistory();
+  calculate();
+});
+
+</script>
+
+<!-- Navigation and shared JS -->
+<script src="../nav.js"></script>
+<script src="../shared.js"></script>
+
+</body>
+</html>
