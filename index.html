@@ -240,10 +240,12 @@
   /* ── SVG country styling (applied to inline SVG) ── */
 
   /* Catch-all: EVERY path inside the Countries layer gets wood tone */
+  /* Using fully opaque fill to ensure uniform color across all countries,
+     regardless of position over the ocean gradient background */
   .map-inner #Countries path {
-    fill: #9c7e54 !important;
-    fill-opacity: 0.65 !important;
-    stroke: #7a5f38 !important;
+    fill: #7a6e50 !important;
+    fill-opacity: 1 !important;
+    stroke: #5a5030 !important;
     stroke-width: 0.12 !important;
     transition: fill 0.3s, fill-opacity 0.3s, filter 0.3s;
     cursor: default;
@@ -251,13 +253,13 @@
 
   /* Also override any group-level fills */
   .map-inner #Countries g {
-    fill: #9c7e54 !important;
-    fill-opacity: 0.65 !important;
+    fill: #7a6e50 !important;
+    fill-opacity: 1 !important;
   }
 
   .map-inner #Countries path:hover {
-    fill: #b08c5a !important;
-    fill-opacity: 0.8 !important;
+    fill: #8a7e5a !important;
+    fill-opacity: 1 !important;
   }
 
   /* Available countries: vivid amber-gold, clearly distinct from wood-brown */
@@ -347,7 +349,7 @@
   }
 
   .legend-dot.available { background: var(--land-available); }
-  .legend-dot.unavailable { background: var(--wood-mid); opacity: 0.7; }
+  .legend-dot.unavailable { background: #7a6e50; }
 
   /* Compass rose */
   .compass-rose {
