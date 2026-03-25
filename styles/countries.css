@@ -1,0 +1,45 @@
+/* ══════════════════════════════════════════════════════════
+   ExpatCalc — Per-Country Accent Color Overrides
+   Each country sets --country-accent and --country-accent-hover
+   which tint buttons, active states, chart colors, etc.
+   ══════════════════════════════════════════════════════════ */
+
+[data-country="hungary"] {
+  --country-accent: #c8a44e;
+  --country-accent-hover: #b8943e;
+}
+
+[data-country="germany"] {
+  --country-accent: #dd1100;
+  --country-accent-hover: #bb0e00;
+}
+
+[data-country="netherlands"] {
+  --country-accent: #f36c21;
+  --country-accent-hover: #d45d1a;
+}
+
+[data-country="portugal"] {
+  --country-accent: #006600;
+  --country-accent-hover: #005200;
+}
+
+[data-country="spain"] {
+  --country-accent: #c60b1e;
+  --country-accent-hover: #a80917;
+}
+
+[data-country="belgium"] {
+  --country-accent: #fdda25;
+  --country-accent-hover: #e5c520;
+}
+
+[data-country="slovakia"] {
+  --country-accent: #0b4ea2;
+  --country-accent-hover: #094089;
+}
+
+[data-country="poland"] {
+  --country-accent: #dc143c;
+  --country-accent-hover: #b81133;
+}

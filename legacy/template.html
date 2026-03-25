@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<!--
+  ╔══════════════════════════════════════════════════════════════════════════════╗
+  ║                    ExpatCalc — CALCULATOR TEMPLATE                         ║
+  ║                                                                            ║
+  ║  How to use this template:                                                 ║
+  ║  1. Duplicate this file and rename it (e.g., france.html)                  ║
+  ║  2. Search for [CUSTOMIZABLE: ...] comments — these are the ONLY           ║
+  ║     sections you need to modify                                            ║
+  ║  3. Do NOT modify anything marked [DO NOT MODIFY]                          ║
+  ║  4. Register your new country in nav.js (add entry to COUNTRIES array)     ║
+  ║     and in the pageFlags object in shared.js                               ║
+  ║                                                                            ║
+  ║  Section overview:                                                         ║
+  ║  ┌─ <head>                                                                 ║
+  ║  │   ├─ [CUSTOMIZABLE: meta]           — page title, description, lang     ║
+  ║  │   ├─ [DO NOT MODIFY: shared-css]    — shared.css import                 ║
+  ║  │   └─ [CUSTOMIZABLE: country-styles] — CSS variables, hero gradient,     ║
+  ║  │                                       range slider, result-hero, etc.   ║
+  ║  ├─ <body data-page="...">             — set country id for nav.js         ║
+  ║  │   ├─ [CUSTOMIZABLE: hero]           — lang selector, title, subtitle,   ║
+  ║  │   │                                   badge, flag strip                 ║
+  ║  │   ├─ [CUSTOMIZABLE: input-cards]    — LEFT column: all input controls   ║
+  ║  │   │   ├─ Gross salary card (slider, input, what-if bar, calc mode tabs) ║
+  ║  │   │   ├─ Options/settings cards (tax class, toggles, selects)           ║
+  ║  │   │   ├─ Family/children card                                           ║
+  ║  │   │   └─ Any country-specific input cards                               ║
+  ║  │   ├─ [REUSABLE: result-section]     — RIGHT column: result display      ║
+  ║  │   │   ├─ Result hero (net amount)                                       ║
+  ║  │   │   ├─ Summary grid (4 boxes)                                         ║
+  ║  │   │   ├─ Donut chart                                                    ║
+  ║  │   │   ├─ Breakdown table                                                ║
+  ║  │   │   ├─ Employer bars                                                  ║
+  ║  │   │   └─ [CUSTOMIZABLE: benefit-cards] — e.g., Kindergeld, SZJA kedv.   ║
+  ║  │   ├─ [REUSABLE: full-width-charts]  — Net vs Gross + Tax Rate charts    ║
+  ║  │   ├─ [REUSABLE: annual-overview]    — Annual summary bar + boxes        ║
+  ║  │   ├─ [DO NOT MODIFY: history]       — Save & history section            ║
+  ║  │   ├─ [CUSTOMIZABLE: footer]         — disclaimer text                   ║
+  ║  │   └─ [CUSTOMIZABLE: calculator-script] — ALL calculator JS goes here    ║
+  ║  │       ├─ Constants (tax rates, brackets, ceilings)                      ║
+  ║  │       ├─ Format helpers (fmt, fmtShort)                                 ║
+  ║  │       ├─ Translation system (setLang, t())                              ║
+  ║  │       ├─ Input handlers (updateFromSlider, updateFromInput, etc.)       ║
+  ║  │       ├─ Core compute functions (computeBreakdown, computeForGross)     ║
+  ║  │       ├─ Render functions (renderResults, renderBreakdown, renderDonut, ║
+  ║  │       │   renderEmployerBars, renderAnnualBar, renderCurveCharts)       ║
+  ║  │       ├─ Event listeners                                                ║
+  ║  │       └─ Init (calculate())                                             ║
+  ║  │   ├─ [DO NOT MODIFY: nav-js]       — nav.js import                      ║
+  ║  │   └─ [DO NOT MODIFY: shared-js]    — shared.js import                   ║
+  ║  └─                                                                        ║
+  ║                                                                            ║
+  ║  IMPORTANT CONTRACTS WITH shared.js:                                       ║
+  ║  shared.js expects the following functions/IDs to exist in your page:       ║
+  ║  • function computeForGross(g) OR computeBreakdownForGross(g)              ║
+  ║    → must return { net, deductions, kindergeld? }                           ║
+  ║  • function updateFromSlider() OR dispatch 'input' on salarySlider         ║
+  ║  • IDs: salarySlider, salaryInput, netAmount, whatifBar, saveCalcBtn,      ║
+  ║    historyList, historySearch, navDropdown                                  ║
+  ║                                                                            ║
+  ║  IMPORTANT CONTRACTS WITH nav.js:                                          ║
+  ║  • <body data-page="your-country-id"> must match the id in nav.js          ║
+  ║    COUNTRIES array. Add your country there first!                           ║
+  ║                                                                            ║
+  ║  CHART IDs (used by shared.js scrubber):                                   ║
+  ║  • netVsGrossChart — canvas for the net-vs-gross curve                     ║
+  ║  • taxRateChart    — canvas for the effective tax rate curve                ║
+  ╚══════════════════════════════════════════════════════════════════════════════╝
+-->
+<html lang="en">
+<!-- [CUSTOMIZABLE: meta] — Set lang attribute (e.g., "de", "pt", "fr", "es") -->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- [CUSTOMIZABLE: meta] — Page description and title for SEO / browser tab -->
+<meta name="description" id="metaDesc" content="COUNTRY_NAME Salary Calculator 2026 — Calculate your net salary with all deductions.">
+<title>COUNTRY_NAME Salary Calculator 2026</title>
+
+<!-- [DO NOT MODIFY: shared-css] ─────────────────────────────────────────── -->
+<link rel="stylesheet" href="shared.css">
+<!-- ────────────────────────────────────────────────────────────────────── -->
+
+<!-- [CUSTOMIZABLE: country-styles] — CSS variables & country-specific overrides
+     These override shared.css defaults. At minimum you need:
+     • :root color variables (--primary, --accent, --red, --blue, etc.)
+     • .hero background gradient
+     • .hero::before radial gradient (animated pulse glow)
+     • .badge background color
+     • input[type="range"] gradient + thumb border color
+     • .toggle input:checked + .slider background color
+     • .result-hero background gradient
+     • footer a color
+-->
+<style>
+  :root {
+    --primary: #1a1a2e;
+    --primary-light: #e94560;       /* CHANGE: accent color */
+    --accent: #e94560;              /* CHANGE: accent color */
+    --accent-green: #0f3460;        /* CHANGE: secondary accent */
+    --bg: #f5f5f7;
+    --card: #ffffff;
+    --text: #1a1a2e;
+    --text-light: #6b7280;
+    --border: #e5e7eb;
+    --shadow: 0 4px 24px rgba(0,0,0,0.07);
+    --radius: 16px;
+    --gold: #d4a843;                /* CHANGE: if needed */
+    --red: #e94560;                 /* CHANGE: primary accent color */
+    --blue: #0f3460;                /* CHANGE: secondary color */
+    --teal: #16a085;                /* CHANGE: if needed */
+  }
+
+  /* CHANGE: Hero gradient — use country-representative colors */
+  .hero {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+    color: white; padding: 48px 24px 36px; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -60%; left: -30%; width: 160%; height: 220%;
+    /* CHANGE: glow accent color */
+    background: radial-gradient(ellipse, rgba(233,69,96,0.08) 0%, transparent 60%);
+    animation: pulse 10s ease-in-out infinite;
+  }
+
+  /* CHANGE: Badge background to match accent */
+  .badge { display:inline-block; background:rgba(233,69,96,0.25); padding:4px 16px; border-radius:20px; font-size:0.85rem; margin-top:12px; position:relative; backdrop-filter:blur(4px); border:1px solid rgba(233,69,96,0.3); }
+
+  /* CHANGE: Salary display color */
+  .salary-display { font-size:2.4rem; font-weight:800; color:var(--blue); margin:4px 0 12px; letter-spacing:-1px; }
+
+  /* CHANGE: Range slider gradient + thumb border */
+  input[type="range"] { -webkit-appearance:none; width:100%; height:8px; border-radius:4px; background:linear-gradient(90deg,#0f3460,#e94560); outline:none; margin:8px 0; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:24px; height:24px; border-radius:50%; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.2); cursor:pointer; border:3px solid var(--red); }
+  input[type="range"]::-moz-range-thumb { width:24px; height:24px; border-radius:50%; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.2); cursor:pointer; border:3px solid var(--red); }
+
+  /* CHANGE: Focus/active accent colors */
+  .number-input:focus { outline:none; border-color:var(--red); }
+  .toggle input:checked + .slider { background:var(--red); }
+  .custom-select:focus { outline:none; border-color:var(--red); }
+
+  /* CHANGE: Result hero gradient */
+  .result-hero {
+    background: linear-gradient(135deg, #1a1a2e, #0f3460);
+    color:white; border-radius:var(--radius); padding:32px; text-align:center; margin-bottom:24px; box-shadow:var(--shadow);
+  }
+
+  /* CHANGE: Footer link color */
+  footer a { color:var(--red); text-decoration:none; }
+</style>
+</head>
+
+<!-- [CUSTOMIZABLE: body-data-page] — Set data-page to your country id (must match nav.js COUNTRIES array) -->
+<body data-page="COUNTRY_ID">
+
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     [CUSTOMIZABLE: hero] — Language selector, title, subtitle, badge, flag
+     ════════════════════════════════════════════════════════════════════════ -->
+<div class="hero">
+  <!-- [CUSTOMIZABLE: lang-selector] — Add/remove language buttons as needed.
+       data-lang values should match what your setLang() function handles. -->
+  <div class="lang-selector">
+    <button class="lang-btn active" data-lang="en" title="English">🇬🇧</button>
+    <!-- Add more language buttons here, e.g.:
+    <button class="lang-btn" data-lang="fr" title="Français">🇫🇷</button>
+    -->
+  </div>
+
+  <!-- [CUSTOMIZABLE: hero-content] — Title, subtitle, badge text, flag colors -->
+  <h1 id="heroTitle">Salary Calculator 2026</h1>
+  <p id="heroSub"
+     data-en="Gross-to-net calculator with all deductions and family benefits"
+     >Gross-to-net calculator with all deductions and family benefits</p>
+  <div class="badge"
+       data-en="Valid from January 1, 2026"
+       >Valid from January 1, 2026</div>
+
+  <!-- [CUSTOMIZABLE: flag-strip] — Country flag colors (3 divs = tricolor) -->
+  <div class="flag-strip">
+    <div style="background:#ccc"></div><div style="background:#999"></div><div style="background:#666"></div>
+  </div>
+</div>
+
+
+<div class="container">
+<div class="grid">
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       LEFT COLUMN: INPUTS
+       [CUSTOMIZABLE: input-cards] — All input controls go here.
+       Keep the IDs that shared.js depends on: salarySlider, salaryInput, whatifBar
+       ══════════════════════════════════════════════════════════════════════ -->
+  <div>
+
+    <!-- ── Gross Salary Card ─────────────────────────────────────────────
+         This card structure is standard across calculators.
+         CHANGE: min/max/step/value on the slider, currency symbol,
+         range labels, and the what-if bar if needed.
+    -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-blue">💰</span> <span data-en="Gross Salary">Gross Salary</span></h2>
+      <div class="salary-input-group">
+        <!-- [CUSTOMIZABLE: salary-label] — Currency and period -->
+        <label data-en="Monthly gross salary (€)">Monthly gross salary (€)</label>
+        <div class="salary-display" id="salaryDisplay">4 000 <span>€/month</span></div>
+
+        <!-- [CUSTOMIZABLE: salary-range] — Adjust min, max, step, value for your country -->
+        <input type="range" id="salarySlider" min="500" max="15000" step="50" value="4000" aria-label="Monthly gross salary slider">
+        <div class="range-labels">
+          <span>500 €</span><span>15 000 €</span>
+        </div>
+
+        <!-- What-if bar — uses shared.js. Keep id="whatifBar" -->
+        <div class="whatif-bar" id="whatifBar">
+          <button class="whatif-btn" data-whatif="raise10"><span class="emoji">📈</span>+10% Raise</button>
+          <button class="whatif-btn" data-whatif="raise20"><span class="emoji">🚀</span>+20% Raise</button>
+          <button class="whatif-btn" data-whatif="bonus1k"><span class="emoji">💎</span>+1K Bonus</button>
+          <button class="whatif-btn" data-whatif="bonus2k"><span class="emoji">🎯</span>+2K Bonus</button>
+          <button class="whatif-btn" data-whatif="min"><span class="emoji">📉</span>Min Wage</button>
+        </div>
+
+        <div style="margin-top:12px">
+          <input type="text" class="number-input" id="salaryInput" value="4 000" aria-label="Monthly gross salary input" placeholder="Enter amount...">
+        </div>
+      </div>
+
+      <!-- [CUSTOMIZABLE: calc-mode-tabs] — Keep if you support gross/employer-cost toggle -->
+      <div class="tab-bar">
+        <button class="tab-btn active" data-mode="gross" data-en="From Gross">From Gross</button>
+        <button class="tab-btn" data-mode="total" data-en="From Employer Cost">From Employer Cost</button>
+      </div>
+    </div>
+
+    <!-- ── [CUSTOMIZABLE: country-specific-inputs] ───────────────────────
+         Add your country-specific input cards here.
+         Examples from existing calculators:
+         • Germany: Tax class & Bundesland, Church tax, Health insurance type
+         • Hungary: Family tax benefit toggle, simplified taxation (KATA)
+         • Portugal: IRS tax bracket, meal allowance, region selector
+         • Spain: Autonomous community, contract type, disability status
+
+         Use these shared CSS classes for consistency:
+         • .card              — card wrapper
+         • .option-row        — label + toggle/select row
+         • .option-label      — label text
+         • .option-sublabel   — helper text below label
+         • .toggle            — on/off switch wrapper
+         • .custom-select     — styled <select>
+         • .select-row        — select input row
+         • .children-counter  — +/- counter buttons
+         • .counter-btn       — individual counter button
+         • .counter-value     — counter display value
+    -->
+
+    <!-- Example: Options Card -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-purple">📋</span> <span data-en="Tax Options">Tax Options</span></h2>
+      <!-- Add your country-specific options: tax class, marital status, region, etc. -->
+      <div class="option-row">
+        <div>
+          <div class="option-label" data-en="Example Option">Example Option</div>
+          <div class="option-sublabel" data-en="Description of this option">Description of this option</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="exampleToggle" aria-label="Example toggle"><span class="slider"></span></label>
+      </div>
+    </div>
+
+    <!-- Example: Family Card -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-green">👨‍👩‍👧‍👦</span> <span data-en="Children & Family">Children & Family</span></h2>
+      <div style="margin-bottom:16px">
+        <label style="font-weight:600;font-size:0.92rem;display:block;margin-bottom:10px" data-en="Number of children">Number of children</label>
+        <div class="children-counter">
+          <button class="counter-btn" data-action="children" data-delta="-1" aria-label="Decrease children">−</button>
+          <span class="counter-value" id="childrenCount">0</span>
+          <button class="counter-btn" data-action="children" data-delta="1" aria-label="Increase children">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add more input cards as needed for your country -->
+
+  </div>
+  <!-- END LEFT COLUMN -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       RIGHT COLUMN: RESULTS
+       [REUSABLE: result-section] — Structure is mostly the same across
+       calculators. Customize the summary box labels and benefit cards.
+       Keep all IDs that render functions reference.
+       ══════════════════════════════════════════════════════════════════════ -->
+  <div>
+
+    <!-- Result Hero — Keep IDs: netAmount, netSub -->
+    <div class="result-hero">
+      <div class="net-label" data-en="Monthly Net Salary">Monthly Net Salary</div>
+      <div class="net-amount" id="netAmount">0 €</div>
+      <div class="net-sub" id="netSub">-</div>
+    </div>
+
+    <!-- [CUSTOMIZABLE: summary-boxes] — Change the 4th box label to match
+         your country's benefit (e.g., Kindergeld, SZJA kedvezmény, etc.) -->
+    <div class="summary-grid" style="margin-bottom:24px">
+      <div class="summary-box green">
+        <div class="label" data-en="Net Salary">Net Salary</div>
+        <div class="value" id="sumNet">0</div>
+      </div>
+      <div class="summary-box red">
+        <div class="label" data-en="Total Deductions">Total Deductions</div>
+        <div class="value" id="sumDeductions">0</div>
+      </div>
+      <div class="summary-box blue">
+        <div class="label" data-en="Employer Cost">Employer Cost</div>
+        <div class="value" id="sumEmployer">0</div>
+      </div>
+      <div class="summary-box purple">
+        <!-- [CUSTOMIZABLE: benefit-box-label] — Name your country's family benefit -->
+        <div class="label" data-en="Family Benefit">Family Benefit</div>
+        <div class="value" id="sumBenefit">0</div>
+      </div>
+    </div>
+
+    <!-- Donut Chart — Keep IDs: donutChart, chartLegend -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-teal">📊</span> <span data-en="Salary Composition">Salary Composition</span></h2>
+      <div class="chart-container">
+        <svg class="donut-chart" id="donutChart" viewBox="0 0 200 200" width="220" height="220"></svg>
+      </div>
+      <div class="chart-legend" id="chartLegend"></div>
+    </div>
+
+    <!-- Breakdown Table — Keep ID: breakdownTable -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-red">📋</span> <span data-en="Detailed Breakdown">Detailed Breakdown</span></h2>
+      <table class="breakdown-table" id="breakdownTable"></table>
+    </div>
+
+    <!-- Employer Bars — Keep IDs: employerBars, totalEmployerCost -->
+    <div class="card" style="margin-bottom:24px">
+      <h2><span class="icon icon-orange">🏢</span> <span data-en="Employer Contributions">Employer Contributions</span></h2>
+      <div id="employerBars"></div>
+      <div style="margin-top:16px;padding-top:16px;border-top:2px solid var(--border);display:flex;justify-content:space-between;font-weight:700">
+        <span data-en="Total Employer Cost">Total Employer Cost</span>
+        <span id="totalEmployerCost">0 €</span>
+      </div>
+    </div>
+
+    <!-- [CUSTOMIZABLE: benefit-cards] — Country-specific benefit cards.
+         Examples: Kindergeld (Germany), SZJA kedvezmény (Hungary), etc.
+         Show/hide dynamically based on calculator state. -->
+    <div class="card" id="benefitCard" style="margin-bottom:24px;display:none">
+      <h2><span class="icon icon-gold">👶</span> <span data-en="Family Benefit">Family Benefit</span></h2>
+      <div class="allowance-card">
+        <h3 data-en="Monthly Benefit">Monthly Benefit</h3>
+        <div class="allowance-amount" id="benefitAmount">0 <span>€/month</span></div>
+      </div>
+      <div style="margin-top:12px;font-size:0.85rem;color:var(--text-light)" id="benefitDetail"></div>
+    </div>
+
+  </div>
+  <!-- END RIGHT COLUMN -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       [REUSABLE: full-width-charts] — Net vs Gross + Effective Tax Rate
+       Keep all IDs. These are rendered by your renderCurveCharts() function
+       and the scrubber tooltips are wired by shared.js.
+       ══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Net vs Gross Chart — Keep IDs: netVsGrossChart, netVsGrossLegend -->
+  <div class="card full-width" style="margin-bottom:0">
+    <h2><span class="icon icon-green">📈</span> <span data-en="Net Take-Home vs. Gross Salary">Net Take-Home vs. Gross Salary</span></h2>
+    <div data-en="Monthly amounts in EUR · 2026" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-light);margin:-12px 0 12px">Monthly amounts in EUR · 2026</div>
+    <div id="netVsGrossLegend" style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;font-size:0.82rem"></div>
+    <div style="position:relative;width:100%;overflow:hidden;border-radius:12px;background:#0f1729">
+      <canvas id="netVsGrossChart" style="width:100%;height:340px;display:block"></canvas>
+    </div>
+  </div>
+
+  <!-- Effective Tax Rate Chart — Keep IDs: taxRateChart, taxRateLegend -->
+  <div class="card full-width" style="margin-bottom:0">
+    <h2><span class="icon icon-red">📉</span> <span data-en="Effective Tax Rate">Effective Tax Rate</span></h2>
+    <div data-en="Total deductions as % of gross salary" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-light);margin:-12px 0 12px">Total deductions as % of gross salary</div>
+    <div id="taxRateLegend" style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;font-size:0.82rem"></div>
+    <div style="position:relative;width:100%;overflow:hidden;border-radius:12px;background:#0f1729">
+      <canvas id="taxRateChart" style="width:100%;height:300px;display:block"></canvas>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       [REUSABLE: annual-overview] — Annual summary with stacked bar chart.
+       Keep all IDs. Your renderAnnualBar() populates these.
+       [CUSTOMIZABLE: annual-box-labels] — Change labels to match your
+       country's terminology.
+       ══════════════════════════════════════════════════════════════════════ -->
+  <div class="card full-width">
+    <h2><span class="icon icon-blue">📅</span> <span data-en="Annual Overview">Annual Overview</span></h2>
+    <div class="summary-grid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="summary-box green"><div class="label" data-en="Annual Net">Annual Net</div><div class="value" id="annualNet">0</div></div>
+      <div class="summary-box red"><div class="label" data-en="Annual Taxes">Annual Taxes</div><div class="value" id="annualTax">0</div></div>
+      <div class="summary-box blue"><div class="label" data-en="Annual SS">Annual SS</div><div class="value" id="annualSS">0</div></div>
+      <div class="summary-box purple"><div class="label" data-en="Annual Employer Cost">Annual Employer Cost</div><div class="value" id="annualEmployer">0</div></div>
+    </div>
+    <div style="margin-top:16px">
+      <svg id="annualBarChart" viewBox="0 0 800 60" width="100%" height="60"></svg>
+      <div id="annualBarLegend" style="display:flex;gap:20px;justify-content:center;margin-top:8px;flex-wrap:wrap"></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     [DO NOT MODIFY: history] — Save & History section.
+     Powered entirely by shared.js. Keep all IDs exactly as they are.
+     ════════════════════════════════════════════════════════════════════════ -->
+<div class="history-card full-width" id="historyCard">
+  <h2><span class="icon icon-green" style="background:#d1fae5;color:#059669">💾</span> Recent Calculations</h2>
+  <button class="save-btn" id="saveCalcBtn" onclick="saveCalculation()">
+    <span>💾</span> Save Calculation
+  </button>
+  <div class="history-search-wrap">
+    <input type="text" class="history-search" id="historySearch" placeholder="Search saved calculations..." oninput="renderHistory()">
+  </div>
+  <div class="history-list" id="historyList">
+    <div class="history-empty">No saved calculations yet. Use the button above to save one.</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     [CUSTOMIZABLE: footer] — Disclaimer text for your country
+     ════════════════════════════════════════════════════════════════════════ -->
+<footer>
+  <p data-en="COUNTRY_NAME Salary Calculator 2026 — For informational purposes only, not tax advice.">COUNTRY_NAME Salary Calculator 2026 — For informational purposes only, not tax advice.</p>
+  <p style="margin-top:4px" data-en="Minimum wage 2026: €X.XX/hour">Minimum wage 2026: €X.XX/hour</p>
+</footer>
+
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     [CUSTOMIZABLE: calculator-script]
+     ALL calculator-specific JavaScript goes in this single <script> block.
+
+     YOU MUST IMPLEMENT:
+     ─────────────────
+     1. CONSTANTS — Tax rates, brackets, ceilings, benefit amounts for your country
+     2. fmt(n) / fmtShort(n) — Number formatting helpers
+     3. t(lang1, en, ...) — Translation helper for multi-language support
+     4. setLang(newLang, btnEl) — Language switcher (updates data-XX attributes)
+     5. updateSalaryDisplay(v) — Updates the salary display text
+     6. updateFromSlider() — Reads slider → updates input + display → calculate()
+     7. updateFromInput() — Reads text input → updates slider + display → calculate()
+     8. setCalcMode(mode, btn) — Switches between gross/employer-cost modes
+     9. changeChildren(d) — Increment/decrement children counter
+     10. computeBreakdown(monthlyGross) — CORE: returns object with all deductions:
+         { gross, monthlyTax, totalEmpSS, empPension, empHealth, empUnemployment,
+           empNursing, totalDeductions, netSalary, erPension, erHealth,
+           erUnemployment, erNursing, totalErSS, totalEmployerCost, kindergeld, ... }
+     11. computeForGross(g) — REQUIRED by shared.js scrubber:
+         Must return { net, deductions, kindergeld? }
+     12. calculate() — Main entry point: reads inputs → computeBreakdown → renderResults
+     13. renderResults(r, gross) — Updates all result displays
+     14. renderBreakdown(r, gross) — Populates breakdownTable
+     15. renderDonut(r, gross) — Renders donut chart SVG
+     16. renderEmployerBars(r, gross) — Renders employer cost bar chart
+     17. renderAnnualBar(r) — Renders annual overview stacked bar
+     18. renderCurveCharts(currentGross) — Calls renderNetVsGrossChart + renderTaxRateChart
+     19. renderNetVsGrossChart(currentGross) — Canvas line chart
+     20. renderTaxRateChart(currentGross) — Canvas line chart
+     21. Event listeners — Wire all inputs to calculate()
+     22. ResizeObserver — For responsive canvas charts
+     23. calculate() call at the end — Initial render
+
+     TIPS:
+     • Copy the structure from Germany.html or another existing calculator
+     • Use animateOdometer() (from shared.js) for smooth number transitions
+     • The what-if bar + history + chart scrubber are handled by shared.js
+       as long as you expose computeForGross() and updateFromSlider()
+     ════════════════════════════════════════════════════════════════════════ -->
+<script>
+// ====== CONSTANTS — REPLACE WITH YOUR COUNTRY'S TAX RULES ======
+// Example placeholder constants (replace with real values):
+const TAX_RATE = 0.15;             // Replace: flat tax rate or bracket system
+const SOCIAL_SECURITY_RATE = 0.185; // Replace: employee SS contribution rate
+const EMPLOYER_SS_RATE = 0.185;     // Replace: employer SS contribution rate
+const BENEFIT_PER_CHILD = 0;        // Replace: per-child monthly benefit
+const SALARY_MIN = 500;
+const SALARY_MAX = 15000;
+
+let lang = 'en';
+let calcMode = 'gross';
+let numChildren = 0;
+
+// ====== FORMAT ======
+function fmt(n) { return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+function fmtShort(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1).replace('.0','') + 'M';
+  if (n >= 1000) return Math.round(n/1000) + 'K';
+  return n.toString();
+}
+
+// ====== TRANSLATION HELPER ======
+// Extend with your supported languages: t(en, fr, ...) etc.
+function t(en) { return en; }
+
+// ====== LANGUAGE SWITCHER ======
+function setLang(newLang, btnEl) {
+  if (lang === newLang) return;
+  lang = newLang;
+  document.documentElement.lang = lang;
+  // Update all data-XX translatable elements
+  document.querySelectorAll('[data-en]').forEach(el => {
+    const txt = el.getAttribute('data-' + lang) || el.getAttribute('data-en');
+    if (txt) el.textContent = txt;
+  });
+  // Update dropdown labels if applicable
+  calculate();
+}
+
+// ====== INPUT HANDLERS ======
+function updateSalaryDisplay(v) {
+  document.getElementById('salaryDisplay').innerHTML = fmt(v) + ' <span>€/month</span>';
+}
+function updateFromSlider() {
+  const v = parseInt(document.getElementById('salarySlider').value);
+  document.getElementById('salaryInput').value = fmt(v);
+  updateSalaryDisplay(v);
+  calculate();
+}
+function updateFromInput() {
+  const raw = document.getElementById('salaryInput').value.replace(/\s/g,'');
+  const v = parseInt(raw) || 0;
+  document.getElementById('salarySlider').value = Math.min(Math.max(v, SALARY_MIN), SALARY_MAX);
+  updateSalaryDisplay(v);
+  calculate();
+}
+function setCalcMode(mode, btn) {
+  calcMode = mode;
+  document.querySelectorAll('.tab-bar .tab-btn[data-mode]').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  calculate();
+}
+
+// ====== CHILDREN ======
+function changeChildren(d) {
+  numChildren = Math.max(0, Math.min(10, numChildren + d));
+  document.getElementById('childrenCount').textContent = numChildren;
+  calculate();
+}
+
+// ====== CORE CALCULATION ======
+// REPLACE THIS ENTIRE FUNCTION with your country's tax/SS logic.
+// Must return an object with at minimum these fields:
+function computeBreakdown(monthlyGross) {
+  const annualGross = monthlyGross * 12;
+
+  // --- Employee social security ---
+  const empPension = monthlyGross * 0.10;       // REPLACE
+  const empHealth = monthlyGross * 0.04;         // REPLACE
+  const empUnemployment = monthlyGross * 0.015;  // REPLACE
+  const empNursing = monthlyGross * 0.01;        // REPLACE
+  const totalEmpSS = empPension + empHealth + empUnemployment + empNursing;
+
+  // --- Income tax ---
+  const monthlyTax = monthlyGross * TAX_RATE;    // REPLACE with bracket logic
+  const monthlySoli = 0;                          // REPLACE if applicable
+  const monthlyChurch = 0;                        // REPLACE if applicable
+  const totalMonthlyTax = monthlyTax + monthlySoli + monthlyChurch;
+
+  // --- Net ---
+  const totalDeductions = totalMonthlyTax + totalEmpSS;
+  const netSalary = monthlyGross - totalDeductions;
+
+  // --- Employer side ---
+  const erPension = monthlyGross * 0.10;         // REPLACE
+  const erHealth = monthlyGross * 0.04;           // REPLACE
+  const erUnemployment = monthlyGross * 0.015;    // REPLACE
+  const erNursing = monthlyGross * 0.01;          // REPLACE
+  const totalErSS = erPension + erHealth + erUnemployment + erNursing;
+  const totalEmployerCost = monthlyGross + totalErSS;
+
+  // --- Benefits ---
+  const kindergeld = numChildren * BENEFIT_PER_CHILD;
+
+  return {
+    gross: monthlyGross,
+    monthlyTax, monthlySoli, monthlyChurch, totalMonthlyTax,
+    empPension, empHealth, empUnemployment, empNursing, totalEmpSS,
+    erPension, erHealth, erUnemployment, erNursing, totalErSS,
+    totalDeductions, netSalary, totalEmployerCost, kindergeld,
+    annualTax: totalMonthlyTax * 12, annualSoli: monthlySoli * 12,
+    // Effective monthly (when bonus support is added)
+    effMonthlyGross: monthlyGross,
+    effMonthlyNet: netSalary,
+    effMonthlyDeductions: totalDeductions,
+    effEmployerCost: totalEmployerCost
+  };
+}
+
+// REQUIRED by shared.js chart scrubber — must return { net, deductions }
+function computeForGross(g) {
+  const r = computeBreakdown(g);
+  return { net: r.netSalary + r.kindergeld, deductions: r.totalDeductions, kindergeld: r.kindergeld };
+}
+
+// ====== MAIN CALCULATE ======
+function calculate() {
+  const rawVal = document.getElementById('salaryInput').value.replace(/\s/g,'');
+  let inputAmount = parseInt(rawVal) || 0;
+  let monthlyGross;
+
+  if (calcMode === 'gross') {
+    monthlyGross = inputAmount;
+  } else {
+    // Reverse from total employer cost using bisection
+    let lo = 0, hi = inputAmount;
+    for (let i = 0; i < 60; i++) {
+      const mid = (lo + hi) / 2;
+      const r = computeBreakdown(mid);
+      if (r.totalEmployerCost < inputAmount) lo = mid; else hi = mid;
+    }
+    monthlyGross = Math.round((lo + hi) / 2);
+  }
+
+  const result = computeBreakdown(monthlyGross);
+  renderResults(result, monthlyGross);
+}
+
+// ====== RENDER RESULTS ======
+// CUSTOMIZE: Update labels, translation calls, and any country-specific display logic.
+function renderResults(r, gross) {
+  updateSalaryDisplay(parseInt(document.getElementById('salaryInput').value.replace(/\s/g,'')) || 0);
+
+  // Net amount hero
+  animateOdometer(document.getElementById('netAmount'), Math.round(r.netSalary), '', ' €');
+  const pct = gross > 0 ? Math.round(r.netSalary / gross * 100) : 0;
+  document.getElementById('netSub').innerHTML = `${pct}% of gross salary | Gross: ${fmt(gross)} €`;
+
+  // Summary boxes
+  document.getElementById('sumNet').textContent = fmt(Math.round(r.netSalary));
+  document.getElementById('sumDeductions').textContent = fmt(Math.round(r.totalDeductions));
+  document.getElementById('sumEmployer').textContent = fmt(Math.round(r.totalEmployerCost));
+  document.getElementById('sumBenefit').textContent = fmt(r.kindergeld);
+  document.getElementById('totalEmployerCost').textContent = fmt(Math.round(r.totalEmployerCost)) + ' €';
+
+  // Annual overview
+  document.getElementById('annualNet').textContent = fmt(Math.round(r.netSalary * 12));
+  document.getElementById('annualTax').textContent = fmt(Math.round(r.totalMonthlyTax * 12));
+  document.getElementById('annualSS').textContent = fmt(Math.round(r.totalEmpSS * 12));
+  document.getElementById('annualEmployer').textContent = fmt(Math.round(r.totalEmployerCost * 12));
+
+  renderBreakdown(r, gross);
+  renderDonut(r, gross);
+  renderEmployerBars(r, gross);
+  renderAnnualBar(r);
+  renderCurveCharts(gross);
+
+  // Benefit card (show/hide based on children)
+  const bCard = document.getElementById('benefitCard');
+  if (numChildren > 0) {
+    bCard.style.display = 'block';
+    document.getElementById('benefitAmount').innerHTML = fmt(r.kindergeld) + ' <span>€/month</span>';
+    document.getElementById('benefitDetail').textContent = `${numChildren} × ${BENEFIT_PER_CHILD} € | Annual: ${fmt(r.kindergeld * 12)} €`;
+  } else {
+    bCard.style.display = 'none';
+  }
+}
+
+// ====== BREAKDOWN TABLE ======
+// CUSTOMIZE: Add/remove rows to match your country's deduction categories.
+function renderBreakdown(r, gross) {
+  const tbl = document.getElementById('breakdownTable');
+  const row = (label, amount, cls = '') => {
+    let val = (cls.includes('benefit') ? '+' : cls.includes('deduction') ? '−' : '') + ' ' + fmt(Math.round(Math.abs(amount))) + ' €';
+    return `<tr class="${cls}"><td class="row-header">${label}</td><td>${val}</td></tr>`;
+  };
+
+  let rows = '';
+  rows += row('💰 Gross Salary', gross, 'subtotal');
+  rows += `<tr><td colspan="2" style="padding:4px;font-size:0.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px">Taxes</td></tr>`;
+  rows += row('Income Tax', r.monthlyTax, 'deduction');
+  // Add more tax rows as needed (soli, church, etc.)
+
+  rows += `<tr><td colspan="2" style="padding:4px;font-size:0.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px">Social Security (Employee)</td></tr>`;
+  rows += row('Pension Insurance', r.empPension, 'deduction');
+  rows += row('Health Insurance', r.empHealth, 'deduction');
+  rows += row('Unemployment Insurance', r.empUnemployment, 'deduction');
+  rows += row('Nursing Care Insurance', r.empNursing, 'deduction');
+
+  rows += row('📌 Total Deductions', r.totalDeductions, 'subtotal deduction');
+  rows += row('✅ Net Salary', r.netSalary, 'subtotal');
+
+  if (r.kindergeld > 0) {
+    rows += `<tr><td colspan="2" style="padding:4px;font-size:0.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;padding-top:12px">State Benefits</td></tr>`;
+    rows += row('👶 Family Benefit', r.kindergeld, 'benefit');
+    rows += row('💚 Net + Benefits', r.netSalary + r.kindergeld, 'subtotal');
+  }
+
+  tbl.innerHTML = rows;
+}
+
+// ====== DONUT CHART ======
+// CUSTOMIZE: Adjust segment labels and colors to match your country's deduction categories.
+function renderDonut(r, gross) {
+  const svg = document.getElementById('donutChart');
+  const legend = document.getElementById('chartLegend');
+  const total = gross > 0 ? gross : 1;
+
+  const segments = [
+    { label: 'Net Salary', value: Math.max(0, r.netSalary), color: '#059669' },
+    { label: 'Income Tax', value: r.monthlyTax, color: '#e94560' },
+    { label: 'Pension', value: r.empPension, color: '#3b82f6' },
+    { label: 'Health Ins.', value: r.empHealth, color: '#8b5cf6' },
+    { label: 'Other SS', value: r.empUnemployment + r.empNursing, color: '#6366f1' },
+  ];
+
+  const cx=100, cy=100, R1=85, R2=55;
+  let startAngle = -Math.PI/2, paths='';
+  segments.forEach(seg => {
+    if(seg.value<=0) return;
+    const angle = (seg.value/total)*Math.PI*2;
+    const endAngle = startAngle+angle;
+    const la = angle>Math.PI?1:0;
+    const x1o=cx+R1*Math.cos(startAngle), y1o=cy+R1*Math.sin(startAngle);
+    const x2o=cx+R1*Math.cos(endAngle), y2o=cy+R1*Math.sin(endAngle);
+    const x1i=cx+R2*Math.cos(endAngle), y1i=cy+R2*Math.sin(endAngle);
+    const x2i=cx+R2*Math.cos(startAngle), y2i=cy+R2*Math.sin(startAngle);
+    paths+=`<path d="M${x1o},${y1o} A${R1},${R1} 0 ${la} 1 ${x2o},${y2o} L${x1i},${y1i} A${R2},${R2} 0 ${la} 0 ${x2i},${y2i} Z" fill="${seg.color}" opacity="0.85"><title>${seg.label}: ${fmt(Math.round(seg.value))} €</title></path>`;
+    startAngle=endAngle;
+  });
+  const netPct = gross>0 ? Math.round(Math.max(0,r.netSalary)/gross*100) : 0;
+  paths+=`<text x="${cx}" y="${cy-6}" text-anchor="middle" font-size="22" font-weight="800" fill="#1a1a2e">${netPct}%</text>`;
+  paths+=`<text x="${cx}" y="${cy+14}" text-anchor="middle" font-size="9" fill="#6b7280">net ratio</text>`;
+  svg.innerHTML=paths;
+
+  let lh='';
+  segments.forEach(seg => {
+    const p = gross>0 ? Math.round(seg.value/gross*100) : 0;
+    lh+=`<div class="legend-item"><div class="legend-color" style="background:${seg.color}"></div><span>${seg.label} (${p}%)</span><span class="legend-value">${fmt(Math.round(seg.value))} €</span></div>`;
+  });
+  legend.innerHTML=lh;
+}
+
+// ====== EMPLOYER BARS ======
+function renderEmployerBars(r, gross) {
+  const c = document.getElementById('employerBars');
+  const max = r.totalEmployerCost;
+  const items = [
+    { label: 'Gross Salary', value: gross, color: '#3b82f6' },
+    { label: 'Employer Pension', value: r.erPension, color: '#0f3460' },
+    { label: 'Employer Health Ins.', value: r.erHealth, color: '#8b5cf6' },
+    { label: 'Employer Unemployment', value: r.erUnemployment, color: '#6366f1' },
+    { label: 'Employer Nursing Care', value: r.erNursing, color: '#a78bfa' },
+  ];
+  let html='';
+  items.forEach(item => {
+    if(item.value<=0) return;
+    const w = max>0 ? (item.value/max*100) : 0;
+    html+=`<div class="bar-group"><div class="bar-label">${item.label}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.max(w,8)}%;background:${item.color}">${fmt(Math.round(item.value))} €</div></div></div>`;
+  });
+  c.innerHTML=html;
+}
+
+// ====== ANNUAL BAR ======
+function renderAnnualBar(r) {
+  const svg = document.getElementById('annualBarChart');
+  const legendDiv = document.getElementById('annualBarLegend');
+  const total = r.totalEmployerCost * 12;
+  if(total === 0) { svg.innerHTML=''; legendDiv.innerHTML=''; return; }
+
+  const segments = [
+    { label: 'Net', value: Math.round(r.netSalary*12), color: '#059669' },
+    { label: 'Taxes', value: Math.round(r.totalMonthlyTax*12), color: '#e94560' },
+    { label: 'SS (Employee)', value: Math.round(r.totalEmpSS*12), color: '#3b82f6' },
+    { label: 'SS (Employer)', value: Math.round(r.totalErSS*12), color: '#8b5cf6' },
+  ];
+  let x=0, paths='';
+  segments.forEach(seg => {
+    const w = (seg.value/total)*800;
+    if(w>0){
+      paths+=`<rect x="${x}" y="0" width="${w}" height="50" rx="4" fill="${seg.color}" opacity="0.85"><title>${seg.label}: ${fmt(seg.value)} €</title></rect>`;
+      if(w>60) paths+=`<text x="${x+w/2}" y="30" text-anchor="middle" fill="white" font-size="11" font-weight="600">${fmt(seg.value)}</text>`;
+    }
+    x+=w;
+  });
+  svg.innerHTML=paths;
+  let lh='';
+  segments.forEach(seg => {
+    lh+=`<div style="display:flex;align-items:center;gap:6px;font-size:0.82rem"><div style="width:12px;height:12px;border-radius:3px;background:${seg.color}"></div>${seg.label}: ${fmt(seg.value)} €</div>`;
+  });
+  legendDiv.innerHTML=lh;
+}
+
+// ====== CURVE CHARTS ======
+// CUSTOMIZE: Adjust minG, maxG, maxY, axis labels, currency symbols as needed.
+function renderCurveCharts(currentGross) {
+  renderNetVsGrossChart(currentGross);
+  renderTaxRateChart(currentGross);
+}
+
+function renderNetVsGrossChart(currentGross) {
+  const canvas = document.getElementById('netVsGrossChart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = canvas.offsetWidth * dpr;
+  canvas.height = canvas.offsetHeight * dpr;
+  ctx.scale(dpr, dpr);
+  const W = canvas.offsetWidth, H = canvas.offsetHeight;
+  const pad = { top:20, right:24, bottom:50, left:70 };
+  const plotW = W-pad.left-pad.right, plotH = H-pad.top-pad.bottom;
+  const minG=SALARY_MIN, maxG=SALARY_MAX > 12000 ? SALARY_MAX : 12000, steps=100;
+  const maxY=maxG;
+
+  const dataWith=[], dataGross=[];
+  for(let i=0;i<=steps;i++){
+    const g = minG+(maxG-minG)*(i/steps);
+    const w = computeForGross(g);
+    dataWith.push({x:g, y:w.net});
+    dataGross.push({x:g, y:g});
+  }
+
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='rgba(255,255,255,0.07)'; ctx.lineWidth=1;
+  const yTicks=[0,2000,4000,6000,8000,10000,12000];
+  yTicks.forEach(v => { const y=pad.top+plotH-(v/maxY)*plotH; ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(pad.left+plotW,y); ctx.stroke(); });
+  const xTicks=[1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,11000];
+  xTicks.forEach(v => { const x=pad.left+((v-minG)/(maxG-minG))*plotW; if(x>=pad.left&&x<=pad.left+plotW){ ctx.beginPath(); ctx.moveTo(x,pad.top); ctx.lineTo(x,pad.top+plotH); ctx.stroke(); } });
+
+  ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='11px system-ui'; ctx.textAlign='right';
+  yTicks.forEach(v => { const y=pad.top+plotH-(v/maxY)*plotH; ctx.fillText(fmtShort(v)+'€',pad.left-8,y+4); });
+  ctx.textAlign='center';
+  xTicks.forEach(v => { const x=pad.left+((v-minG)/(maxG-minG))*plotW; if(x>=pad.left&&x<=pad.left+plotW) ctx.fillText(fmtShort(v)+'€',x,pad.top+plotH+20); });
+
+  ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='10px system-ui'; ctx.textAlign='center';
+  ctx.fillText('GROSS SALARY (€)',pad.left+plotW/2,H-6);
+  ctx.save(); ctx.translate(14,pad.top+plotH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('NET INCOME (€)',0,0); ctx.restore();
+
+  function drawLine(data,color,lw,dashed){
+    ctx.strokeStyle=color; ctx.lineWidth=lw; ctx.setLineDash(dashed?[6,4]:[]);
+    ctx.beginPath();
+    data.forEach((p,i) => { const x=pad.left+((p.x-minG)/(maxG-minG))*plotW; const y=pad.top+plotH-(Math.min(p.y,maxY)/maxY)*plotH; if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); });
+    ctx.stroke(); ctx.setLineDash([]);
+  }
+
+  drawLine(dataGross,'rgba(196,181,107,0.6)',1.5,true);
+  drawLine(dataWith,'#2ecc71',2.5,false);
+
+  if(currentGross>=minG && currentGross<=maxG){
+    const cx2=pad.left+((currentGross-minG)/(maxG-minG))*plotW;
+    const curR=computeForGross(currentGross);
+    const cy2=pad.top+plotH-(Math.min(curR.net,maxY)/maxY)*plotH;
+    ctx.strokeStyle='rgba(46,204,113,0.4)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(cx2,pad.top); ctx.lineTo(cx2,pad.top+plotH); ctx.stroke(); ctx.setLineDash([]);
+    ctx.beginPath(); ctx.arc(cx2,cy2,6,0,Math.PI*2); ctx.fillStyle='#2ecc71'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.font='bold 11px system-ui'; ctx.textAlign=cx2>W/2?'right':'left';
+    ctx.fillText(fmt(Math.round(curR.net))+' €',cx2>W/2?cx2-12:cx2+12,cy2-12);
+  }
+
+  const legendDiv=document.getElementById('netVsGrossLegend');
+  legendDiv.innerHTML=[
+    {color:'#2ecc71', label:'Net (with benefits)', dash:false},
+    {color:'rgba(196,181,107,0.8)', label:'Gross (reference)', dash:true},
+  ].map(l => `<div style="display:flex;align-items:center;gap:6px"><div style="width:20px;height:3px;background:${l.color};border-radius:2px;${l.dash?'border-top:2px dashed '+l.color+';background:transparent;height:0':''}"></div><span style="color:var(--text-light)">${l.label}</span></div>`).join('');
+}
+
+function renderTaxRateChart(currentGross) {
+  const canvas = document.getElementById('taxRateChart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = canvas.offsetWidth * dpr;
+  canvas.height = canvas.offsetHeight * dpr;
+  ctx.scale(dpr, dpr);
+  const W=canvas.offsetWidth, H=canvas.offsetHeight;
+  const pad={top:20, right:24, bottom:50, left:55};
+  const plotW=W-pad.left-pad.right, plotH=H-pad.top-pad.bottom;
+  const minG=SALARY_MIN, maxG=SALARY_MAX > 12000 ? SALARY_MAX : 12000, steps=100, maxPct=55;
+
+  const dataEff=[], dataMarg=[];
+  for(let i=0;i<=steps;i++){
+    const g = minG+(maxG-minG)*(i/steps);
+    const w = computeForGross(g);
+    dataEff.push({x:g, y:g>0?(w.deductions/g)*100:0});
+    const delta=100;
+    const wPlus=computeForGross(g+delta);
+    const marg=((wPlus.deductions-w.deductions)/delta)*100;
+    dataMarg.push({x:g, y:Math.min(maxPct, Math.max(0,marg))});
+  }
+
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='rgba(255,255,255,0.07)'; ctx.lineWidth=1;
+  const yTicks=[0,5,10,15,20,25,30,35,40,45,50,55];
+  yTicks.forEach(v => { const y=pad.top+plotH-(v/maxPct)*plotH; ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(pad.left+plotW,y); ctx.stroke(); });
+  const xTicks=[1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,11000];
+  xTicks.forEach(v => { const x=pad.left+((v-minG)/(maxG-minG))*plotW; if(x>=pad.left&&x<=pad.left+plotW){ ctx.beginPath(); ctx.moveTo(x,pad.top); ctx.lineTo(x,pad.top+plotH); ctx.stroke(); } });
+
+  ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='11px system-ui'; ctx.textAlign='right';
+  yTicks.forEach(v => { const y=pad.top+plotH-(v/maxPct)*plotH; ctx.fillText(v+'%',pad.left-8,y+4); });
+  ctx.textAlign='center';
+  xTicks.forEach(v => { const x=pad.left+((v-minG)/(maxG-minG))*plotW; if(x>=pad.left&&x<=pad.left+plotW) ctx.fillText(fmtShort(v)+'€',x,pad.top+plotH+20); });
+  ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='10px system-ui'; ctx.textAlign='center';
+  ctx.fillText('GROSS SALARY (€)',pad.left+plotW/2,H-6);
+
+  function drawLine(data,color,lw){
+    ctx.strokeStyle=color; ctx.lineWidth=lw; ctx.beginPath();
+    data.forEach((p,i) => { const x=pad.left+((p.x-minG)/(maxG-minG))*plotW; const y=pad.top+plotH-(Math.min(p.y,maxPct)/maxPct)*plotH; if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); });
+    ctx.stroke();
+  }
+
+  drawLine(dataEff,'#f1c40f',2.5);
+  drawLine(dataMarg,'#E87722',1.8);
+
+  if(currentGross>=minG && currentGross<=maxG){
+    const cx2=pad.left+((currentGross-minG)/(maxG-minG))*plotW;
+    const curR=computeForGross(currentGross);
+    const curPct=currentGross>0?(curR.deductions/currentGross)*100:0;
+    const cy2=pad.top+plotH-(Math.min(curPct,maxPct)/maxPct)*plotH;
+    ctx.strokeStyle='rgba(241,196,15,0.4)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(cx2,pad.top); ctx.lineTo(cx2,pad.top+plotH); ctx.stroke(); ctx.setLineDash([]);
+    ctx.beginPath(); ctx.arc(cx2,cy2,6,0,Math.PI*2); ctx.fillStyle='#f1c40f'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.font='bold 11px system-ui'; ctx.textAlign=cx2>W/2?'right':'left';
+    ctx.fillText(curPct.toFixed(1)+'%',cx2>W/2?cx2-12:cx2+12,cy2-12);
+  }
+
+  const legendDiv=document.getElementById('taxRateLegend');
+  legendDiv.innerHTML=[
+    {color:'#f1c40f', label:'Effective tax rate (current settings)'},
+    {color:'#E87722', label:'Marginal tax rate'},
+  ].map(l => `<div style="display:flex;align-items:center;gap:6px"><div style="width:20px;height:3px;background:${l.color};border-radius:2px"></div><span style="color:var(--text-light)">${l.label}</span></div>`).join('');
+}
+
+// ====== EVENT LISTENERS ======
+// Language buttons
+document.querySelectorAll('.lang-btn[data-lang]').forEach(btn => {
+  btn.addEventListener('click', () => setLang(btn.dataset.lang, btn));
+});
+
+// Salary controls
+document.getElementById('salarySlider').addEventListener('input', updateFromSlider);
+document.getElementById('salaryInput').addEventListener('input', updateFromInput);
+
+// Calc mode tabs
+document.querySelectorAll('.tab-btn[data-mode]').forEach(btn => {
+  btn.addEventListener('click', () => setCalcMode(btn.dataset.mode, btn));
+});
+
+// Children counters
+document.querySelectorAll('.counter-btn[data-action]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const delta = parseInt(btn.dataset.delta);
+    if (btn.dataset.action === 'children') changeChildren(delta);
+    // Add more counter actions as needed
+  });
+});
+
+// [CUSTOMIZABLE: event-listeners] — Wire up your country-specific inputs:
+// document.getElementById('yourToggle').addEventListener('change', calculate);
+// document.getElementById('yourSelect').addEventListener('change', calculate);
+
+// ====== RESPONSIVE CANVAS ======
+const canvasObserver = new ResizeObserver(() => {
+  const rawVal = document.getElementById('salaryInput').value.replace(/\s/g, '');
+  const currentGross = parseInt(rawVal) || 0;
+  renderCurveCharts(currentGross);
+});
+canvasObserver.observe(document.getElementById('netVsGrossChart'));
+canvasObserver.observe(document.getElementById('taxRateChart'));
+
+// ====== INIT ======
+calculate();
+</script>
+
+<!-- [DO NOT MODIFY: nav-js] ─────────────────────────────────────────────── -->
+<script src="nav.js"></script>
+<!-- ────────────────────────────────────────────────────────────────────── -->
+
+<!-- [DO NOT MODIFY: shared-js] ──────────────────────────────────────────── -->
+<script src="shared.js"></script>
+<!-- ────────────────────────────────────────────────────────────────────── -->
+
+</body>
+</html>

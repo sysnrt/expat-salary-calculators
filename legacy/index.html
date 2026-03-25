@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expat Salary Calculators 2026</title>
+<link rel="stylesheet" href="shared.css">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&display=swap');
+
+  :root {
+    --brass: #b8943e;
+    --brass-light: #d4af5a;
+    --brass-dark: #8a6d2b;
+    --brass-shine: #e8d48b;
+    --teal-deep: #1a3a3a;
+    --teal-mid: #1e4d4d;
+    --teal-accent: #2a6363;
+    --wood-light: #c69c6d;
+    --wood-mid: #a07840;
+    --wood-dark: #7a5a30;
+    --wood-darker: #5a3f1e;
+    --ocean: #1a5c6c;
+    --ocean-dark: #134a58;
+    --land-available: #d4881a;
+    --land-unavailable: #a07840;
+    --cream: #f0e6d0;
+    --text-dark: #2a1f0e;
+    --text-brass: #e8d48b;
+    --primary: #1a5276;
+    --accent: #c8a44e;
+    --bg: #1a3a3a;
+    --card: #2a1f0e;
+    --text: #e8d48b;
+    --text-light: #c69c6d;
+    --border: #8a6d2b;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    --radius: 6px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body {
+    background: var(--teal-deep);
+    font-family: 'Crimson Text', Georgia, serif;
+    color: var(--cream);
+  }
+
+  /* ── Botanical leaf pattern background ── */
+  .page-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background:
+      /* Leaf pattern overlay */
+      repeating-conic-gradient(
+        from 45deg at 50% 50%,
+        rgba(42, 99, 99, 0.08) 0deg 30deg,
+        transparent 30deg 60deg
+      ),
+      /* Subtle radial depth */
+      radial-gradient(ellipse at 30% 20%, rgba(42, 99, 99, 0.4) 0%, transparent 60%),
+      radial-gradient(ellipse at 70% 80%, rgba(26, 58, 58, 0.6) 0%, transparent 60%),
+      var(--teal-deep);
+    pointer-events: none;
+  }
+
+  .page-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      /* Geometric leaf-like SVG pattern via CSS */
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5 Q35 15 30 25 Q25 15 30 5z' fill='rgba(42,99,99,0.15)' /%3E%3Cpath d='M30 35 Q35 45 30 55 Q25 45 30 35z' fill='rgba(42,99,99,0.12)' /%3E%3Cpath d='M5 30 Q15 35 25 30 Q15 25 5 30z' fill='rgba(42,99,99,0.1)' /%3E%3Cpath d='M35 30 Q45 35 55 30 Q45 25 35 30z' fill='rgba(42,99,99,0.1)' /%3E%3C/svg%3E") repeat;
+    opacity: 0.7;
+  }
+
+  /* ── Main content wrapper ── */
+  .main-frame {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0;
+  }
+
+  /* ── Brass outer frame ── */
+  .brass-frame {
+    position: relative;
+    background: linear-gradient(165deg, #3a2a14 0%, #2a1f0e 40%, #3a2a14 100%);
+    border: 3px solid var(--brass);
+    border-radius: 8px;
+    padding: 32px 28px 36px;
+    box-shadow:
+      0 0 0 1px rgba(184, 148, 62, 0.3),
+      0 0 0 6px rgba(26, 58, 58, 0.5),
+      0 0 0 8px var(--brass-dark),
+      0 20px 60px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(232, 212, 139, 0.1);
+  }
+
+  /* Corner brackets */
+  .corner {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    z-index: 5;
+  }
+  .corner::before, .corner::after {
+    content: '';
+    position: absolute;
+    background: linear-gradient(135deg, var(--brass-light), var(--brass-dark));
+    border-radius: 1px;
+  }
+  .corner-tl { top: 8px; left: 8px; }
+  .corner-tl::before { top: 0; left: 0; width: 24px; height: 3px; }
+  .corner-tl::after { top: 0; left: 0; width: 3px; height: 24px; }
+
+  .corner-tr { top: 8px; right: 8px; }
+  .corner-tr::before { top: 0; right: 0; width: 24px; height: 3px; }
+  .corner-tr::after { top: 0; right: 0; width: 3px; height: 24px; }
+
+  .corner-bl { bottom: 8px; left: 8px; }
+  .corner-bl::before { bottom: 0; left: 0; width: 24px; height: 3px; }
+  .corner-bl::after { bottom: 0; left: 0; width: 3px; height: 24px; }
+
+  .corner-br { bottom: 8px; right: 8px; }
+  .corner-br::before { bottom: 0; right: 0; width: 24px; height: 3px; }
+  .corner-br::after { bottom: 0; right: 0; width: 3px; height: 24px; }
+
+  /* ── Title banner ── */
+  .title-banner {
+    text-align: center;
+    margin-bottom: 28px;
+    position: relative;
+    padding: 18px 40px 14px;
+    background: linear-gradient(180deg, var(--brass-shine) 0%, var(--brass) 30%, var(--brass-dark) 90%, #6b5220 100%);
+    border-radius: 4px;
+    border: 1px solid rgba(232, 212, 139, 0.4);
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .title-banner::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    right: 3px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  }
+
+  .title-banner h1 {
+    font-family: 'Cinzel Decorative', 'Cinzel', serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    letter-spacing: 2px;
+    text-shadow: 0 1px 0 rgba(232, 212, 139, 0.6);
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+
+  .title-banner .subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: rgba(42, 31, 14, 0.75);
+    letter-spacing: 1.5px;
+    text-transform: none;
+  }
+
+  /* ── Map section with wood frame ── */
+  .map-section {
+    margin-bottom: 28px;
+  }
+
+  .wood-frame {
+    position: relative;
+    background:
+      /* Wood grain texture */
+      repeating-linear-gradient(
+        92deg,
+        rgba(160, 120, 64, 0.15) 0px,
+        transparent 2px,
+        transparent 8px,
+        rgba(160, 120, 64, 0.1) 10px
+      ),
+      linear-gradient(180deg, var(--wood-light) 0%, var(--wood-mid) 30%, var(--wood-dark) 70%, var(--wood-darker) 100%);
+    border: 3px solid var(--brass);
+    border-radius: 6px;
+    padding: 16px;
+    box-shadow:
+      0 4px 20px rgba(0, 0, 0, 0.4),
+      inset 0 2px 4px rgba(255, 255, 255, 0.1),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .map-inner {
+    position: relative;
+    background: linear-gradient(135deg, var(--ocean) 0%, var(--ocean-dark) 100%);
+    border-radius: 4px;
+    border: 2px solid var(--brass-dark);
+    padding: 12px;
+    box-shadow:
+      inset 0 2px 8px rgba(0, 0, 0, 0.3),
+      0 1px 0 rgba(232, 212, 139, 0.2);
+    overflow: hidden;
+  }
+
+  .map-inner svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  #mapContainer {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #mapContainer .loading-text {
+    font-family: 'Cinzel', serif;
+    color: var(--brass-dark);
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+  }
+
+  /* ── SVG country styling (applied to inline SVG) ── */
+
+  /* Catch-all: EVERY path inside the Countries layer gets wood tone */
+  /* Using fully opaque fill to ensure uniform color across all countries,
+     regardless of position over the ocean gradient background */
+  .map-inner #Countries path {
+    fill: #7a6e50 !important;
+    fill-opacity: 1 !important;
+    stroke: #5a5030 !important;
+    stroke-width: 0.12 !important;
+    transition: fill 0.3s, fill-opacity 0.3s, filter 0.3s;
+    cursor: default;
+  }
+
+  /* Also override any group-level fills */
+  .map-inner #Countries g {
+    fill: #7a6e50 !important;
+    fill-opacity: 1 !important;
+  }
+
+  /* Available countries: vivid amber-gold, clearly distinct from wood-brown */
+  /* Use #Countries in selector to beat the higher-specificity .map-inner #Countries path rule */
+  .map-inner #Countries .region-available {
+    fill: #d4881a !important;
+    fill-opacity: 1 !important;
+    stroke: #8a5010 !important;
+    stroke-width: 0.35 !important;
+    cursor: pointer;
+    filter: drop-shadow(0 0 2px rgba(212, 136, 26, 0.6)) drop-shadow(0 0 4px rgba(212, 136, 26, 0.25));
+  }
+
+  .map-inner #Countries .region-available:hover {
+    fill: #f0a828 !important;
+    filter: drop-shadow(0 0 4px rgba(240, 168, 40, 0.9)) drop-shadow(0 0 8px rgba(240, 168, 40, 0.4));
+  }
+
+  /* SVG layer overrides */
+  .map-inner #Coastline { opacity: 0.12 !important; }
+  .map-inner #Coastline path { stroke: #5a4020 !important; stroke-width: 0.1 !important; fill: none !important; fill-opacity: 0 !important; }
+  .map-inner #Lakes path { fill: #1a5c6c !important; fill-opacity: 0.7 !important; stroke: #134a58 !important; stroke-width: 0.2 !important; }
+  .map-inner #Borders path { stroke: #6b5535 !important; stroke-opacity: 0.25 !important; stroke-width: 0.1 !important; fill: none !important; fill-opacity: 0 !important; }
+  .map-inner #Marine_borders path { stroke: #3a6a7a !important; stroke-opacity: 0.15 !important; stroke-width: 0.1 !important; fill: none !important; fill-opacity: 0 !important; }
+
+  .map-tooltip {
+    position: absolute;
+    background: linear-gradient(180deg, var(--brass-shine) 0%, var(--brass) 100%);
+    color: var(--text-dark);
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    white-space: nowrap;
+    z-index: 10;
+    transform: translate(-50%, -100%);
+    margin-top: -8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    letter-spacing: 0.5px;
+  }
+
+  .map-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--brass);
+  }
+
+  .map-tooltip.visible { opacity: 1; }
+
+  /* Legend inside map */
+  .map-legend {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 10px;
+    font-family: 'Crimson Text', serif;
+    font-size: 0.85rem;
+    color: var(--cream);
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 20px;
+    padding: 5px 20px;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .map-legend span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    display: inline-block;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .legend-dot.available { background: var(--land-available); }
+  .legend-dot.unavailable { background: #7a6e50; }
+
+  /* Compass rose */
+  .compass-rose {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    opacity: 0.5;
+    z-index: 2;
+  }
+
+  .compass-rose svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
+  }
+
+  /* ── Country buttons grid ── */
+  .countries-section {
+    margin-top: 4px;
+    background: linear-gradient(180deg, var(--brass) 0%, var(--brass-dark) 50%, #6b5220 100%);
+    border-radius: 6px;
+    border: 1px solid rgba(232, 212, 139, 0.3);
+    padding: 20px 20px 24px;
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  .countries-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+
+  .country-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    text-decoration: none;
+    color: var(--cream);
+    background:
+      repeating-linear-gradient(
+        88deg,
+        rgba(160, 120, 64, 0.12) 0px,
+        transparent 1.5px,
+        transparent 6px,
+        rgba(160, 120, 64, 0.08) 7px
+      ),
+      linear-gradient(180deg, var(--wood-mid) 0%, var(--wood-dark) 60%, var(--wood-darker) 100%);
+    border: 2px solid var(--brass-dark);
+    border-radius: 5px;
+    transition: all 0.25s ease;
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .country-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  }
+
+  .country-btn:hover {
+    border-color: var(--brass-light);
+    transform: translateY(-2px);
+    box-shadow:
+      0 6px 20px rgba(0, 0, 0, 0.4),
+      0 0 12px rgba(200, 164, 78, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    background:
+      repeating-linear-gradient(
+        88deg,
+        rgba(160, 120, 64, 0.15) 0px,
+        transparent 1.5px,
+        transparent 6px,
+        rgba(160, 120, 64, 0.1) 7px
+      ),
+      linear-gradient(180deg, var(--wood-light) 0%, var(--wood-mid) 60%, var(--wood-dark) 100%);
+  }
+
+  .country-btn .flag-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  }
+
+  .country-btn .btn-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .country-btn .btn-name {
+    font-family: 'Cinzel', serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--cream);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  }
+
+  .country-btn .btn-year {
+    font-family: 'Crimson Text', serif;
+    font-size: 0.8rem;
+    color: rgba(240, 230, 208, 0.6);
+    margin-top: 1px;
+  }
+
+  /* ── "EST." watermark ── */
+  .est-mark {
+    position: absolute;
+    bottom: 14px;
+    right: 20px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    color: rgba(232, 212, 139, 0.25);
+    z-index: 2;
+  }
+
+  /* ── Page load animation ── */
+  @keyframes fadeReveal {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes shimmerBrass {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  .title-banner {
+    animation: fadeReveal 0.7s ease-out both;
+  }
+
+  .wood-frame {
+    animation: fadeReveal 0.7s ease-out 0.15s both;
+  }
+
+  .countries-section {
+    animation: fadeReveal 0.7s ease-out 0.3s both;
+  }
+
+  .country-btn:nth-child(1) { animation: fadeReveal 0.5s ease-out 0.4s both; }
+  .country-btn:nth-child(2) { animation: fadeReveal 0.5s ease-out 0.48s both; }
+  .country-btn:nth-child(3) { animation: fadeReveal 0.5s ease-out 0.56s both; }
+  .country-btn:nth-child(4) { animation: fadeReveal 0.5s ease-out 0.64s both; }
+  .country-btn:nth-child(5) { animation: fadeReveal 0.5s ease-out 0.72s both; }
+  .country-btn:nth-child(6) { animation: fadeReveal 0.5s ease-out 0.8s both; }
+  .country-btn:nth-child(7) { animation: fadeReveal 0.5s ease-out 0.88s both; }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .main-frame { margin: 20px 12px; }
+    .brass-frame { padding: 20px 16px 28px; }
+    .countries-grid { grid-template-columns: repeat(2, 1fr); }
+    .title-banner h1 { font-size: 1.7rem; letter-spacing: 1px; }
+  }
+
+  @media (max-width: 560px) {
+    .main-frame { margin: 12px 6px; }
+    .brass-frame { padding: 14px 10px 20px; }
+    .countries-grid { grid-template-columns: 1fr; }
+    .title-banner { padding: 14px 16px 10px; }
+    .title-banner h1 { font-size: 1.3rem; }
+    .compass-rose { width: 36px; height: 36px; bottom: 16px; right: 16px; }
+  }
+
+  /* Override shared.css nav for this theme */
+  .topbar {
+    background: linear-gradient(180deg, #2a1f0e, #1e1608) !important;
+    border-bottom: 1px solid var(--brass-dark) !important;
+  }
+
+  /* Language selector for index page */
+  .index-lang-selector {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .index-lang-selector .lang-btn {
+    background: rgba(42, 31, 14, 0.6);
+    border: 1px solid var(--brass-dark);
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    line-height: 1;
+  }
+  .index-lang-selector .lang-btn:hover {
+    border-color: var(--brass-light);
+    background: rgba(184, 148, 62, 0.2);
+  }
+  .index-lang-selector .lang-btn.active {
+    border-color: var(--brass-light);
+    background: rgba(184, 148, 62, 0.35);
+    box-shadow: 0 0 6px rgba(184, 148, 62, 0.3);
+  }
+</style>
+</head>
+<body data-page="index">
+
+<div class="page-bg"></div>
+
+<div class="main-frame">
+  <div class="brass-frame">
+
+    <!-- Corner brackets -->
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-tr"></div>
+    <div class="corner corner-bl"></div>
+    <div class="corner corner-br"></div>
+
+    <!-- Language selector -->
+    <div class="index-lang-selector">
+      <button class="lang-btn active" data-lang="en" title="English">🇬🇧</button>
+      <button class="lang-btn" data-lang="hu" title="Magyar">🇭🇺</button>
+      <button class="lang-btn" data-lang="de" title="Deutsch">🇩🇪</button>
+      <button class="lang-btn" data-lang="nl" title="Nederlands">🇳🇱</button>
+    </div>
+
+    <!-- Title banner -->
+    <div class="title-banner">
+      <h1 id="indexTitle" data-en="Expat Salary Calculators" data-hu="Expat bérkalkulátorok" data-de="Expat-Gehaltsrechner" data-nl="Expat salariscalculators">Expat Salary Calculators</h1>
+      <div class="subtitle" id="indexSubtitle" data-en="Select a Country · 2026 Tax Rates" data-hu="Válassz országot · 2026-os adókulcsok" data-de="Land auswählen · Steuersätze 2026" data-nl="Kies een land · Belastingtarieven 2026">Select a Country · 2026 Tax Rates</div>
+    </div>
+
+    <!-- Map in wood frame -->
+    <div class="map-section">
+      <div class="wood-frame">
+        <div class="map-inner" id="mapWrapper">
+          <div class="map-tooltip" id="mapTooltip"></div>
+
+          <!-- Compass rose -->
+          <div class="compass-rose">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <g fill="none" stroke="var(--brass-shine)" stroke-width="1.2">
+                <!-- Outer ring -->
+                <circle cx="50" cy="50" r="46" opacity="0.6"/>
+                <circle cx="50" cy="50" r="40" opacity="0.3"/>
+                <!-- Cardinal points -->
+                <polygon points="50,6 54,42 50,36 46,42" fill="var(--brass-shine)" stroke="none" opacity="0.8"/>
+                <polygon points="50,94 54,58 50,64 46,58" fill="var(--brass-dark)" stroke="none" opacity="0.6"/>
+                <polygon points="6,50 42,46 36,50 42,54" fill="var(--brass-dark)" stroke="none" opacity="0.6"/>
+                <polygon points="94,50 58,46 64,50 58,54" fill="var(--brass-dark)" stroke="none" opacity="0.6"/>
+                <!-- Intercardinal points -->
+                <polygon points="19,19 40,44 36,40 44,40" fill="var(--brass)" stroke="none" opacity="0.4"/>
+                <polygon points="81,19 56,40 60,44 56,44" fill="var(--brass)" stroke="none" opacity="0.4" transform="rotate(0,50,50)"/>
+                <polygon points="19,81 44,56 40,60 40,56" fill="var(--brass)" stroke="none" opacity="0.4"/>
+                <polygon points="81,81 60,56 56,56 56,60" fill="var(--brass)" stroke="none" opacity="0.4"/>
+                <!-- Center -->
+                <circle cx="50" cy="50" r="4" fill="var(--brass-shine)" stroke="none" opacity="0.7"/>
+                <circle cx="50" cy="50" r="2" fill="var(--brass-dark)" stroke="none"/>
+              </g>
+              <!-- N marker -->
+              <text x="50" y="3" text-anchor="middle" font-family="Cinzel, serif" font-size="7" fill="var(--brass-shine)" opacity="0.7">N</text>
+            </svg>
+          </div>
+
+          <div id="mapContainer">
+<div id="europeMap" class="svg-loading">Loading map…</div>
+
+</div>
+
+          <div class="map-legend">
+            <span><span class="legend-dot available"></span> <span data-en="Available" data-hu="Elérhető" data-de="Verfügbar" data-nl="Beschikbaar">Available</span></span>
+            <span><span class="legend-dot unavailable"></span> <span data-en="Coming soon" data-hu="Hamarosan" data-de="Demnächst" data-nl="Binnenkort">Coming soon</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Country buttons -->
+    <div class="countries-section">
+      <div class="countries-grid">
+        <a href="Hungary/hungary.html" class="country-btn">
+          <span class="flag-icon">🇭🇺</span>
+          <span class="btn-text">
+            <span class="btn-name" data-en="Hungary" data-hu="Magyarország" data-de="Ungarn" data-nl="Hongarije">Hungary</span>
+            <span class="btn-year">2026</span>
+          </span>
+        </a>
+        <a href="Germany/germany.html" class="country-btn">
+          <span class="flag-icon">🇩🇪</span>
+          <span class="btn-text">
+            <span class="btn-name" data-en="Germany" data-hu="Németország" data-de="Deutschland" data-nl="Duitsland">Germany</span>
+            <span class="btn-year">2026</span>
+          </span>
+        </a>
+        <a href="Netherlands/netherlands.html" class="country-btn">
+          <span class="flag-icon">🇳🇱</span>
+          <span class="btn-text">
+            <span class="btn-name" data-en="Netherlands" data-hu="Hollandia" data-de="Niederlande" data-nl="Nederland">Netherlands</span>
+            <span class="btn-year">2026</span>
+          </span>
+        </a>
+        <a href="Portugal/portugal.html" class="country-btn">
+          <span class="flag-icon">🇵🇹</span>
+          <span class="btn-text">
+            <span class="btn-name" data-en="Portugal" data-hu="Portugália" data-de="Portugal" data-nl="Portugal">Portugal</span>
+            <span class="btn-year">2026</span>
+          </span>
+        </a>
+        <a href="Spain/spain.html" class="country-btn">
+          <span class="flag-icon">🇪🇸</span>
+          <span class="btn-text">
+            <span class="btn-name" data-en="Spain" data-hu="Spanyolország" data-de="Spanien" data-nl="Spanje">Spain</span>
+            <span class="btn-year">2026</span>
+          </span>
+        </a>
+        <a href="Belgium/belgium.html" class="country-btn">
+          <span class="flag-icon">🇧🇪</span>
+          <span class="btn-text">
+            <span class="btn-name" data-en="Belgium" data-hu="Belgium" data-de="Belgien" data-nl="België">Belgium</span>
+            <span class="btn-year">2026</span>
+          </span>
+        </a>
+        <a href="Slovakia/slovakia.html" class="country-btn">
+          <span class="flag-icon">🇸🇰</span>
+          <span class="btn-text">
+            <span class="btn-name" data-en="Slovakia" data-hu="Szlovákia" data-de="Slowakei" data-nl="Slowakije">Slovakia</span>
+            <span class="btn-year">2026</span>
+          </span>
+        </a>
+      </div>
+    </div>
+
+    <!-- EST watermark -->
+    <div class="est-mark">EST. 2024</div>
+
+  </div>
+</div>
+
+<script src="nav.js"></script>
+<script src="shared.js"></script>
+<script>
+// ══════ INDEX PAGE LANGUAGE SWITCHING ══════
+(function() {
+  var lang = 'en';
+  window.SUPPORTED_LANGS = ['en', 'hu', 'de', 'nl'];
+
+  var TOOLTIP_MAP = {
+    en: ' — Open calculator',
+    hu: ' — Kalkulátor megnyitása',
+    de: ' — Rechner öffnen',
+    nl: ' — Calculator openen'
+  };
+
+  var COUNTRY_NAMES_I18N = {
+    HUN: { en: 'Hungary', hu: 'Magyarország', de: 'Ungarn', nl: 'Hongarije' },
+    DEU: { en: 'Germany', hu: 'Németország', de: 'Deutschland', nl: 'Duitsland' },
+    NLD: { en: 'Netherlands', hu: 'Hollandia', de: 'Niederlande', nl: 'Nederland' },
+    PRT: { en: 'Portugal', hu: 'Portugália', de: 'Portugal', nl: 'Portugal' },
+    ESP: { en: 'Spain', hu: 'Spanyolország', de: 'Spanien', nl: 'Spanje' },
+    BEL: { en: 'Belgium', hu: 'Belgium', de: 'Belgien', nl: 'België' },
+    SVK: { en: 'Slovakia', hu: 'Szlovákia', de: 'Slowakei', nl: 'Slowakije' }
+  };
+
+  window.setLang = function(newLang, btnEl) {
+    if (lang === newLang) return;
+    lang = newLang;
+    document.documentElement.lang = lang;
+    if (typeof saveLangPref === 'function') saveLangPref(newLang);
+
+    document.querySelectorAll('.lang-btn').forEach(function(b) { b.classList.remove('active'); });
+    if (btnEl) btnEl.classList.add('active');
+
+    // Update all data-attribute translations
+    document.querySelectorAll('[data-en]').forEach(function(el) {
+      var txt = el.getAttribute('data-' + lang) || el.getAttribute('data-en');
+      if (txt) el.textContent = txt;
+    });
+  };
+
+  // Wire up language buttons
+  document.querySelectorAll('.index-lang-selector .lang-btn[data-lang]').forEach(function(btn) {
+    btn.addEventListener('click', function() { setLang(btn.dataset.lang, btn); });
+  });
+
+  // Expose lang and country names for map tooltip
+  window.getIndexLang = function() { return lang; };
+  window.getTooltipSuffix = function() { return TOOLTIP_MAP[lang] || TOOLTIP_MAP.en; };
+  window.getCountryNameI18N = function(code) {
+    return (COUNTRY_NAMES_I18N[code] && COUNTRY_NAMES_I18N[code][lang]) ||
+           (COUNTRY_NAMES_I18N[code] && COUNTRY_NAMES_I18N[code].en) || '';
+  };
+})();
+</script>
+<script>
+(function() {
+  var wrapper = document.getElementById('mapWrapper');
+  var tooltip = document.getElementById('mapTooltip');
+  var container = document.getElementById('mapContainer');
+
+  if (!wrapper || !tooltip || !container) return;
+
+  // Available countries: ISO-3 code → { name, href }
+  var availableCountries = {
+    HUN: { name: 'Hungary', href: 'Hungary/hungary.html' },
+    DEU: { name: 'Germany', href: 'Germany/germany.html' },
+    NLD: { name: 'Netherlands', href: 'Netherlands/netherlands.html' },
+    PRT: { name: 'Portugal', href: 'Portugal/portugal.html' },
+    ESP: { name: 'Spain', href: 'Spain/spain.html' },
+    BEL: { name: 'Belgium', href: 'Belgium/belgium.html' },
+    SVK: { name: 'Slovakia', href: 'Slovakia/slovakia.html' }
+  };
+
+  // Country name lookup
+  var countryNames = {
+    NOR: 'Norway', SWE: 'Sweden', FIN: 'Finland', DNK: 'Denmark',
+    GBR: 'United Kingdom', IRL: 'Ireland', FRA: 'France', CHE: 'Switzerland',
+    AUT: 'Austria', CZE: 'Czech Republic', POL: 'Poland', ITA: 'Italy',
+    SVN: 'Slovenia', HRV: 'Croatia', BIH: 'Bosnia & Herzegovina',
+    SRB: 'Serbia', MNE: 'Montenegro', MKD: 'North Macedonia',
+    ALB: 'Albania', GRC: 'Greece', BGR: 'Bulgaria', ROU: 'Romania',
+    MDA: 'Moldova', UKR: 'Ukraine', BLR: 'Belarus', LTU: 'Lithuania',
+    LVA: 'Latvia', EST: 'Estonia', LUX: 'Luxembourg', TUR: 'Turkey',
+    RUS: 'Russia', ISL: 'Iceland', AND: 'Andorra', MCO: 'Monaco',
+    MLT: 'Malta', CYP: 'Cyprus', XKX: 'Kosovo'
+  };
+
+  // Load SVG from external file and inject into the placeholder
+  fetch('europe-map.svg')
+    .then(function(response) { return response.text(); })
+    .then(function(svgText) {
+      var placeholder = document.getElementById('europeMap');
+      placeholder.outerHTML = svgText;
+      var svgEl = document.getElementById('europeMap');
+      if (svgEl) {
+        // Mark available countries
+        Object.keys(availableCountries).forEach(function(code) {
+          var paths = svgEl.querySelectorAll('.region.' + code);
+          paths.forEach(function(path) {
+            if (!path.classList.contains('region-available')) {
+              path.classList.add('region-available');
+            }
+          });
+        });
+        setupInteractivity(svgEl);
+      }
+    })
+    .catch(function(err) { console.error('Failed to load europe-map.svg:', err); });
+
+  function setupInteractivity(svgEl) {
+    var allPaths = svgEl.querySelectorAll('.region');
+    allPaths.forEach(function(path) {
+      // Extract the ISO-3 country code from class list
+      var code = null;
+      path.classList.forEach(function(cls) {
+        if (cls !== 'region' && cls !== 'region-available') {
+          // ISO-3 codes are 3 uppercase letters (not alphanumeric sub-region codes like NL1)
+          if (cls.length === 3 && /^[A-Z]{3}$/.test(cls)) {
+            code = cls;
+          }
+        }
+      });
+      if (!code) return;
+
+      var isAvailable = availableCountries[code];
+
+      if (isAvailable) {
+        var name = availableCountries[code].name;
+
+        path.addEventListener('mouseenter', function(e) {
+          var localName = (typeof getCountryNameI18N === 'function') ? getCountryNameI18N(code) : name;
+          var suffix = (typeof getTooltipSuffix === 'function') ? getTooltipSuffix() : ' \u2014 Open calculator';
+          tooltip.textContent = (localName || name) + suffix;
+          tooltip.classList.add('visible');
+          positionTooltip(e);
+        });
+
+        path.addEventListener('mousemove', positionTooltip);
+
+        path.addEventListener('mouseleave', function() {
+          tooltip.classList.remove('visible');
+        });
+
+        path.addEventListener('click', function() {
+          window.location.href = availableCountries[code].href;
+        });
+      }
+    });
+  }
+
+  function positionTooltip(e) {
+    var rect = wrapper.getBoundingClientRect();
+    var x = e.clientX - rect.left;
+    var y = e.clientY - rect.top;
+    tooltip.style.left = x + 'px';
+    tooltip.style.top = y + 'px';
+  }
+})();
+</script>
+</body>
+</html>
