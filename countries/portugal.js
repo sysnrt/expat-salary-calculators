@@ -1,6 +1,13 @@
 /* ══════════════════════════════════════════════════════════
    ExpatCalc — Portugal Configuration & Tax Computation
    2026 tax rules: IRS brackets, SS 11%, IFICI flat 20%
+
+   Meal allowance (subsídio de refeição) logic:
+   - Legal basis: CIRS Art. 2(3)(b)(2); Art. 46 Código Contributivo
+   - 2026 exempt limits: €6.15/day (cash), €10.46/day (card/voucher)
+   - Source: Portaria n.º 51-B/2026/1, 30 Jan 2026
+   - Only the daily excess above the exempt limit is taxable.
+   - The taxable excess is added to the SS base and withholding base.
    ══════════════════════════════════════════════════════════ */
 
 // ── IRS tax brackets 2026 ──
@@ -24,10 +31,13 @@ const SS_EMPLOYER = 0.2375;
 const SPECIFIC_DEDUCTION = 4587.09;
 const MINIMO_EXISTENCIA  = 12880;
 
-// ── Meal allowance ──
-const MEAL_WORKING_DAYS    = 22;
-const MEAL_TAX_FREE_CASH   = 6.15;
-const MEAL_TAX_FREE_CARD   = 10.46;
+// ── Meal allowance (subsídio de refeição) ──
+// Source: Portaria n.º 51-B/2026/1, de 30 de janeiro de 2026 (effective 1 Jan 2026)
+// CIRS Art. 2(3)(b)(2): the daily exempt limit for card/voucher is cash limit × 1.70.
+// Only the portion exceeding the daily exempt limit is taxable Category A income.
+const MEAL_WORKING_DAYS_DEFAULT = 22;   // Standard Portuguese convention; configurable via UI
+const MEAL_TAX_FREE_CASH        = 6.15; // €/day — public sector reference value (Portaria 51-B/2026/1)
+const MEAL_TAX_FREE_CARD        = 10.46; // €/day — €6.15 × 1.70 = €10.455 ≈ €10.46 (CIRS Art. 2(3)(b)(2))
 
 // ── Abono de Família (child benefit) ──
 const ABONO_PER_CHILD = 42.07;
@@ -177,8 +187,16 @@ const portugal = {
     },
     {
       id: 'mealValue', type: 'number', label: 'Daily meal value (€)',
-      sublabel: 'Per working day (22 days/month)',
+      sublabel: 'Amount received per working day',
       min: 0, max: 30, step: 0.5,
+      showWhen: ctx => ctx.mealAllowance,
+    },
+    {
+      // Working days per month determines the monthly meal total.
+      // Standard Portuguese convention is 22 days; some contracts use 20.
+      id: 'mealWorkingDays', type: 'number', label: 'Working days per month',
+      sublabel: 'Standard is 22 days (adjust if contract differs)',
+      min: 1, max: 31, step: 1,
       showWhen: ctx => ctx.mealAllowance,
     },
     { id: 'dependents', type: 'counter', label: 'Dependents (IRS deduction)', sublabel: '€600/year per dependent', min: 0, max: 10 },
@@ -201,6 +219,7 @@ const portugal = {
       mealAllowance: false,
       mealType: 'card',
       mealValue: 8,
+      mealWorkingDays: MEAL_WORKING_DAYS_DEFAULT, // 22 — standard Portuguese convention
       dependents: 0,
       children: 0,
       paymentsPerYear: '14',
@@ -208,85 +227,145 @@ const portugal = {
   },
 
   computeBreakdown(gross, opts) {
-    const { maritalStatus, ifici, mealAllowance, mealType, mealValue, dependents, children } = opts;
+    const {
+      maritalStatus, ifici,
+      mealAllowance, mealType, mealValue,
+      dependents, children,
+    } = opts;
     const paymentsPerYear = Number(opts.paymentsPerYear) || 14;
 
+    // Resolve working days — user-configurable, default 22 (standard Portuguese convention).
+    // This controls both the monthly meal total and the exempt/taxable split.
+    const workingDays = Number(opts.mealWorkingDays) || MEAL_WORKING_DAYS_DEFAULT;
+
+    // ── Annual gross (salary only; meal allowance is a separate benefit paid each month) ──
     const annualGross = gross * paymentsPerYear;
-    const annualSS = annualGross * SS_EMPLOYEE;
 
-    // Meal allowance
-    const dailyMealValue = mealAllowance ? mealValue : 0;
-    const taxFreeLimit = mealType === 'card' ? MEAL_TAX_FREE_CARD : MEAL_TAX_FREE_CASH;
-    const dailyMealTaxable = Math.max(0, dailyMealValue - taxFreeLimit);
-    const monthlyMealTaxable = dailyMealTaxable * MEAL_WORKING_DAYS;
-    const monthlyMealTaxFree = Math.min(dailyMealValue, taxFreeLimit) * MEAL_WORKING_DAYS;
-    const monthlyMeal = dailyMealValue * MEAL_WORKING_DAYS;
+    // ─────────────────────────────────────────────────────────────────────────────
+    // MEAL ALLOWANCE (subsídio de refeição)
+    // Legal basis: CIRS Art. 2(3)(b)(2); Art. 46 Código Contributivo
+    //
+    // Only the portion of the daily meal value that exceeds the exempt daily limit
+    // is treated as taxable Category A income.  The exempt portion is excluded from
+    // both IRS and Social Security bases entirely.
+    //
+    // Exempt daily limits 2026 (Portaria n.º 51-B/2026/1, effective 1 Jan 2026):
+    //   Cash:        €6.15/day
+    //   Card/voucher: €10.46/day  (= €6.15 × 1.70, per CIRS Art. 2(3)(b)(2))
+    // ─────────────────────────────────────────────────────────────────────────────
 
-    // Taxable income
-    const taxableIncome = Math.max(0, annualGross - annualSS - SPECIFIC_DEDUCTION + monthlyMealTaxable * 12);
+    // Daily meal value: zero when meal allowance is disabled
+    const dailyMealValue = mealAllowance ? (Number(mealValue) || 0) : 0;
 
-    // Mínimo de existência
+    // Select the correct exempt daily limit based on payment method
+    const mealExemptDailyLimit = (mealType === 'card') ? MEAL_TAX_FREE_CARD : MEAL_TAX_FREE_CASH;
+
+    // Daily taxable excess — the part above the exempt threshold (CIRS Art. 2(3)(b)(2))
+    const dailyMealTaxable = Math.max(0, dailyMealValue - mealExemptDailyLimit);
+
+    // Daily exempt portion — capped at the exempt limit (can't exceed actual daily value)
+    const dailyMealExempt = Math.min(dailyMealValue, mealExemptDailyLimit);
+
+    // Monthly totals — scale by number of working days in the month
+    const monthlyMealTotal    = dailyMealValue  * workingDays; // gross meal received
+    const monthlyMealTaxFree  = dailyMealExempt * workingDays; // excluded from IRS and SS
+    const monthlyMealTaxable  = dailyMealTaxable * workingDays; // added to IRS and SS bases
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // SOCIAL SECURITY (monthly payslip)
+    // The taxable meal excess "acresce ao salário" (is added to salary) for SS purposes.
+    // Art. 46 Código Contributivo — the exempt portion is fully excluded from TSU.
+    // ─────────────────────────────────────────────────────────────────────────────
+
+    // SS base = monthly gross salary + any taxable meal excess
+    const monthlySsBase = gross + monthlyMealTaxable;
+    const monthlySS     = monthlySsBase * SS_EMPLOYEE; // employee TSU: 11%
+    const employerSS    = monthlySsBase * SS_EMPLOYER; // employer TSU: 23.75%
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // ANNUAL IRS LIABILITY (CIRS Art. 68 brackets)
+    // Used for the annual overview display, not the payslip withholding figure.
+    // Annual SS base mirrors the monthly logic but applied over paymentsPerYear.
+    // The taxable meal excess is annualised over 12 calendar months (it is paid
+    // every working month regardless of the number of salary payments per year).
+    // ─────────────────────────────────────────────────────────────────────────────
+
+    const annualSS = annualGross * SS_EMPLOYEE + monthlyMealTaxable * 12 * SS_EMPLOYEE;
+
+    // Taxable income for annual IRS — includes annualised taxable meal excess
+    const taxableIncome = Math.max(
+      0,
+      annualGross
+      + (monthlyMealTaxable * 12)  // annualised taxable meal excess (CIRS Art. 2(3)(b)(2))
+      - annualSS
+      - SPECIFIC_DEDUCTION
+    );
+
+    // Mínimo de existência guard — IRS is zero if net-of-SS income is below the minimum
     const netAfterSS = annualGross - annualSS;
     const divisor = (maritalStatus === 'married1') ? 2 : 1;
 
     let annualIRS = 0;
     if (netAfterSS > MINIMO_EXISTENCIA) {
       if (ifici) {
+        // IFICI flat rate (replaces NHR from Jan 2024) — Lei n.º 21/2023
         annualIRS = taxableIncome * 0.20;
       } else {
         const splitIncome = taxableIncome / divisor;
         annualIRS = computeIRS(splitIncome) * divisor;
         annualIRS = Math.min(annualIRS, netAfterSS - MINIMO_EXISTENCIA);
       }
-      // Solidarity surcharge (Art. 68-A CIRS)
+      // Solidarity surcharge (Art. 68-A CIRS): 2.5% on €80k–€250k, 5% above €250k
       if (!ifici && taxableIncome > 80000) {
         const soliBase1 = Math.min(taxableIncome, 250000) - 80000;
         annualIRS += soliBase1 * 0.025;
         if (taxableIncome > 250000) annualIRS += (taxableIncome - 250000) * 0.05;
       }
-      // Dependent deduction
+      // Dependent deduction: €600/year per dependent (CIRS Art. 78-A)
       const dependentCredit = dependents * 600;
       annualIRS = Math.max(0, annualIRS - dependentCredit);
     }
 
-    const monthlySS = gross * SS_EMPLOYEE;                  // 11% on this month's gross payment
-
-    // ── Monthly payslip withholding: AT withholding table formula ────────────────
+    // ─────────────────────────────────────────────────────────────────────────────
+    // MONTHLY IRS WITHHOLDING (retenção na fonte)
     // Source: Despacho n.º 233-A/2026, Table I (Continente, Categoria A)
     // Formula: retenção = remuneração_mensal_bruta × taxa − parcela_a_abater
     //
-    // The withholding table is applied directly to the MONTHLY GROSS SALARY, not to
-    // the taxable income after deductions. This matches what appears on a Portuguese
-    // payslip (recibo de vencimento) and the AT's own payslip simulator.
+    // The withholding base is the monthly gross salary PLUS any taxable meal excess.
+    // Per operational guidance (Cambragest, OCC): the taxable meal excess "acresce ao
+    // salário e outros abonos para efeitos do cálculo da taxa de retenção de IRS".
+    // Legal basis: CIRS Art. 2(3)(b)(2); confirmed by AT payslip guidance.
     //
-    // For 14-payment (duodécimos) salaries under CIRS Art. 99-C:
-    //   - The regular monthly salary component (e.g. €7,000) is withheld using the
-    //     table directly on the full monthly gross.
-    //   - The holiday/Christmas subsidy duodécimos (each = gross/12, e.g. €583.33)
-    //     are withheld autonomously at their own bracket.  At €7,000/month gross, the
-    //     €583.33 subsidy fragment falls into the ≤€1,819 bracket (24.10%, parcela
-    //     €193.33): €583.33 × 24.10% − €193.33 = −€52.75 → clamped to €0.  So the
-    //     autonomous subsidy withholding is zero and total monthly withholding equals
-    //     the table result on the regular monthly gross alone.
+    // When monthlyMealTaxable is zero (meal is within the exempt threshold, or no meal
+    // allowance), the withholding base equals gross and behaviour is unchanged.
     //
-    // For 13-payment structure: same table logic applies to the monthly gross.
-    // For 12-payment structure: no subsidy duodécimos exist; table on monthly gross.
-    //
-    // NOTE: annualIRS (computed above via CIRS Art. 68 brackets) is retained for the
-    // annual liability view and annualNetSalary.  monthlyIRS below is the payslip figure.
+    // For 14-payment (duodécimos) salaries, the subsidy duodécimos are withheld
+    // autonomously at their own bracket (CIRS Art. 99-C) and typically produce zero
+    // withholding at the subsidy fragment level — so total monthly withholding equals
+    // the table result on the regular monthly gross + meal taxable excess.
     //
     // Reference: Despacho n.º 233-A/2026; CIRS Art. 99-C
-    const monthlyIRS = computeWithholdingRetencao(gross, dependents);
+    // ─────────────────────────────────────────────────────────────────────────────
 
-    const totalDeductions = monthlyIRS + monthlySS;
-    const netSalary = gross - totalDeductions;
+    const withholdingBase = gross + monthlyMealTaxable; // gross + taxable meal excess
+    const monthlyIRS = computeWithholdingRetencao(withholdingBase, dependents);
 
-    // Employer
-    const employerSS = gross * SS_EMPLOYER;
+    // ── Monthly net and employer cost ──
+    const totalDeductions  = monthlyIRS + monthlySS;
+    const netSalary        = gross - totalDeductions; // net salary from gross only (meal is additive)
     const totalEmployerCost = gross + employerSS;
 
-    // Abono de Família
+    // Abono de Família (child benefit): state transfer, not employer cost
     const abono = children * ABONO_PER_CHILD;
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // ANNUAL NET SALARY
+    // Includes the full meal allowance received (both exempt and taxable portions),
+    // because the meal benefit is real income regardless of its tax classification.
+    // Deducts annual SS (on the corrected base) and annual IRS liability.
+    // ─────────────────────────────────────────────────────────────────────────────
+    const annualMealTotal  = monthlyMealTotal * 12; // total meal income over 12 calendar months
+    const annualNetSalary  = annualGross + annualMealTotal - annualSS - annualIRS;
 
     return {
       gross,
@@ -296,20 +375,23 @@ const portugal = {
       netSalary,
       employerSS,
       totalEmployerCost,
-      monthlyMeal,
-      monthlyMealTaxFree,
-      monthlyMealTaxable,
+      // Meal allowance breakdown (monthly)
+      monthlyMeal:         monthlyMealTotal,
+      monthlyMealTaxFree:  monthlyMealTaxFree,
+      monthlyMealTaxable:  monthlyMealTaxable,
+      // Annual figures
       annualGross,
       annualIRS,
       annualSS,
+      annualMealTotal,
       taxableIncome,
       abono,
-      // Generic summary fields
-      totalTaxes: monthlyIRS,
-      totalSocialSecurity: monthlySS,
-      stateBenefit: abono,
-      annualNetSalary: annualGross - annualSS - annualIRS,
-      annualEmployerCost: totalEmployerCost * paymentsPerYear,
+      // Generic summary fields consumed by shared components
+      totalTaxes:            monthlyIRS,
+      totalSocialSecurity:   monthlySS,
+      stateBenefit:          abono,
+      annualNetSalary,
+      annualEmployerCost:    totalEmployerCost * paymentsPerYear,
     };
   },
 
@@ -358,9 +440,24 @@ const portugal = {
     rows.push({ label: 'Total Deductions', amount: r.totalDeductions, type: 'subtotal deduction', icon: '📌' });
     rows.push({ label: 'Net Salary', amount: r.netSalary, type: 'subtotal net', icon: '✅' });
 
+    // ── Meal allowance display ──────────────────────────────────────────────────
+    // When the daily value is fully within the exempt threshold the entire monthly
+    // meal amount is tax-free.  When it exceeds the threshold we split the display
+    // into an exempt line and a taxable-excess line so the user can see exactly
+    // how the CIRS Art. 2(3)(b)(2) split applies to their situation.
     if (r.monthlyMeal > 0) {
-      rows.push({ type: 'section', label: 'Tax-Free Benefit' });
-      rows.push({ label: 'Meal Allowance', amount: r.monthlyMeal, type: 'benefit', icon: '🍽️' });
+      if (r.monthlyMealTaxable > 0) {
+        // Meal allowance straddles the exempt threshold — show both portions
+        rows.push({ type: 'section', label: 'Meal Allowance (subsídio de refeição)' });
+        rows.push({ label: 'Meal Allowance (exempt)', amount: r.monthlyMealTaxFree, type: 'benefit', icon: '🍽️' });
+        // The taxable excess is added to the IRS and SS bases (not an additional
+        // deduction here — it is already factored into monthlyIRS and monthlySS above).
+        rows.push({ label: 'Meal Allowance (taxable)', amount: r.monthlyMealTaxable, type: 'benefit taxable', icon: '⚠️' });
+      } else {
+        // Entire meal allowance is within the exempt threshold — fully tax-free
+        rows.push({ type: 'section', label: 'Meal Allowance (subsídio de refeição)' });
+        rows.push({ label: 'Meal Allowance (tax-free)', amount: r.monthlyMeal, type: 'benefit', icon: '🍽️' });
+      }
     }
 
     if (r.abono > 0) {
