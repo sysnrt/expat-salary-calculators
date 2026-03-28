@@ -348,7 +348,13 @@ const portugal = {
     // ─────────────────────────────────────────────────────────────────────────────
 
     const withholdingBase = gross + monthlyMealTaxable; // gross + taxable meal excess
-    const monthlyIRS = computeWithholdingRetencao(withholdingBase, dependents);
+
+    // Under IFICI (Lei n.º 21/2023 / CIRS Art. 101), the employer withholds at the
+    // flat 20% rate directly on monthly gross — the progressive table does not apply.
+    // Without IFICI, the standard Despacho n.º 233-A/2026 retencao table is used.
+    const monthlyIRS = ifici
+      ? withholdingBase * 0.20
+      : computeWithholdingRetencao(withholdingBase, dependents);
 
     // ── Monthly net and employer cost ──
     const totalDeductions  = monthlyIRS + monthlySS;
