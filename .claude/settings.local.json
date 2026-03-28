@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s http://localhost:8080/)",
+      "Bash(curl -s http://localhost:8080/countries/hungary.js)",
+      "Bash(node -e \":*)",
+      "Bash(where node:*)",
+      "Bash(where node.exe)",
+      "Bash(python -m http.server 8080)",
+      "Bash(for d:*)",
+      "Bash(do echo:*)",
+      "Read(//c/development/Salary Calculator/DEV/APPLICATION/v0.4/legacy/**)",
+      "Bash(done)",
+      "Bash(curl -s \"http://localhost:3847/components/EuropeMap.js\")",
+      "Bash(1 echo:*)",
+      "Bash(where python:*)",
+      "Bash(python -c \":*)",
+      "Bash(curl -sI https://esm.sh/react-router-dom@6.30.3?external=react)",
+      "Bash(curl -sI https://esm.sh/react@18.3.1)",
+      "Bash(curl -sI https://esm.sh/react-dom@18.3.1/client)",
+      "Bash(curl -s https://esm.sh/react-router-dom@6.30.3?external=react)",
+      "WebSearch",
+      "WebFetch(domain:www.belastingdienst.nl)",
+      "WebFetch(domain:www.grantthornton.nl)",
+      "WebFetch(domain:www.crowe-peak.nl)",
+      "WebFetch(domain:www.vastrecht.com)",
+      "WebFetch(domain:www.deloitte.com)",
+      "WebFetch(domain:www.berekenhet.nl)",
+      "WebFetch(domain:www.kvk.nl)",
+      "WebFetch(domain:www.salarisvanmorgen.nl)",
+      "WebFetch(domain:www.onderneming.nl)",
+      "WebFetch(domain:mijn.bovag.nl)",
+      "WebFetch(domain:www.accountancyvanmorgen.nl)"
+    ]
+  }
+}

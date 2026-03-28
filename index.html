@@ -22,11 +22,25 @@
     "imports": {
       "react":            "https://esm.sh/react@18.3.1",
       "react/":           "https://esm.sh/react@18.3.1/",
-      "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
-      "react-router-dom": "https://esm.sh/react-router-dom@6.30.3?external=react",
+      "react-dom":        "https://esm.sh/react-dom@18.3.1?external=react",
+      "react-dom/":       "https://esm.sh/react-dom@18.3.1&external=react/",
+      "react-dom/client": "https://esm.sh/react-dom@18.3.1/client?external=react",
+      "react-router-dom": "https://esm.sh/react-router-dom@6.30.3?external=react,react-dom",
       "htm":              "https://esm.sh/htm@3.1.1"
     }
   }
+  </script>
+
+  <!-- Error handler: surface module loading failures -->
+  <script>
+    window.addEventListener('error', function(e) {
+      var loader = document.getElementById('app-loader');
+      if (loader) loader.innerHTML = '<div style="text-align:center;max-width:600px;padding:2rem"><div style="font-size:1.5rem;margin-bottom:0.5rem">⚠️ Failed to load</div><pre style="text-align:left;background:#fee;padding:1rem;border-radius:8px;overflow-x:auto;font-size:0.8rem">' + (e.message || e) + '\n' + (e.filename || '') + ':' + (e.lineno || '') + '</pre></div>';
+    });
+    window.addEventListener('unhandledrejection', function(e) {
+      var loader = document.getElementById('app-loader');
+      if (loader) loader.innerHTML = '<div style="text-align:center;max-width:600px;padding:2rem"><div style="font-size:1.5rem;margin-bottom:0.5rem">⚠️ Module error</div><pre style="text-align:left;background:#fee;padding:1rem;border-radius:8px;overflow-x:auto;font-size:0.8rem">' + (e.reason && e.reason.message || e.reason || 'Unknown error') + '</pre></div>';
+    });
   </script>
 
   <!-- App entry -->

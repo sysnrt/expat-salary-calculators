@@ -24,7 +24,12 @@ function loadPersistedState() {
   try {
     const lang = localStorage.getItem('expatcalc_lang') || 'en';
     const dark = localStorage.getItem('expatcalc_dark') === 'true';
-    return { language: lang, darkMode: dark };
+    let history = [];
+    try {
+      const raw = localStorage.getItem('expatcalc_history');
+      if (raw) history = JSON.parse(raw);
+    } catch (e) {}
+    return { language: lang, darkMode: dark, history };
   } catch (e) {
     return {};
   }

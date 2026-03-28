@@ -26,4 +26,5 @@ export {
   useNavigate,
   useParams,
   useLocation,
+  useSearchParams,
 } from 'react-router-dom';
