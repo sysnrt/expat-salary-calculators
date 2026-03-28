@@ -399,15 +399,15 @@ function parseTaxCode(taxCode, isScottish) {
     return result;
   }
   if (code === 'D0' || code === 'SD0' || code === 'CD0') {
-    // Higher rate: all income taxed at 40%, no PA — Sarah §8.2
-    result.flatRate = HIGHER_RATE;
+    // D0 = English 40%, SD0 = Scottish 42% — Sarah §8.2, audit fix #2
+    result.flatRate = (code === 'SD0') ? SCOT_HIGHER_RATE : HIGHER_RATE;
     result.effectivePA = 0;
     if (code.startsWith('S')) result.isScottish = true;
     return result;
   }
   if (code === 'D1' || code === 'SD1' || code === 'CD1') {
-    // Additional rate: all income taxed at 45%, no PA — Sarah §8.2
-    result.flatRate = ADDITIONAL_RATE;
+    // D1 = English 45%, SD1 = Scottish 48% — Sarah §8.2, audit fix #2
+    result.flatRate = (code === 'SD1') ? SCOT_TOP_RATE : ADDITIONAL_RATE;
     result.effectivePA = 0;
     if (code.startsWith('S')) result.isScottish = true;
     return result;
@@ -674,6 +674,7 @@ function computeBreakdown(gross, opts) {
     scottish: useScottishRates,
     statePensionAge: !!statePensionAge,
     inTaperZone: adjustedNetIncome > PA_TAPER_START && adjustedNetIncome < ADDITIONAL_RATE_THRESHOLD,
+    marriageAllowanceReceiver: !!marriageAllowanceReceiver,
     pensionMethod: pensionMethod || 'none',
     undergraduatePlan: undergraduatePlan || 'none',
 
@@ -892,11 +893,25 @@ const uk = {
     });
 
     if (r.inTaperZone) {
+      // Audit fix #4: Scottish taper zone effective rate is 67.5%, not 60%
+      const taperRate = r.scottish ? '67.5%' : '60%';
       rows.push({
-        label:  '⚠ PA taper active (income £100k–£125k — 60% effective marginal rate)',
+        label:  `⚠ PA taper active (income £100k–£125k — ${taperRate} effective marginal rate)`,
         amount: null,
         type:   'note',
       });
+    }
+
+    // Audit fix #3: MA ineligibility warning for higher-rate taxpayers (Sarah Q8)
+    if (r.marriageAllowanceReceiver) {
+      const maCap = r.scottish ? SCOT_MARRIAGE_ALLOWANCE_CAP : HIGHER_RATE_THRESHOLD;
+      if (r.annualGross > maCap) {
+        rows.push({
+          label:  '⚠ Marriage Allowance: you may be ineligible — recipient must be a basic rate taxpayer',
+          amount: null,
+          type:   'note',
+        });
+      }
     }
 
     rows.push({ label: 'Income Tax', amount: r.monthlyIncomeTax, type: 'deduction' });
