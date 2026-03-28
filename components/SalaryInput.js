@@ -6,7 +6,7 @@
 import { html, React } from '../app/deps.js';
 import { formatNumber } from '../app/utils.js';
 
-const { useState, useCallback } = React;
+const { useState, useEffect, useCallback } = React;
 
 function OptionSelect({ option, value, onChange }) {
   return html`
@@ -68,6 +68,25 @@ function OptionToggle({ option, value, onChange, disabled }) {
   `;
 }
 
+function OptionText({ option, value, onChange }) {
+  return html`
+    <div class="option-row">
+      <div class="option-info">
+        <div class="option-label">${option.label}</div>
+        ${option.sublabel && html`<div class="option-sublabel">${option.sublabel}</div>`}
+      </div>
+      <input
+        type="text"
+        class="option-text-input"
+        value=${value || ''}
+        placeholder=${option.placeholder || ''}
+        onInput=${(e) => onChange(option.id, e.target.value)}
+        style=${{ width: '100px', textTransform: 'uppercase' }}
+      />
+    </div>
+  `;
+}
+
 function OptionCounter({ option, value, onChange, max }) {
   const effectiveMax = max != null ? max : (option.max || 10);
   return html`
@@ -96,7 +115,17 @@ function OptionCounter({ option, value, onChange, max }) {
 export default function SalaryInput({ country, salary, calcMode, options, onSalaryChange, onCalcModeChange, onOptionChange }) {
   const range = country.salaryRange;
 
-  const handleSliderChange = useCallback((e) => {
+  const [sliderValue, setSliderValue] = useState(salary);
+
+  useEffect(() => {
+    setSliderValue(salary);
+  }, [salary]);
+
+  const handleSliderInput = useCallback((e) => {
+    setSliderValue(parseInt(e.target.value));
+  }, []);
+
+  const handleSliderCommit = useCallback((e) => {
     onSalaryChange(parseInt(e.target.value));
   }, [onSalaryChange]);
 
@@ -139,6 +168,7 @@ export default function SalaryInput({ country, salary, calcMode, options, onSala
     if (opt.type === 'number') return html`<${OptionNumber} key=${opt.id} option=${opt} value=${options[opt.id]} onChange=${onOptionChange} />`;
     if (opt.type === 'toggle') return html`<${OptionToggle} key=${opt.id} option=${opt} value=${options[opt.id]} onChange=${onOptionChange} />`;
     if (opt.type === 'counter') return html`<${OptionCounter} key=${opt.id} option=${opt} value=${options[opt.id]} onChange=${onOptionChange} max=${opt.dependsOn ? options[opt.dependsOn] : undefined} />`;
+    if (opt.type === 'text') return html`<${OptionText} key=${opt.id} option=${opt} value=${options[opt.id]} onChange=${onOptionChange} />`;
     return null;
   };
 
@@ -155,7 +185,7 @@ export default function SalaryInput({ country, salary, calcMode, options, onSala
         </div>
 
         <div class="salary-display num">
-          ${formatNumber(salary)} <span class="salary-currency">${country.currency}/month</span>
+          ${formatNumber(sliderValue)} <span class="salary-currency">${country.currency}/month</span>
         </div>
 
         <input
@@ -164,8 +194,10 @@ export default function SalaryInput({ country, salary, calcMode, options, onSala
           min=${range.min}
           max=${range.max}
           step=${range.step}
-          value=${Math.min(salary, range.max)}
-          onInput=${handleSliderChange}
+          value=${Math.min(sliderValue, range.max)}
+          onInput=${handleSliderInput}
+          onMouseUp=${handleSliderCommit}
+          onTouchEnd=${handleSliderCommit}
         />
         <div class="range-labels">
           <span>${formatNumber(range.min)}</span>

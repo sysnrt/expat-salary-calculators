@@ -6,6 +6,7 @@
    ══════════════════════════════════════════════════════════ */
 
 import { html, React, useNavigate } from '../app/deps.js';
+import { useApp } from '../app/store.js';
 import COUNTRIES from '../countries/registry.js';
 
 const { useState, useEffect, useRef, useCallback } = React;
@@ -20,12 +21,14 @@ const ISO3_TO_ID = {
   BEL: 'belgium',
   SVK: 'slovakia',
   POL: 'poland',
+  GBR: 'uk',      // United Kingdom — 2025/26 income tax calculator added
 };
 
 // Non-available country names for tooltip
+// GBR removed — UK calculator is now available (added to ISO3_TO_ID above)
 const OTHER_COUNTRIES = {
   NOR: 'Norway', SWE: 'Sweden', FIN: 'Finland', DNK: 'Denmark',
-  GBR: 'United Kingdom', IRL: 'Ireland', FRA: 'France', CHE: 'Switzerland',
+  IRL: 'Ireland', FRA: 'France', CHE: 'Switzerland',
   AUT: 'Austria', CZE: 'Czech Republic', ITA: 'Italy',
   SVN: 'Slovenia', HRV: 'Croatia', BIH: 'Bosnia & Herzegovina',
   SRB: 'Serbia', MNE: 'Montenegro', MKD: 'North Macedonia',
@@ -42,6 +45,7 @@ export default function EuropeMap() {
   const [svgHtml, setSvgHtml] = useState('');
   const [tooltip, setTooltip] = useState({ text: '', visible: false, x: 0, y: 0 });
   const navigate = useNavigate();
+  const { state } = useApp();
 
   // Load SVG content
   useEffect(() => {
@@ -172,6 +176,28 @@ export default function EuropeMap() {
       wrapper.removeEventListener('click', handleClick);
     };
   }, [loaded]);
+
+  // Highlight country on sidebar hover
+  useEffect(() => {
+    if (!loaded || !wrapperRef.current) return;
+    const wrapper = wrapperRef.current;
+
+    // Clear previous highlights
+    wrapper.querySelectorAll('.region-sidebar-hover').forEach(el => {
+      el.classList.remove('region-sidebar-hover');
+    });
+
+    if (!state.hoveredCountry) return;
+
+    // Find the ISO3 code(s) for this country id
+    Object.entries(ISO3_TO_ID).forEach(([code, id]) => {
+      if (id === state.hoveredCountry) {
+        wrapper.querySelectorAll('.region.' + code).forEach(el => {
+          el.classList.add('region-sidebar-hover');
+        });
+      }
+    });
+  }, [state.hoveredCountry, loaded]);
 
   return html`
     <div class="europe-map-card">

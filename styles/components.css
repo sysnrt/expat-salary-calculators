@@ -452,6 +452,33 @@
   border-color: var(--border);
 }
 
+/* Free-text input for option fields (e.g. tax code entry) — matches number input style */
+.option-text-input {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 6px 12px;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono, monospace);
+  width: 100px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.option-text-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+[data-theme="dark"] .option-text-input {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
 /* ── Result Panel ── */
 .result-panel {
   display: flex;
@@ -751,6 +778,18 @@
   font-size: var(--text-xs);
 }
 
+/* Note rows — informational warnings (no amount, spans full width) */
+.breakdown-row.note-row td.row-note {
+  color: var(--amber-600, #d97706);
+  font-size: var(--text-xs);
+  font-style: italic;
+  padding: var(--sp-1) 0;
+}
+
+[data-theme="dark"] .breakdown-row.note-row td.row-note {
+  color: var(--amber-400, #fbbf24);
+}
+
 /* ── Charts row ── */
 .charts-row {
   display: grid;
@@ -1022,7 +1061,7 @@
 /* ── Homepage enhanced ── */
 .homepage-hero {
   text-align: center;
-  margin-bottom: var(--sp-8);
+  margin-bottom: var(--sp-4);
 }
 
 .homepage-hero h1 {
@@ -1116,6 +1155,7 @@
 .europe-map-container svg {
   width: 100%;
   height: auto;
+  max-height: calc(100vh - 180px);
   display: block;
 }
 
@@ -1159,7 +1199,22 @@
   filter: none;
 }
 
-.europe-map-wrapper #Countries .region-available:hover {
+/* Dark mode: re-assert available fill with higher specificity than the dark path override */
+[data-theme="dark"] .europe-map-wrapper #Countries .region-available {
+  fill: #7dd3fc !important;
+  fill-opacity: 0.9 !important;
+}
+
+.europe-map-wrapper #Countries .region-available:hover,
+.europe-map-wrapper #Countries .region-sidebar-hover {
+  fill: #38bdf8 !important;
+  fill-opacity: 1 !important;
+  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.5));
+}
+
+/* Dark mode: re-assert hover fill with higher specificity */
+[data-theme="dark"] .europe-map-wrapper #Countries .region-available:hover,
+[data-theme="dark"] .europe-map-wrapper #Countries .region-sidebar-hover {
   fill: #38bdf8 !important;
   fill-opacity: 1 !important;
   filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.5));
@@ -1576,4 +1631,146 @@
   font-weight: 600;
   font-family: inherit;
   color: var(--text-secondary);
+}
+
+/* ══════════════════════════════════════════════════════════
+   Mobile — homepage country list
+   Shown only on smartphones; map is hidden at same breakpoint
+   ══════════════════════════════════════════════════════════ */
+
+.mobile-country-list {
+  display: none; /* hidden on desktop */
+}
+
+.desktop-map {
+  display: block; /* shown on desktop */
+}
+
+.mobile-country-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: background var(--duration-fast), border-color var(--duration-fast),
+              transform var(--duration-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-country-item:active {
+  transform: scale(0.98);
+  background: var(--bg-secondary);
+}
+
+.mobile-country-flag {
+  font-size: 2rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.mobile-country-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mobile-country-name {
+  font-size: var(--text-base);
+  font-weight: 700;
+}
+
+.mobile-country-local {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.mobile-country-currency {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 2px 10px;
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Mobile — phone-specific overrides (≤ 640px)
+   ══════════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+
+  /* Show mobile country list, hide map */
+  .desktop-map {
+    display: none;
+  }
+
+  .mobile-country-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+  }
+
+  /* Tighten homepage hero */
+  .homepage-hero {
+    margin-bottom: var(--sp-4);
+  }
+
+  .homepage-hero h1 {
+    font-size: var(--text-xl);
+  }
+
+  /* Tighten card padding */
+  .card {
+    padding: var(--sp-4);
+  }
+
+  /* Smaller salary display */
+  .salary-display {
+    font-size: var(--text-2xl);
+  }
+
+  /* Tighten the calc grid and inputs gap */
+  .calc-grid {
+    gap: var(--sp-4);
+  }
+
+  .calc-inputs {
+    gap: var(--sp-4);
+  }
+
+  /* Tighten page header */
+  .page-header {
+    margin-bottom: var(--sp-4);
+  }
+
+  .page-header h1 {
+    font-size: var(--text-xl);
+  }
+
+  /* Charts row tighter */
+  .charts-row {
+    gap: var(--sp-4);
+  }
+
+  /* Slider thumb larger for finger taps */
+  .salary-slider::-webkit-slider-thumb {
+    width: 26px;
+    height: 26px;
+  }
+
+  .salary-slider::-moz-range-thumb {
+    width: 26px;
+    height: 26px;
+  }
+
+  /* Topbar: hide Compare link text to save space */
+  .topbar-btn span {
+    display: none;
+  }
 }

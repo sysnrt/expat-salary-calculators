@@ -24,6 +24,15 @@ export default React.memo(function BreakdownTable({ rows, currency }) {
               `;
             }
 
+            // 'note' rows: informational label only, no amount column (e.g. warnings)
+            if (row.type === 'note') {
+              return html`
+                <tr key=${i} class="breakdown-row note-row">
+                  <td class="row-label row-note" colspan="2">${row.label}</td>
+                </tr>
+              `;
+            }
+
             const isDeduction = row.type?.includes('deduction');
             const isBenefit = row.type === 'benefit';
             const isSubtotal = row.type?.includes('subtotal');

@@ -7,14 +7,14 @@
 
 const COUNTRIES = [
   {
-    id: 'hungary',
-    name: 'Hungary',
-    localName: 'Magyarország',
-    flag: '🇭🇺',
-    currency: 'HUF',
-    locale: 'hu-HU',
-    accentColor: '#c8a44e',
-    accentSecondary: '#8b1a3a',
+    id: 'belgium',
+    name: 'Belgium',
+    localName: 'België',
+    flag: '🇧🇪',
+    currency: 'EUR',
+    locale: 'fr-BE',
+    accentColor: '#fdda25',
+    accentSecondary: '#000000',
   },
   {
     id: 'germany',
@@ -27,6 +27,16 @@ const COUNTRIES = [
     accentSecondary: '#ffcc00',
   },
   {
+    id: 'hungary',
+    name: 'Hungary',
+    localName: 'Magyarország',
+    flag: '🇭🇺',
+    currency: 'HUF',
+    locale: 'hu-HU',
+    accentColor: '#c8a44e',
+    accentSecondary: '#8b1a3a',
+  },
+  {
     id: 'netherlands',
     name: 'Netherlands',
     localName: 'Nederland',
@@ -35,6 +45,16 @@ const COUNTRIES = [
     locale: 'nl-NL',
     accentColor: '#f36c21',
     accentSecondary: '#21468b',
+  },
+  {
+    id: 'poland',
+    name: 'Poland',
+    localName: 'Polska',
+    flag: '🇵🇱',
+    currency: 'PLN',
+    locale: 'pl-PL',
+    accentColor: '#dc143c',
+    accentSecondary: '#ffffff',
   },
   {
     id: 'portugal',
@@ -47,26 +67,6 @@ const COUNTRIES = [
     accentSecondary: '#ff0000',
   },
   {
-    id: 'spain',
-    name: 'Spain',
-    localName: 'España',
-    flag: '🇪🇸',
-    currency: 'EUR',
-    locale: 'es-ES',
-    accentColor: '#c60b1e',
-    accentSecondary: '#ffc400',
-  },
-  {
-    id: 'belgium',
-    name: 'Belgium',
-    localName: 'België',
-    flag: '🇧🇪',
-    currency: 'EUR',
-    locale: 'fr-BE',
-    accentColor: '#fdda25',
-    accentSecondary: '#000000',
-  },
-  {
     id: 'slovakia',
     name: 'Slovakia',
     localName: 'Slovensko',
@@ -77,14 +77,26 @@ const COUNTRIES = [
     accentSecondary: '#ee1c25',
   },
   {
-    id: 'poland',
-    name: 'Poland',
-    localName: 'Polska',
-    flag: '🇵🇱',
-    currency: 'PLN',
-    locale: 'pl-PL',
-    accentColor: '#dc143c',
-    accentSecondary: '#ffffff',
+    id: 'spain',
+    name: 'Spain',
+    localName: 'España',
+    flag: '🇪🇸',
+    currency: 'EUR',
+    locale: 'es-ES',
+    accentColor: '#c60b1e',
+    accentSecondary: '#ffc400',
+  },
+  {
+    // United Kingdom — 2025/26 tax year
+    // Income tax, NIC, student loans, pension, Marriage Allowance, BPA, dividends
+    id: 'uk',
+    name: 'United Kingdom',
+    localName: 'United Kingdom',
+    flag: '🇬🇧',
+    currency: 'GBP',
+    locale: 'en-GB',
+    accentColor: '#012169',      // Union Flag navy
+    accentSecondary: '#C8102E',  // Union Flag red
   },
 ];
 
