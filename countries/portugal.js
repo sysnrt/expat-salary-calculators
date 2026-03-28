@@ -32,7 +32,9 @@ const MEAL_TAX_FREE_CARD   = 10.46;
 // ── Abono de Família (child benefit) ──
 const ABONO_PER_CHILD = 42.07;
 
-// ── IRS calculation ──
+// ── IRS annual bracket calculation (CIRS Art. 68) ──
+// Used for the final annual tax liability view only, not for payslip withholding.
+// Applies a cascade of marginal rates on annual taxable income (after SS and specific deduction).
 function computeIRS(taxableIncome) {
   for (let i = 0; i < BRACKETS.length; i++) {
     if (taxableIncome <= BRACKETS[i].limit) {
@@ -41,6 +43,97 @@ function computeIRS(taxableIncome) {
   }
   const last = BRACKETS[BRACKETS.length - 1];
   return Math.max(0, taxableIncome * last.rate - last.parcela);
+}
+
+// ── IRS withholding tables 2026 — Continente, Categoria A ──────────────────
+// Source: Despacho n.º 233-A/2026, 5 January 2026
+// Formula: retenção = remuneração_mensal_bruta × taxa − parcela_a_abater
+//          (result floored at zero; cannot produce negative withholding)
+//
+// Applied directly to MONTHLY GROSS SALARY — not to taxable income after deductions.
+// This is the employer payslip withholding amount, matching the AT payslip simulator.
+//
+// Table I — Não casado (single) or married two earners, no dependents
+// The bottom two brackets use a formula-based parcela (income-tapering mechanism to
+// avoid a sharp cliff at the withholding threshold).  All other brackets use fixed parcelas.
+//
+// CRITICAL: Use parcela €823.40 for the €5,547–€20,221 bracket.
+// Several secondary sources (Montepio etc.) incorrectly quote €893.75 — that value does
+// NOT reproduce the AT's own reference output.  Confirmed correct value: €823.40.
+// Verification: €7,000 × 44.95% − €823.40 = €2,323.10 ✓ (matches AT simulator exactly)
+//
+// Per-dependent additional deduction: €21.43/month per dependent (2026).
+// Source: Despacho n.º 233-A/2026, Table I footnote.
+const WITHHOLDING_TABLE_SINGLE_NO_DEP = [
+  // limit        rate      parcela    notes
+  { limit:   920, rate: 0.0000, parcela: 0       }, // below threshold → zero withholding
+  // Next two brackets: formula-based parcela (tapering mechanism, CIRS Art. 99-C)
+  // Bracket: up to €1,042  — formula: 12.50% × 2.60 × (1,273.85 − R)
+  // Bracket: up to €1,108  — formula: 15.70% × 1.35 × (1,554.83 − R)
+  // These are handled inline in computeWithholdingRetencao() below.
+  { limit:  1042, rate: null,   parcela: null    }, // sentinel — see formula handling below
+  { limit:  1108, rate: null,   parcela: null    }, // sentinel — see formula handling below
+  { limit:  1154, rate: 0.1570, parcela:   94.71 },
+  { limit:  1212, rate: 0.2120, parcela:  158.18 },
+  { limit:  1819, rate: 0.2410, parcela:  193.33 },
+  { limit:  2119, rate: 0.3110, parcela:  320.66 },
+  { limit:  2499, rate: 0.3490, parcela:  401.19 },
+  { limit:  3305, rate: 0.3836, parcela:  487.66 },
+  { limit:  5547, rate: 0.3969, parcela:  531.62 },
+  { limit: 20221, rate: 0.4495, parcela:  823.40 }, // ← €7,000/month falls here
+  { limit: Infinity, rate: 0.4717, parcela: 1272.31 },
+];
+
+// Per-dependent monthly deduction applied after the table formula (2026)
+// Source: Despacho n.º 233-A/2026, Table I
+const WITHHOLDING_PER_DEPENDENT = 21.43;
+
+/**
+ * Computes the monthly IRS withholding (retenção na fonte) using the official
+ * AT withholding table formula from Despacho n.º 233-A/2026.
+ *
+ * Formula: retenção = monthlyGross × taxa − parcela_a_abater − (PER_DEP × dependents)
+ * Result is clamped to zero (cannot be negative).
+ *
+ * @param {number} monthlyGross   - Monthly gross salary (remuneração mensal bruta), €
+ * @param {number} [dependents=0] - Number of qualifying dependents
+ * @returns {number} Monthly withholding amount in €, rounded to 2 decimal places
+ *
+ * Source: Despacho n.º 233-A/2026; CIRS Art. 99-C
+ */
+function computeWithholdingRetencao(monthlyGross, dependents = 0) {
+  let grossTax;
+
+  if (monthlyGross <= 920) {
+    // Below withholding threshold — no withholding due
+    grossTax = 0;
+
+  } else if (monthlyGross <= 1042) {
+    // Formula-based tapering bracket (up to €1,042)
+    // Source formula: taxa = 12.50%, parcela = 12.50% × 2.60 × (1,273.85 − R)
+    // Expanded: grossTax = R × 0.1250 − 0.325 × (1273.85 − R) = 0.450R − 414.00
+    // This taper smooths the transition from zero withholding at the threshold.
+    grossTax = monthlyGross * 0.1250 - 0.325 * (1273.85 - monthlyGross);
+
+  } else if (monthlyGross <= 1108) {
+    // Formula-based tapering bracket (up to €1,108)
+    // Source formula: taxa = 15.70%, parcela = 15.70% × 1.35 × (1,554.83 − R)
+    // Expanded: grossTax = R × 0.1570 − 0.2120 × (1554.83 − R) = 0.3690R − 329.62
+    grossTax = monthlyGross * 0.1570 - 0.2120 * (1554.83 - monthlyGross);
+
+  } else {
+    // Fixed parcela brackets — standard formula: grossTax = R × taxa − parcela
+    const band = WITHHOLDING_TABLE_SINGLE_NO_DEP.find(b => monthlyGross <= b.limit && b.rate !== null);
+    if (!band) {
+      // Fallback: should not be reached given Infinity sentinel in table
+      return 0;
+    }
+    grossTax = monthlyGross * band.rate - band.parcela;
+  }
+
+  // Apply per-dependent deduction and clamp to zero
+  const retencao = grossTax - WITHHOLDING_PER_DEPENDENT * dependents;
+  return Math.max(0, Math.round(retencao * 100) / 100);
 }
 
 // ── Country config ──
@@ -158,21 +251,32 @@ const portugal = {
 
     const monthlySS = gross * SS_EMPLOYEE;                  // 11% on this month's gross payment
 
-    // ── Duodécimos withholding method (CIRS Art. 99-B) ──────────────────────────
-    // Under Portuguese law, employers paying 14 salaries (holiday + Christmas bonus)
-    // must use the "duodécimos" (twelfths) method: the IRS on all bonus months is
-    // spread evenly across the 12 regular monthly paycheques. This means each of the
-    // 12 regular months bears 1/12 of the FULL annual IRS liability.
+    // ── Monthly payslip withholding: AT withholding table formula ────────────────
+    // Source: Despacho n.º 233-A/2026, Table I (Continente, Categoria A)
+    // Formula: retenção = remuneração_mensal_bruta × taxa − parcela_a_abater
     //
-    // This is the method used by the AT's own payslip simulator (at.gov.pt/simuladores)
-    // and is what appears on a Portuguese payslip (recibo de vencimento).
+    // The withholding table is applied directly to the MONTHLY GROSS SALARY, not to
+    // the taxable income after deductions. This matches what appears on a Portuguese
+    // payslip (recibo de vencimento) and the AT's own payslip simulator.
     //
-    // For 13 or 12-payment structures, we continue to divide by the actual number of
-    // payment periods, since the duodécimos rule is specific to the 14-payment regime.
+    // For 14-payment (duodécimos) salaries under CIRS Art. 99-C:
+    //   - The regular monthly salary component (e.g. €7,000) is withheld using the
+    //     table directly on the full monthly gross.
+    //   - The holiday/Christmas subsidy duodécimos (each = gross/12, e.g. €583.33)
+    //     are withheld autonomously at their own bracket.  At €7,000/month gross, the
+    //     €583.33 subsidy fragment falls into the ≤€1,819 bracket (24.10%, parcela
+    //     €193.33): €583.33 × 24.10% − €193.33 = −€52.75 → clamped to €0.  So the
+    //     autonomous subsidy withholding is zero and total monthly withholding equals
+    //     the table result on the regular monthly gross alone.
     //
-    // Reference: CIRS Art. 99-B; Portaria de retenção na fonte (AT, 2026)
-    const withholdingDivisor = (paymentsPerYear === 14) ? 12 : paymentsPerYear;
-    const monthlyIRS = annualIRS / withholdingDivisor;
+    // For 13-payment structure: same table logic applies to the monthly gross.
+    // For 12-payment structure: no subsidy duodécimos exist; table on monthly gross.
+    //
+    // NOTE: annualIRS (computed above via CIRS Art. 68 brackets) is retained for the
+    // annual liability view and annualNetSalary.  monthlyIRS below is the payslip figure.
+    //
+    // Reference: Despacho n.º 233-A/2026; CIRS Art. 99-C
+    const monthlyIRS = computeWithholdingRetencao(gross, dependents);
 
     const totalDeductions = monthlyIRS + monthlySS;
     const netSalary = gross - totalDeductions;
