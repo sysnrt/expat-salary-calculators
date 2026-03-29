@@ -95,14 +95,17 @@ const APEC_RATE = 0.00024;                  // 0.024%
 // Ref: SPEC §2.5
 // ─────────────────────────────────────────────────────────────────────────────
 
-const EMPLOYER_MALADIE_RATE = 0.13;          // 13.00% (or 7.00% reduced for low wages)
+const EMPLOYER_MALADIE_RATE_REDUCED = 0.07;  // 7.00% reduced rate (up to 2.5x SMIC)
+const EMPLOYER_MALADIE_RATE_FULL = 0.13;     // 13.00% full rate (above 2.5x SMIC)
+const EMPLOYER_SMIC_MONTHLY = 1823.03;       // 2026 SMIC mensuel brut (for threshold calc)
 const EMPLOYER_CSA_RATE = 0.003;             // 0.30% Solidarité autonomie
 const EMPLOYER_VIEILLESSE_PLAFONNEE = 0.0855; // 8.55% on gross up to PMSS
 const EMPLOYER_VIEILLESSE_DEPLAFONNEE = 0.0211; // 2.11% on total gross
-const EMPLOYER_ALLOCATIONS_FAMILIALES = 0.0525; // 5.25% (or 3.45% reduced)
+const EMPLOYER_ALLOC_FAM_RATE_REDUCED = 0.0345; // 3.45% reduced rate (up to 3.5x SMIC)
+const EMPLOYER_ALLOC_FAM_RATE_FULL = 0.0525;   // 5.25% full rate (above 3.5x SMIC)
 const EMPLOYER_CHOMAGE_RATE = 0.04;          // 4.00% on up to 4x PMSS
 const EMPLOYER_AGS_RATE = 0.0025;            // 0.25% on up to 4x PMSS
-const EMPLOYER_FNAL_RATE = 0.005;            // 0.50% on total gross (>= 50 employees)
+const EMPLOYER_FNAL_RATE = 0.001;            // 0.10% on up to PMSS (< 50 employees default)
 const EMPLOYER_DIALOGUE_SOCIAL = 0.00016;    // 0.016% on total gross
 const EMPLOYER_AGIRC_T1_RATE = 0.0472;       // 4.72% up to PMSS
 const EMPLOYER_AGIRC_T2_RATE = 0.1295;       // 12.95% PMSS to 8x PMSS
@@ -403,8 +406,11 @@ function computeSocialContributions(monthlyGross, opts) {
  * @returns {number} Total monthly employer contributions
  */
 function computeEmployerContributions(monthlyGross, isCadre) {
-  // Assurance maladie: 13% on total gross (using standard rate, not reduced)
-  const maladie = monthlyGross * EMPLOYER_MALADIE_RATE;
+  // Assurance maladie: 7% reduced (up to 2.5x SMIC) or 13% full (above)
+  const smicThreshold25 = EMPLOYER_SMIC_MONTHLY * 2.5;
+  const maladieRate = monthlyGross <= smicThreshold25
+    ? EMPLOYER_MALADIE_RATE_REDUCED : EMPLOYER_MALADIE_RATE_FULL;
+  const maladie = monthlyGross * maladieRate;
 
   // CSA (solidarité autonomie): 0.30% on total gross
   const csa = monthlyGross * EMPLOYER_CSA_RATE;
@@ -415,8 +421,11 @@ function computeEmployerContributions(monthlyGross, isCadre) {
   // Vieillesse déplafonnée: 2.11% on total gross
   const vieillesseDepl = monthlyGross * EMPLOYER_VIEILLESSE_DEPLAFONNEE;
 
-  // Allocations familiales: 5.25% on total gross (standard rate)
-  const allocFam = monthlyGross * EMPLOYER_ALLOCATIONS_FAMILIALES;
+  // Allocations familiales: 3.45% reduced (up to 3.5x SMIC) or 5.25% full (above)
+  const smicThreshold35 = EMPLOYER_SMIC_MONTHLY * 3.5;
+  const allocFamRate = monthlyGross <= smicThreshold35
+    ? EMPLOYER_ALLOC_FAM_RATE_REDUCED : EMPLOYER_ALLOC_FAM_RATE_FULL;
+  const allocFam = monthlyGross * allocFamRate;
 
   // Assurance chômage: 4.00% on gross up to 4x PMSS
   const chomage = Math.min(monthlyGross, PMSS_4X) * EMPLOYER_CHOMAGE_RATE;
@@ -424,8 +433,8 @@ function computeEmployerContributions(monthlyGross, isCadre) {
   // AGS: 0.25% on gross up to 4x PMSS
   const ags = Math.min(monthlyGross, PMSS_4X) * EMPLOYER_AGS_RATE;
 
-  // FNAL: 0.50% on total gross (assuming >= 50 employees)
-  const fnal = monthlyGross * EMPLOYER_FNAL_RATE;
+  // FNAL: 0.10% on gross up to PMSS (< 50 employees default)
+  const fnal = Math.min(monthlyGross, PMSS) * EMPLOYER_FNAL_RATE;
 
   // Dialogue social: 0.016% on total gross
   const dialogueSocial = monthlyGross * EMPLOYER_DIALOGUE_SOCIAL;
@@ -601,7 +610,9 @@ function computeAnnualIncomeTax(annualNetImposable, parts, filingStatus, childre
 
   // Step 6: Final tax after décote (cannot be negative)
   // Ref: SPEC §12.4 — round annual tax to nearest whole euro
-  const impotFinal = Math.max(0, Math.round(impotBrut - decoteAmount));
+  // Article 1657 CGI: tax below 61 EUR is not collected
+  const impotAfterDecote = Math.max(0, Math.round(impotBrut - decoteAmount));
+  const impotFinal = impotAfterDecote < 61 ? 0 : impotAfterDecote;
 
   // Effective annual tax rate (on net imposable, not gross)
   const effectiveAnnualRate = annualNetImposable > 0
