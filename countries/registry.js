@@ -17,6 +17,18 @@ const COUNTRIES = [
     accentSecondary: '#000000',
   },
   {
+    // France — 2026 tax year (Revenus 2025 / Imposition 2026)
+    // Social contributions, PAS withholding, barème progressif with quotient familial
+    id: 'france',
+    name: 'France',
+    localName: 'France',
+    flag: '🇫🇷',
+    currency: 'EUR',
+    locale: 'fr-FR',
+    accentColor: '#002395',      // French blue (Tricolore)
+    accentSecondary: '#ED2939',  // French red (Tricolore)
+  },
+  {
     id: 'germany',
     name: 'Germany',
     localName: 'Deutschland',
@@ -25,6 +37,18 @@ const COUNTRIES = [
     locale: 'de-DE',
     accentColor: '#dd1100',
     accentSecondary: '#ffcc00',
+  },
+  {
+    // Ireland — 2026 tax year
+    // Income tax (IT), USC, PRSI, tax credits, pension relief
+    id: 'ireland',
+    name: 'Ireland',
+    localName: 'Éire',
+    flag: '🇮🇪',
+    currency: 'EUR',
+    locale: 'en-IE',
+    accentColor: '#169B62',      // Irish green
+    accentSecondary: '#FF883E',  // Irish orange
   },
   {
     id: 'hungary',

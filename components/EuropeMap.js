@@ -22,21 +22,34 @@ const ISO3_TO_ID = {
   SVK: 'slovakia',
   POL: 'poland',
   GBR: 'uk',      // United Kingdom — 2025/26 income tax calculator added
+  IRL: 'ireland',  // Ireland — 2026 income tax, USC, PRSI calculator
+  FRA: 'france',   // France — 2026 social contributions, PAS, barème progressif
 };
 
-// Non-available country names for tooltip
-// GBR removed — UK calculator is now available (added to ISO3_TO_ID above)
+// Map multi-part countries: when one code is hovered, highlight all related codes
+const MULTI_PART_COUNTRIES = {
+  CYP: ['CYP', 'CYN'],  // Cyprus + Northern Cyprus
+  CYN: ['CYP', 'CYN'],  // Northern Cyprus + Cyprus
+};
+
+// Coming-soon countries: EU, EEA, Switzerland, Ukraine, and the Balkans only.
+// Countries outside these regions (Russia, Belarus, Turkey, Moldova, Andorra, Monaco) get no tooltip.
 const OTHER_COUNTRIES = {
+  // EU
   NOR: 'Norway', SWE: 'Sweden', FIN: 'Finland', DNK: 'Denmark',
-  IRL: 'Ireland', FRA: 'France', CHE: 'Switzerland',
-  AUT: 'Austria', CZE: 'Czech Republic', ITA: 'Italy',
-  SVN: 'Slovenia', HRV: 'Croatia', BIH: 'Bosnia & Herzegovina',
-  SRB: 'Serbia', MNE: 'Montenegro', MKD: 'North Macedonia',
-  ALB: 'Albania', GRC: 'Greece', BGR: 'Bulgaria', ROU: 'Romania',
-  MDA: 'Moldova', UKR: 'Ukraine', BLR: 'Belarus', LTU: 'Lithuania',
-  LVA: 'Latvia', EST: 'Estonia', LUX: 'Luxembourg', TUR: 'Turkey',
-  RUS: 'Russia', ISL: 'Iceland', AND: 'Andorra', MCO: 'Monaco',
-  MLT: 'Malta', CYP: 'Cyprus', XKX: 'Kosovo',
+  AUT: 'Austria', CZE: 'Czech Republic',
+  ITA: 'Italy', SVN: 'Slovenia', HRV: 'Croatia', GRC: 'Greece',
+  BGR: 'Bulgaria', ROU: 'Romania', LTU: 'Lithuania', LVA: 'Latvia',
+  EST: 'Estonia', LUX: 'Luxembourg', MLT: 'Malta', CYP: 'Cyprus',
+  // EEA (non-EU)
+  ISL: 'Iceland',
+  // Switzerland
+  CHE: 'Switzerland',
+  // Ukraine
+  UKR: 'Ukraine',
+  // Balkans (non-EU)
+  BIH: 'Bosnia & Herzegovina', SRB: 'Serbia', MNE: 'Montenegro',
+  MKD: 'North Macedonia', ALB: 'Albania', XKX: 'Kosovo',
 };
 
 export default function EuropeMap() {
@@ -93,10 +106,12 @@ export default function EuropeMap() {
     const wrapper = wrapperRef.current;
 
     function getRegionPath(target) {
-      // Walk up from target to find a .region element within the SVG
+      // Walk up from target to find a .region element or a group with country ID (gXXX)
       let el = target;
       while (el && el !== wrapper) {
         if (el.classList && el.classList.contains('region')) return el;
+        // Also match groups with IDs like gCYP, gFRA, etc.
+        if (el.id && el.id.match(/^g[A-Z]{3}$/)) return el;
         el = el.parentElement;
       }
       return null;
@@ -104,11 +119,18 @@ export default function EuropeMap() {
 
     function getCode(regionEl) {
       let code = null;
-      regionEl.classList.forEach(cls => {
-        if (cls !== 'region' && cls !== 'region-available' && cls.length === 3 && /^[A-Z]{3}$/.test(cls)) {
-          code = cls;
-        }
-      });
+      // Try to extract from classes (for .region elements)
+      if (regionEl.classList) {
+        regionEl.classList.forEach(cls => {
+          if (cls !== 'region' && cls !== 'region-available' && cls.length === 3 && /^[A-Z]{3}$/.test(cls)) {
+            code = cls;
+          }
+        });
+      }
+      // Try to extract from ID (for g-prefixed groups like gCYP)
+      if (!code && regionEl.id && regionEl.id.match(/^g([A-Z]{3})$/)) {
+        code = RegExp.$1;
+      }
       return code;
     }
 
@@ -123,9 +145,29 @@ export default function EuropeMap() {
       if (isAvailable) {
         const country = COUNTRIES.find(c => c.id === ISO3_TO_ID[code]);
         name = country ? `${country.flag} ${country.name}` : code;
+      } else if (OTHER_COUNTRIES[code]) {
+        name = OTHER_COUNTRIES[code] + ' — Coming soon';
       } else {
-        name = OTHER_COUNTRIES[code] || code;
-        name += ' — Coming soon';
+        return;
+      }
+
+      // Only highlight available countries with the blue glow effect
+      if (isAvailable) {
+        const codesToHighlight = MULTI_PART_COUNTRIES[code] ? MULTI_PART_COUNTRIES[code] : [code];
+
+        codesToHighlight.forEach(c => {
+          // For available countries: find .region elements with the code class
+          wrapper.querySelectorAll('.region.' + c).forEach(path => {
+            path.classList.add('region-map-hover');
+          });
+          // For coming-soon countries: find the gXXX group and highlight its paths
+          const groupEl = document.getElementById('g' + c);
+          if (groupEl) {
+            groupEl.querySelectorAll('path').forEach(path => {
+              path.classList.add('region-map-hover');
+            });
+          }
+        });
       }
 
       const rect = wrapper.getBoundingClientRect();
@@ -152,6 +194,29 @@ export default function EuropeMap() {
       // Only hide if we're leaving the region (not moving between child elements)
       const related = e.relatedTarget;
       if (related && regionEl.contains(related)) return;
+
+      const code = getCode(regionEl);
+      if (code) {
+        const isAvailable = ISO3_TO_ID[code];
+        // Only remove highlight if the country was available (and thus was highlighted)
+        if (isAvailable) {
+          const codesToUnhighlight = MULTI_PART_COUNTRIES[code] ? MULTI_PART_COUNTRIES[code] : [code];
+
+          codesToUnhighlight.forEach(c => {
+            wrapper.querySelectorAll('.region.' + c).forEach(path => {
+              path.classList.remove('region-map-hover');
+            });
+            // Also remove from coming-soon country groups
+            const groupEl = document.getElementById('g' + c);
+            if (groupEl) {
+              groupEl.querySelectorAll('path').forEach(path => {
+                path.classList.remove('region-map-hover');
+              });
+            }
+          });
+        }
+      }
+
       setTooltip(prev => ({ ...prev, visible: false }));
     }
 
