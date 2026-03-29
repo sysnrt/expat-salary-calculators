@@ -661,6 +661,32 @@ function round2(n) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function computeBreakdown(gross, opts) {
+  // Guard against invalid input
+  if (!Number.isFinite(gross) || gross < 0) {
+    return {
+      gross: 0,
+      inputGross: gross,
+      monthlyContributions: 0,
+      monthlyNetBeforeTax: 0,
+      monthlyNetImposable: 0,
+      monthlyPAS: 0,
+      monthlyNetAfterTax: 0,
+      annualGross: 0,
+      annualContributions: 0,
+      annualNetBeforeTax: 0,
+      annualNetImposable: 0,
+      annualPAS: 0,
+      annualNetAfterTax: 0,
+      annualTax: { impotFinal: 0, effectiveAnnualRate: 0 },
+      totalTaxes: 0,
+      totalSocialSecurity: 0,
+      netSalary: 0,
+      totalDeductions: 0,
+      annualNetSalary: 0,
+      totalEmployerCost: 0,
+    };
+  }
+
   const {
     filingStatus,       // 'single' | 'married' | 'parentIsole'
     children,           // number of dependent children (0–10)
